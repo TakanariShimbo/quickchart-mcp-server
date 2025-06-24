@@ -503,8 +503,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
   try {
     if (name === "generate_chart") {
-      validateChartType(args.type);
-      validateDatasets(args.datasets);
+      if (!args) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing arguments for generate_chart"
+        );
+      }
+      validateChartType(args.type as string);
+      validateDatasets(args.datasets as any[]);
 
       const config = buildChartConfig(args);
       const chartUrl = generateChartUrl(config);
@@ -520,6 +526,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     if (name === "download_chart") {
+      if (!args) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing arguments for download_chart"
+        );
+      }
       if (!args.config || typeof args.config !== 'object') {
         throw new McpError(
           ErrorCode.InvalidParams,
@@ -528,7 +540,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       const chartUrl = generateChartUrl(args.config);
-      const outputPath = getDownloadPath(args.outputPath);
+      const outputPath = getDownloadPath(args.outputPath as string | undefined);
 
       try {
         const response = await axios.get(chartUrl, {
