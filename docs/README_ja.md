@@ -1,18 +1,22 @@
 # QuickChart MCP サーバー
 
-QuickChart.io APIを使用してチャートを生成するModel Context Protocol (MCP)サーバーです。AIアシスタントから簡単なコマンドで美しいチャートを直接作成できます。
+QuickChart.io API を使用してチャートを生成する Model Context Protocol (MCP)サーバーです。AI アシスタントから簡単なコマンドで美しいチャートを直接作成できます。
 
 ## 機能
 
 ### ツール
 
 #### `generate_chart`
-QuickChart.ioを使用してチャートURLを生成
-- **入力**: チャートタイプ、ラベル、データセット、タイトル、追加オプション
-- **出力**: 生成されたチャート画像のURL
 
-#### `download_chart` 
-QuickChart.ioからチャート画像をダウンロード
+QuickChart.io を使用してチャート URL を生成
+
+- **入力**: チャートタイプ、ラベル、データセット、タイトル、追加オプション
+- **出力**: 生成されたチャート画像の URL
+
+#### `download_chart`
+
+QuickChart.io からチャート画像をダウンロード
+
 - **入力**: チャート設定オブジェクトとオプションの出力パス
 - **出力**: 保存されたファイルパスを含む確認メッセージ
 
@@ -25,21 +29,21 @@ QuickChart.ioからチャート画像をダウンロード
 - **radar**: 複数の変数を比較するレーダーチャート
 - **polarArea**: 周期的なデータのための極座標エリアチャート
 - **scatter**: 相関分析のための散布図
-- **bubble**: 3次元データのためのバブルチャート
+- **bubble**: 3 次元データのためのバブルチャート
 - **radialGauge**: 単一の値を表示する放射状ゲージ
 - **speedometer**: スピードメータースタイルのゲージ
 
 ## インストール
 
-### npm経由
+### npm 経由
 
 ```bash
 npm install -g @takanarishimbo/quickchart-mcp-server
 ```
 
-### Claude Desktop経由
+### Claude Desktop 経由
 
-Claude Desktopの設定に追加：
+Claude Desktop の設定に追加：
 
 ```json
 {
@@ -52,7 +56,7 @@ Claude Desktopの設定に追加：
 }
 ```
 
-### カスタムQuickChartインスタンスを使用
+### カスタム QuickChart インスタンスを使用
 
 ```json
 {
@@ -102,7 +106,7 @@ Claude Desktopの設定に追加：
       "backgroundColor": "transparent"
     },
     {
-      "label": "製品B", 
+      "label": "製品B",
       "data": [20, 15, 25, 35],
       "borderColor": "red",
       "backgroundColor": "transparent"
@@ -137,9 +141,9 @@ Claude Desktopの設定に追加：
     {
       "label": "データセット1",
       "data": [
-        {"x": 10, "y": 20},
-        {"x": 15, "y": 25},
-        {"x": 20, "y": 30}
+        { "x": 10, "y": 20 },
+        { "x": 15, "y": 25 },
+        { "x": 20, "y": 30 }
       ],
       "backgroundColor": "rgba(255, 99, 132, 0.5)"
     }
@@ -167,12 +171,109 @@ Claude Desktopの設定に追加：
 
 ### 環境変数
 
-- **QUICKCHART_BASE_URL**: QuickChart APIのベースURL（デフォルト: `https://quickchart.io/chart`）
-  - セルフホストのQuickChartインスタンスを指定する際に使用
+- **QUICKCHART_BASE_URL**: QuickChart API のベース URL（デフォルト: `https://quickchart.io/chart`）
+  - セルフホストの QuickChart インスタンスを指定する際に使用
+
+## NPM への公開
+
+このプロジェクトは GitHub Actions を通じた自動 NPM 公開機能を含んでいます。公開の設定方法：
+
+### 1. NPM アクセストークンの作成
+
+1. **NPM にログイン**（アカウントが必要な場合は作成）
+
+   ```bash
+   npm login
+   ```
+
+2. **アクセストークンの作成**
+   - [https://www.npmjs.com/settings/tokens](https://www.npmjs.com/settings/tokens) にアクセス
+   - "Generate New Token"をクリック
+   - "Automation"を選択（CI/CD 使用のため）
+   - "Publish"権限レベルを選択
+   - 生成されたトークンをコピー（`npm_`で始まる）
+
+### 2. GitHub リポジトリにトークンを追加
+
+1. **リポジトリ設定へ移動**
+
+   - GitHub リポジトリにアクセス
+   - "Settings"タブをクリック
+   - "Secrets and variables" → "Actions" に移動
+
+2. **NPM トークンを追加**
+   - "New repository secret"をクリック
+   - 名前：`NPM_TOKEN`
+   - 値：ステップ 1 でコピーした NPM トークンを貼り付け
+   - "Add secret"をクリック
+
+### 3. GitHub Personal Access Token の設定（リリーススクリプト用）
+
+リリーススクリプトは GitHub にプッシュする必要があるため、GitHub トークンが必要です：
+
+1. **GitHub Personal Access Token の作成**
+
+   - [https://github.com/settings/tokens](https://github.com/settings/tokens) にアクセス
+   - "Generate new token" → "Generate new token (classic)" をクリック
+   - 有効期限を設定（推奨：90 日またはカスタム）
+   - スコープを選択：
+     - ✅ `repo` (プライベートリポジトリの完全制御)
+   - "Generate token"をクリック
+   - 生成されたトークンをコピー（`ghp_`で始まる）
+
+2. **Git にトークンを設定**
+
+   ```bash
+   # オプション1: GitHub CLI を使用（推奨）
+   gh auth login
+
+   # オプション2: gitにトークンを設定
+   git config --global credential.helper store
+
+   # パスワードを求められた際にトークンを使用
+   ```
+
+### 4. 新しいバージョンのリリース
+
+付属のリリーススクリプトを使用してバージョン管理、タグ付け、公開トリガーを自動化：
+
+```bash
+# パッチバージョンを増分 (0.1.0 → 0.1.1)
+./scripts/release.sh patch
+
+# マイナーバージョンを増分 (0.1.0 → 0.2.0)
+./scripts/release.sh minor
+
+# メジャーバージョンを増分 (0.1.0 → 1.0.0)
+./scripts/release.sh major
+
+# 特定のバージョンを設定
+./scripts/release.sh 1.2.3
+```
+
+### 5. 公開の確認
+
+1. **GitHub Actions をチェック**
+
+   - リポジトリの"Actions"タブに移動
+   - "Publish to npm"ワークフローが正常に完了したことを確認
+
+2. **NPM パッケージを確認**
+   - アクセス：`https://www.npmjs.com/package/@takanarishimbo/quickchart-mcp-server`
+   - または実行：`npm view @takanarishimbo/quickchart-mcp-server`
+
+### リリースプロセスフロー
+
+1. `release.sh`スクリプトがすべてのファイルのバージョンを更新
+2. git コミットとタグを作成
+3. GitHub にプッシュ
+4. 新しいタグで GitHub Actions ワークフローが発動
+5. ワークフローがプロジェクトをビルドして NPM に公開
+6. `npm install`でパッケージがグローバルに利用可能になる
 
 ## 開発
 
-### 方法1: Node.jsをローカルで使用
+### 方法 1: Node.js をローカルで使用
 
 1. **このリポジトリをクローン**
 
@@ -199,7 +300,7 @@ Claude Desktopの設定に追加：
    npx @modelcontextprotocol/inspector node dist/index.js
    ```
 
-### 方法2: Docker を使用（ローカルに Node.js 不要）
+### 方法 2: Docker を使用（ローカルに Node.js 不要）
 
 1. **リポジトリをクローン**
 

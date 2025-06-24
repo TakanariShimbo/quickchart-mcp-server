@@ -7,12 +7,16 @@ A Model Context Protocol (MCP) server that generates charts using QuickChart.io 
 ### Tools
 
 #### `generate_chart`
+
 Generate a chart URL using QuickChart.io
+
 - **Input**: Chart type, labels, datasets, title, and additional options
 - **Output**: URL to the generated chart image
 
-#### `download_chart` 
+#### `download_chart`
+
 Download a chart image from QuickChart.io
+
 - **Input**: Chart configuration object and optional output path
 - **Output**: Confirmation message with the saved file path
 
@@ -102,7 +106,7 @@ Add to your Claude Desktop configuration:
       "backgroundColor": "transparent"
     },
     {
-      "label": "Product B", 
+      "label": "Product B",
       "data": [20, 15, 25, 35],
       "borderColor": "red",
       "backgroundColor": "transparent"
@@ -137,9 +141,9 @@ Add to your Claude Desktop configuration:
     {
       "label": "Dataset 1",
       "data": [
-        {"x": 10, "y": 20},
-        {"x": 15, "y": 25},
-        {"x": 20, "y": 30}
+        { "x": 10, "y": 20 },
+        { "x": 15, "y": 25 },
+        { "x": 20, "y": 30 }
       ],
       "backgroundColor": "rgba(255, 99, 132, 0.5)"
     }
@@ -169,6 +173,103 @@ Add to your Claude Desktop configuration:
 
 - **QUICKCHART_BASE_URL**: Base URL for QuickChart API (default: `https://quickchart.io/chart`)
   - Use this to point to a self-hosted QuickChart instance
+
+## Publishing to NPM
+
+This project includes automated NPM publishing via GitHub Actions. To set up publishing:
+
+### 1. Create NPM Access Token
+
+1. **Log in to NPM** (create account if needed)
+
+   ```bash
+   npm login
+   ```
+
+2. **Create Access Token**
+   - Go to [https://www.npmjs.com/settings/tokens](https://www.npmjs.com/settings/tokens)
+   - Click "Generate New Token"
+   - Select "Automation" (for CI/CD usage)
+   - Choose "Publish" permission level
+   - Copy the generated token (starts with `npm_`)
+
+### 2. Add Token to GitHub Repository
+
+1. **Navigate to Repository Settings**
+
+   - Go to your GitHub repository
+   - Click "Settings" tab
+   - Go to "Secrets and variables" → "Actions"
+
+2. **Add NPM Token**
+   - Click "New repository secret"
+   - Name: `NPM_TOKEN`
+   - Value: Paste your NPM token from step 1
+   - Click "Add secret"
+
+### 3. Setup GitHub Personal Access Token (for release script)
+
+The release script needs to push to GitHub, so you'll need a GitHub token:
+
+1. **Create GitHub Personal Access Token**
+
+   - Go to [https://github.com/settings/tokens](https://github.com/settings/tokens)
+   - Click "Generate new token" → "Generate new token (classic)"
+   - Set expiration (recommended: 90 days or custom)
+   - Select scopes:
+     - ✅ `repo` (Full control of private repositories)
+   - Click "Generate token"
+   - Copy the generated token (starts with `ghp_`)
+
+2. **Configure Git with Token**
+
+   ```bash
+   # Option 1: Use GitHub CLI (recommended)
+   gh auth login
+
+   # Option 2: Configure git to use token
+   git config --global credential.helper store
+
+   # Then when prompted for password, use your token instead
+   ```
+
+### 4. Release New Version
+
+Use the included release script to automatically version, tag, and trigger publishing:
+
+```bash
+# Increment patch version (0.1.0 → 0.1.1)
+./scripts/release.sh patch
+
+# Increment minor version (0.1.0 → 0.2.0)
+./scripts/release.sh minor
+
+# Increment major version (0.1.0 → 1.0.0)
+./scripts/release.sh major
+
+# Set specific version
+./scripts/release.sh 1.2.3
+```
+
+### 5. Verify Publication
+
+1. **Check GitHub Actions**
+
+   - Go to "Actions" tab in your repository
+   - Verify the "Publish to npm" workflow completed successfully
+
+2. **Verify NPM Package**
+   - Visit: `https://www.npmjs.com/package/@takanarishimbo/quickchart-mcp-server`
+   - Or run: `npm view @takanarishimbo/quickchart-mcp-server`
+
+### Release Process Flow
+
+1. `release.sh` script updates version in all files
+2. Creates git commit and tag
+3. Pushes to GitHub
+4. GitHub Actions workflow triggers on new tag
+5. Workflow builds project and publishes to NPM
+6. Package becomes available globally via `npm install`
 
 ## Development
 
