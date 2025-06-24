@@ -191,8 +191,7 @@ const DOWNLOAD_CHART_TOOL: Tool = {
     properties: {
       config: {
         type: "object",
-        description: "Chart configuration object (Chart.js format)",
-        required: true
+        description: "Chart configuration object (Chart.js format)"
       },
       outputPath: {
         type: "string",
