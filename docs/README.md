@@ -8,18 +8,18 @@ A Model Context Protocol (MCP) server that generates charts using QuickChart.io 
 
 ### Tools
 
-#### `generate_chart`
+#### `create_chart_and_get_url`
 
-Generate a chart URL using QuickChart.io
+Create a chart and get its URL using QuickChart.io
 
 - **Input**: Chart type, labels, datasets, title, and additional options
 - **Output**: URL to the generated chart image
 
-#### `download_chart`
+#### `create_chart_and_save_file`
 
-Download a chart image from QuickChart.io
+Create a chart and save it as a file using QuickChart.io
 
-- **Input**: Chart configuration object and optional output path
+- **Input**: Chart type, labels, datasets, title, format, and optional output path
 - **Output**: Confirmation message with the saved file path
 
 ## Supported Chart Types
@@ -76,9 +76,9 @@ Add to your Claude Desktop configuration:
 
 ## Usage Examples
 
-### Using `generate_chart` Tool
+### Using `create_chart_and_get_url` Tool
 
-The `generate_chart` tool creates a chart URL that you can view in a browser or embed in applications.
+The `create_chart_and_get_url` tool creates a chart URL that you can view in a browser or embed in applications.
 
 #### Generate a Bar Chart
 
@@ -173,9 +173,9 @@ The `generate_chart` tool creates a chart URL that you can view in a browser or 
 }
 ```
 
-### Using `download_chart` Tool
+### Using `create_chart_and_save_file` Tool
 
-The `download_chart` tool downloads chart files directly to your local machine. It uses the same chart configuration as `generate_chart` but saves the result as a file.
+The `create_chart_and_save_file` tool creates chart files and saves them directly to your local machine. It uses the same chart configuration as `create_chart_and_get_url` but saves the result as a file.
 
 #### Download as PNG (Default)
 

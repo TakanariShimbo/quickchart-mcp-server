@@ -125,9 +125,9 @@ interface ChartConfiguration {
  *   チャートタイプ: bar, line, pie, doughnut, radar, polarArea, scatter, bubble, radialGauge, speedometer
  *   戻り値: URL文字列またはファイルパス確認
  */
-const GENERATE_CHART_TOOL: Tool = {
-  name: "generate_chart",
-  description: "Generate a chart URL using QuickChart.io",
+const CREATE_CHART_AND_GET_URL_TOOL: Tool = {
+  name: "create_chart_and_get_url",
+  description: "Create a chart and get its URL using QuickChart.io",
   inputSchema: {
     type: "object",
     properties: {
@@ -195,9 +195,9 @@ const GENERATE_CHART_TOOL: Tool = {
   },
 };
 
-const DOWNLOAD_CHART_TOOL: Tool = {
-  name: "download_chart",
-  description: "Download a chart file from QuickChart.io",
+const CREATE_CHART_AND_SAVE_FILE_TOOL: Tool = {
+  name: "create_chart_and_save_file",
+  description: "Create a chart and save it as a file using QuickChart.io",
   inputSchema: {
     type: "object",
     properties: {
@@ -549,8 +549,8 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  * Handle requests to list available tools
  *
  * Examples:
- *   Request: ListToolsRequest → Response: { tools: [GENERATE_CHART_TOOL, DOWNLOAD_CHART_TOOL] }
- *   Available tools: generate_chart, download_chart
+ *   Request: ListToolsRequest → Response: { tools: [CREATE_CHART_AND_GET_URL_TOOL, CREATE_CHART_AND_SAVE_FILE_TOOL] }
+ *   Available tools: create_chart_and_get_url, create_chart_and_save_file
  *   Tool count: 2
  *   This handler responds to MCP clients asking what tools are available
  *
@@ -559,13 +559,13 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  * 利用可能なツールをリストするリクエストを処理
  *
  * 例:
- *   リクエスト: ListToolsRequest → レスポンス: { tools: [GENERATE_CHART_TOOL, DOWNLOAD_CHART_TOOL] }
- *   利用可能なツール: generate_chart, download_chart
+ *   リクエスト: ListToolsRequest → レスポンス: { tools: [CREATE_CHART_AND_GET_URL_TOOL, CREATE_CHART_AND_SAVE_FILE_TOOL] }
+ *   利用可能なツール: create_chart_and_get_url, create_chart_and_save_file
  *   ツール数: 2
  *   このハンドラーは利用可能なツールを尋ねるMCPクライアントに応答
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [GENERATE_CHART_TOOL, DOWNLOAD_CHART_TOOL],
+  tools: [CREATE_CHART_AND_GET_URL_TOOL, CREATE_CHART_AND_SAVE_FILE_TOOL],
 }));
 
 /**
@@ -585,8 +585,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
  * ツール呼び出しのリクエストハンドラーを設定
  *
  * 例:
- *   リクエスト: { name: "generate_chart", arguments: { type: "bar", ... } } → チャートURLを返す
- *   リクエスト: { name: "download_chart", arguments: { config: {...} } } → ダウンロードしてファイルパスを返す
+ *   リクエスト: { name: "create_chart_and_get_url", arguments: { type: "bar", ... } } → チャートURLを返す
+ *   リクエスト: { name: "create_chart_and_save_file", arguments: { type: "bar", ... } } → ファイルを保存してパスを返す
  *   リクエスト: { name: "unknown_tool" } → エラー: "Unknown tool: unknown_tool"
  *   無効なパラメータ → 特定の検証メッセージを含むエラー
  *   ネットワークエラー → エラー: "Failed to generate/download chart"
@@ -595,11 +595,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    if (name === "generate_chart") {
+    if (name === "create_chart_and_get_url") {
       if (!args) {
         throw new McpError(
           ErrorCode.InvalidParams,
-          "Missing arguments for generate_chart"
+          "Missing arguments for create_chart_and_get_url"
         );
       }
       validateChartType(args.type as string);
@@ -618,11 +618,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
 
-    if (name === "download_chart") {
+    if (name === "create_chart_and_save_file") {
       if (!args) {
         throw new McpError(
           ErrorCode.InvalidParams,
-          "Missing arguments for download_chart"
+          "Missing arguments for create_chart_and_save_file"
         );
       }
       validateChartType(args.type as string);

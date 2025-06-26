@@ -8,18 +8,18 @@ QuickChart.io API を使用してチャートを生成する Model Context Proto
 
 ### ツール
 
-#### `generate_chart`
+#### `create_chart_and_get_url`
 
-QuickChart.io を使用してチャート URL を生成
+QuickChart.io を使用してチャートを作成し URL を取得
 
 - **入力**: チャートタイプ、ラベル、データセット、タイトル、追加オプション
 - **出力**: 生成されたチャート画像の URL
 
-#### `download_chart`
+#### `create_chart_and_save_file`
 
-QuickChart.io からチャート画像をダウンロード
+QuickChart.io を使用してチャートを作成しファイルとして保存
 
-- **入力**: チャート設定オブジェクトとオプションの出力パス
+- **入力**: チャートタイプ、ラベル、データセット、タイトル、形式、オプションの出力パス
 - **出力**: 保存されたファイルパスを含む確認メッセージ
 
 ## サポートされているチャートタイプ
@@ -76,9 +76,9 @@ Claude Desktop の設定に追加：
 
 ## 使用例
 
-### `generate_chart` ツールの使用
+### `create_chart_and_get_url` ツールの使用
 
-`generate_chart` ツールは、ブラウザで表示したりアプリケーションに埋め込んだりできるチャート URL を作成します。
+`create_chart_and_get_url` ツールは、ブラウザで表示したりアプリケーションに埋め込んだりできるチャート URL を作成します。
 
 #### 棒グラフの生成
 
@@ -173,9 +173,9 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### `download_chart` ツールの使用
+### `create_chart_and_save_file` ツールの使用
 
-`download_chart` ツールは、チャートファイルを直接ローカルマシンにダウンロードします。`generate_chart` と同じチャート設定を使用しますが、結果をファイルとして保存します。
+`create_chart_and_save_file` ツールは、チャートを作成して直接ローカルマシンにファイルとして保存します。`create_chart_and_get_url` と同じチャート設定を使用しますが、結果をファイルとして保存します。
 
 #### PNG形式でダウンロード（デフォルト）
 
