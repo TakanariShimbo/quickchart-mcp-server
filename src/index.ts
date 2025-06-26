@@ -197,7 +197,7 @@ const GENERATE_CHART_TOOL: Tool = {
 
 const DOWNLOAD_CHART_TOOL: Tool = {
   name: "download_chart",
-  description: "Download a chart image from QuickChart.io",
+  description: "Download a chart file from QuickChart.io",
   inputSchema: {
     type: "object",
     properties: {
@@ -208,7 +208,12 @@ const DOWNLOAD_CHART_TOOL: Tool = {
       outputPath: {
         type: "string",
         description:
-          "Path where to save the image (optional, defaults to Desktop or home directory)",
+          "Path where to save the file (optional, defaults to Desktop or home directory)",
+      },
+      format: {
+        type: "string",
+        enum: ["png", "webp", "jpg", "svg", "pdf"],
+        description: "Output format for the chart (default: png)",
       },
     },
     required: ["config"],
@@ -414,35 +419,38 @@ function buildChartConfig(params: any): any {
  */
 function generateChartUrl(
   config: any,
-  baseUrl: string = QUICKCHART_BASE_URL
+  baseUrl: string = QUICKCHART_BASE_URL,
+  format: string = "png"
 ): string {
   const chartJson = JSON.stringify(config);
   const encodedChart = encodeURIComponent(chartJson);
-  return `${baseUrl}?c=${encodedChart}`;
+  return `${baseUrl}?c=${encodedChart}&format=${format}`;
 }
 
 /**
  * 8. File Path Helper
  *
- * Get appropriate download path for chart images
+ * Get appropriate download path for chart files
  *
  * Examples:
  *   getDownloadPath() → "/Users/username/Desktop/chart_20240115_103045.png"
  *   getDownloadPath("/custom/path.png") → "/custom/path.png"
  *   getDownloadPath("mychart.png") → "/Users/username/Desktop/mychart.png"
+ *   getDownloadPath(undefined, "svg") → "/Users/username/Desktop/chart_20240115_103045.svg"
  *   Falls back to home directory if Desktop doesn't exist
  *
  * 8. ファイルパスヘルパー
  *
- * チャート画像の適切なダウンロードパスを取得
+ * チャートファイルの適切なダウンロードパスを取得
  *
  * 例:
  *   getDownloadPath() → "/Users/username/Desktop/chart_20240115_103045.png"
  *   getDownloadPath("/custom/path.png") → "/custom/path.png"
  *   getDownloadPath("mychart.png") → "/Users/username/Desktop/mychart.png"
+ *   getDownloadPath(undefined, "svg") → "/Users/username/Desktop/chart_20240115_103045.svg"
  *   デスクトップが存在しない場合はホームディレクトリにフォールバック
  */
-function getDownloadPath(outputPath?: string): string {
+function getDownloadPath(outputPath?: string, format: string = "png"): string {
   if (outputPath) {
     if (path.isAbsolute(outputPath)) {
       return outputPath;
@@ -464,7 +472,7 @@ function getDownloadPath(outputPath?: string): string {
     .toISOString()
     .replace(/[-:T]/g, "")
     .split(".")[0];
-  const filename = `chart_${timestamp}.png`;
+  const filename = `chart_${timestamp}.${format}`;
   const desktopPath = path.join(
     process.env.HOME || process.env.USERPROFILE || ".",
     "Desktop"
@@ -569,12 +577,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         );
       }
 
-      const chartUrl = generateChartUrl(args.config);
-      const outputPath = getDownloadPath(args.outputPath as string | undefined);
+      const format = (args.format as string) || "png";
+      const chartUrl = generateChartUrl(args.config, QUICKCHART_BASE_URL, format);
+      const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
 
       try {
+        const responseType = format === "svg" ? "text" : "arraybuffer";
         const response = await axios.get(chartUrl, {
-          responseType: "arraybuffer",
+          responseType: responseType as any,
           timeout: 30000,
         });
 
@@ -583,7 +593,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           fs.mkdirSync(dir, { recursive: true });
         }
 
-        fs.writeFileSync(outputPath, response.data);
+        if (format === "svg") {
+          fs.writeFileSync(outputPath, response.data, "utf8");
+        } else {
+          fs.writeFileSync(outputPath, response.data);
+        }
 
         return {
           content: [
