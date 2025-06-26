@@ -8,19 +8,12 @@ A Model Context Protocol (MCP) server that generates charts using QuickChart.io 
 
 ### Tools
 
-#### `create_chart_and_get_url`
+#### `create_chart`
 
-Create a chart and get its URL using QuickChart.io
+Create a chart using QuickChart.io - get URL or save as file
 
-- **Input**: Chart type, labels, datasets, title, and additional options
-- **Output**: URL to the generated chart image
-
-#### `create_chart_and_save_file`
-
-Create a chart and save it as a file using QuickChart.io
-
-- **Input**: Chart type, labels, datasets, title, format, and optional output path
-- **Output**: Confirmation message with the saved file path
+- **Input**: Action (get_url/save_file), chart type, labels, datasets, title, and additional options
+- **Output**: Chart URL or confirmation message with saved file path
 
 ## Supported Chart Types
 
@@ -76,14 +69,17 @@ Add to your Claude Desktop configuration:
 
 ## Usage Examples
 
-### Using `create_chart_and_get_url` Tool
+### Using `create_chart` Tool
 
-The `create_chart_and_get_url` tool creates a chart URL that you can view in a browser or embed in applications.
+The `create_chart` tool can either return a chart URL or save a chart file, depending on the `action` parameter.
 
-#### Generate a Bar Chart
+#### Get Chart URL (Default)
+
+Set `action` to `"get_url"` (or omit it) to get a chart URL:
 
 ```json
 {
+  "action": "get_url",
   "type": "bar",
   "labels": ["January", "February", "March", "April"],
   "datasets": [
@@ -98,34 +94,13 @@ The `create_chart_and_get_url` tool creates a chart URL that you can view in a b
 }
 ```
 
-#### Create a Line Chart with Multiple Datasets
+#### Save Chart as File
+
+Set `action` to `"save_file"` to save the chart locally:
 
 ```json
 {
-  "type": "line",
-  "labels": ["Q1", "Q2", "Q3", "Q4"],
-  "datasets": [
-    {
-      "label": "Product A",
-      "data": [10, 25, 15, 30],
-      "borderColor": "blue",
-      "backgroundColor": "transparent"
-    },
-    {
-      "label": "Product B",
-      "data": [20, 15, 25, 35],
-      "borderColor": "red",
-      "backgroundColor": "transparent"
-    }
-  ],
-  "title": "Quarterly Product Comparison"
-}
-```
-
-#### Generate a Pie Chart
-
-```json
-{
+  "action": "save_file",
   "type": "pie",
   "labels": ["Desktop", "Mobile", "Tablet"],
   "datasets": [
@@ -134,12 +109,37 @@ The `create_chart_and_get_url` tool creates a chart URL that you can view in a b
       "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
     }
   ],
-  "title": "Device Usage Statistics"
+  "title": "Device Usage Statistics",
+  "format": "svg",
+  "outputPath": "reports/device-usage.svg"
+}
+```
+*Saves to: `Desktop/reports/device-usage.svg`*
+
+#### More Chart Examples
+
+**Line Chart with Multiple Datasets:**
+```json
+{
+  "type": "line",
+  "labels": ["Q1", "Q2", "Q3", "Q4"],
+  "datasets": [
+    {
+      "label": "Product A",
+      "data": [10, 25, 15, 30],
+      "borderColor": "blue"
+    },
+    {
+      "label": "Product B",
+      "data": [20, 15, 25, 35],
+      "borderColor": "red"
+    }
+  ],
+  "title": "Quarterly Product Comparison"
 }
 ```
 
-#### Create a Scatter Plot
-
+**Scatter Plot:**
 ```json
 {
   "type": "scatter",
@@ -158,8 +158,7 @@ The `create_chart_and_get_url` tool creates a chart URL that you can view in a b
 }
 ```
 
-#### Generate a Radial Gauge
-
+**Radial Gauge:**
 ```json
 {
   "type": "radialGauge",
@@ -173,78 +172,16 @@ The `create_chart_and_get_url` tool creates a chart URL that you can view in a b
 }
 ```
 
-### Using `create_chart_and_save_file` Tool
+#### File Save Options
 
-The `create_chart_and_save_file` tool creates chart files and saves them directly to your local machine. It uses the same chart configuration as `create_chart_and_get_url` but saves the result as a file.
-
-#### Download as PNG (Default)
-
-```json
-{
-  "type": "bar",
-  "labels": ["January", "February", "March", "April"],
-  "datasets": [
-    {
-      "label": "Sales 2024",
-      "data": [65, 59, 80, 81],
-      "backgroundColor": "rgba(54, 162, 235, 0.8)"
-    }
-  ],
-  "title": "Monthly Sales Report"
-}
-```
-*Downloads to Desktop as: `chart_20240626123456.png`*
-
-#### Download as SVG with Custom Path
-
-```json
-{
-  "type": "pie",
-  "labels": ["Desktop", "Mobile", "Tablet"],
-  "datasets": [
-    {
-      "data": [65, 25, 10],
-      "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
-    }
-  ],
-  "title": "Device Usage Statistics",
-  "format": "svg",
-  "outputPath": "reports/device-usage.svg"
-}
-```
-*Downloads to: `Desktop/reports/device-usage.svg`*
-
-#### Download with Absolute Path
-
-```json
-{
-  "type": "line",
-  "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
-  "datasets": [
-    {
-      "label": "Revenue",
-      "data": [1200, 1900, 3000, 5000],
-      "borderColor": "rgb(75, 192, 192)",
-      "backgroundColor": "rgba(75, 192, 192, 0.2)"
-    }
-  ],
-  "title": "Weekly Revenue Growth",
-  "format": "pdf",
-  "outputPath": "/Users/username/Documents/charts/revenue-chart.pdf"
-}
-```
-*Downloads to: `/Users/username/Documents/charts/revenue-chart.pdf`*
-
-#### Supported Formats
-
+**Supported Formats:**
 - **PNG** (default): `"format": "png"`
 - **SVG**: `"format": "svg"`
 - **JPEG**: `"format": "jpg"`
 - **WebP**: `"format": "webp"`
 - **PDF**: `"format": "pdf"`
 
-#### Download Locations
-
+**Save Locations:**
 - **No path specified**: Desktop (or home directory if Desktop doesn't exist)
 - **Relative path**: Relative to Desktop (or home directory)
 - **Absolute path**: Exact path specified

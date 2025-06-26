@@ -8,19 +8,12 @@ QuickChart.io API を使用してチャートを生成する Model Context Proto
 
 ### ツール
 
-#### `create_chart_and_get_url`
+#### `create_chart`
 
-QuickChart.io を使用してチャートを作成し URL を取得
+QuickChart.io を使用してチャートを作成 - URL取得またはファイル保存
 
-- **入力**: チャートタイプ、ラベル、データセット、タイトル、追加オプション
-- **出力**: 生成されたチャート画像の URL
-
-#### `create_chart_and_save_file`
-
-QuickChart.io を使用してチャートを作成しファイルとして保存
-
-- **入力**: チャートタイプ、ラベル、データセット、タイトル、形式、オプションの出力パス
-- **出力**: 保存されたファイルパスを含む確認メッセージ
+- **入力**: アクション（get_url/save_file）、チャートタイプ、ラベル、データセット、タイトル、追加オプション
+- **出力**: チャートURLまたは保存されたファイルパスを含む確認メッセージ
 
 ## サポートされているチャートタイプ
 
@@ -76,14 +69,17 @@ Claude Desktop の設定に追加：
 
 ## 使用例
 
-### `create_chart_and_get_url` ツールの使用
+### `create_chart` ツールの使用
 
-`create_chart_and_get_url` ツールは、ブラウザで表示したりアプリケーションに埋め込んだりできるチャート URL を作成します。
+`create_chart` ツールは、`action` パラメータに応じてチャート URL を返すかファイルを保存するかを選択できます。
 
-#### 棒グラフの生成
+#### チャート URL の取得（デフォルト）
+
+`action` を `"get_url"` に設定（または省略）してチャート URL を取得：
 
 ```json
 {
+  "action": "get_url",
   "type": "bar",
   "labels": ["1月", "2月", "3月", "4月"],
   "datasets": [
@@ -98,34 +94,13 @@ Claude Desktop の設定に追加：
 }
 ```
 
-#### 複数データセットの折れ線グラフ作成
+#### チャートをファイルとして保存
+
+`action` を `"save_file"` に設定してチャートをローカルに保存：
 
 ```json
 {
-  "type": "line",
-  "labels": ["Q1", "Q2", "Q3", "Q4"],
-  "datasets": [
-    {
-      "label": "製品A",
-      "data": [10, 25, 15, 30],
-      "borderColor": "blue",
-      "backgroundColor": "transparent"
-    },
-    {
-      "label": "製品B",
-      "data": [20, 15, 25, 35],
-      "borderColor": "red",
-      "backgroundColor": "transparent"
-    }
-  ],
-  "title": "四半期製品比較"
-}
-```
-
-#### 円グラフの生成
-
-```json
-{
+  "action": "save_file",
   "type": "pie",
   "labels": ["デスクトップ", "モバイル", "タブレット"],
   "datasets": [
@@ -134,12 +109,37 @@ Claude Desktop の設定に追加：
       "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
     }
   ],
-  "title": "デバイス使用統計"
+  "title": "デバイス使用統計",
+  "format": "svg",
+  "outputPath": "reports/device-usage.svg"
+}
+```
+*保存先：`デスクトップ/reports/device-usage.svg`*
+
+#### その他のチャート例
+
+**複数データセットの折れ線グラフ：**
+```json
+{
+  "type": "line",
+  "labels": ["Q1", "Q2", "Q3", "Q4"],
+  "datasets": [
+    {
+      "label": "製品A",
+      "data": [10, 25, 15, 30],
+      "borderColor": "blue"
+    },
+    {
+      "label": "製品B",
+      "data": [20, 15, 25, 35],
+      "borderColor": "red"
+    }
+  ],
+  "title": "四半期製品比較"
 }
 ```
 
-#### 散布図の作成
-
+**散布図：**
 ```json
 {
   "type": "scatter",
@@ -158,8 +158,7 @@ Claude Desktop の設定に追加：
 }
 ```
 
-#### 放射状ゲージの生成
-
+**放射状ゲージ：**
 ```json
 {
   "type": "radialGauge",
@@ -173,78 +172,16 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### `create_chart_and_save_file` ツールの使用
+#### ファイル保存オプション
 
-`create_chart_and_save_file` ツールは、チャートを作成して直接ローカルマシンにファイルとして保存します。`create_chart_and_get_url` と同じチャート設定を使用しますが、結果をファイルとして保存します。
-
-#### PNG形式でダウンロード（デフォルト）
-
-```json
-{
-  "type": "bar",
-  "labels": ["1月", "2月", "3月", "4月"],
-  "datasets": [
-    {
-      "label": "2024年売上",
-      "data": [65, 59, 80, 81],
-      "backgroundColor": "rgba(54, 162, 235, 0.8)"
-    }
-  ],
-  "title": "月次売上レポート"
-}
-```
-*デスクトップに次の名前で保存：`chart_20240626123456.png`*
-
-#### カスタムパスでSVG形式でダウンロード
-
-```json
-{
-  "type": "pie",
-  "labels": ["デスクトップ", "モバイル", "タブレット"],
-  "datasets": [
-    {
-      "data": [65, 25, 10],
-      "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
-    }
-  ],
-  "title": "デバイス使用統計",
-  "format": "svg",
-  "outputPath": "reports/device-usage.svg"
-}
-```
-*保存先：`デスクトップ/reports/device-usage.svg`*
-
-#### 絶対パスでダウンロード
-
-```json
-{
-  "type": "line",
-  "labels": ["第1週", "第2週", "第3週", "第4週"],
-  "datasets": [
-    {
-      "label": "売上",
-      "data": [1200, 1900, 3000, 5000],
-      "borderColor": "rgb(75, 192, 192)",
-      "backgroundColor": "rgba(75, 192, 192, 0.2)"
-    }
-  ],
-  "title": "週次売上成長",
-  "format": "pdf",
-  "outputPath": "/Users/username/Documents/charts/revenue-chart.pdf"
-}
-```
-*保存先：`/Users/username/Documents/charts/revenue-chart.pdf`*
-
-#### サポートされる形式
-
+**サポートされる形式：**
 - **PNG**（デフォルト）：`"format": "png"`
 - **SVG**：`"format": "svg"`
 - **JPEG**：`"format": "jpg"`
 - **WebP**：`"format": "webp"`
 - **PDF**：`"format": "pdf"`
 
-#### ダウンロード場所
-
+**保存場所：**
 - **パス未指定**：デスクトップ（デスクトップが存在しない場合はホームディレクトリ）
 - **相対パス**：デスクトップ（またはホームディレクトリ）を基準とした相対パス
 - **絶対パス**：指定された正確なパス

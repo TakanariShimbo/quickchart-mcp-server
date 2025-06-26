@@ -125,82 +125,17 @@ interface ChartConfiguration {
  *   チャートタイプ: bar, line, pie, doughnut, radar, polarArea, scatter, bubble, radialGauge, speedometer
  *   戻り値: URL文字列またはファイルパス確認
  */
-const CREATE_CHART_AND_GET_URL_TOOL: Tool = {
-  name: "create_chart_and_get_url",
-  description: "Create a chart and get its URL using QuickChart.io",
+const CREATE_CHART_TOOL: Tool = {
+  name: "create_chart",
+  description: "Create a chart using QuickChart.io - get URL or save as file",
   inputSchema: {
     type: "object",
     properties: {
-      type: {
+      action: {
         type: "string",
-        enum: [
-          "bar",
-          "line",
-          "pie",
-          "doughnut",
-          "radar",
-          "polarArea",
-          "scatter",
-          "bubble",
-          "radialGauge",
-          "speedometer",
-        ],
-        description: "The type of chart to generate",
+        enum: ["get_url", "save_file"],
+        description: "Whether to get chart URL or save chart as file (default: get_url)",
       },
-      labels: {
-        type: "array",
-        items: { type: "string" },
-        description:
-          "Labels for the data points (not used for scatter/bubble charts)",
-      },
-      datasets: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            data: {
-              description:
-                "Data points - array of numbers for most charts, array of {x,y} for scatter, array of {x,y,r} for bubble",
-            },
-            label: {
-              type: "string",
-              description: "Label for this dataset",
-            },
-            backgroundColor: {
-              description:
-                "Background color(s) - single color or array of colors",
-            },
-            borderColor: {
-              description: "Border color(s) - single color or array of colors",
-            },
-            additionalConfig: {
-              type: "object",
-              description: "Additional Chart.js configuration for this dataset",
-            },
-          },
-          required: ["data"],
-        },
-        description: "Datasets to display in the chart",
-      },
-      title: {
-        type: "string",
-        description: "Title of the chart",
-      },
-      options: {
-        type: "object",
-        description: "Additional Chart.js options",
-      },
-    },
-    required: ["type", "datasets"],
-  },
-};
-
-const CREATE_CHART_AND_SAVE_FILE_TOOL: Tool = {
-  name: "create_chart_and_save_file",
-  description: "Create a chart and save it as a file using QuickChart.io",
-  inputSchema: {
-    type: "object",
-    properties: {
       type: {
         type: "string",
         enum: [
@@ -263,12 +198,12 @@ const CREATE_CHART_AND_SAVE_FILE_TOOL: Tool = {
       outputPath: {
         type: "string",
         description:
-          "Path where to save the file (optional, defaults to Desktop or home directory)",
+          "Path where to save the file (only used with action=save_file, optional, defaults to Desktop)",
       },
       format: {
         type: "string",
         enum: ["png", "webp", "jpg", "svg", "pdf"],
-        description: "Output format for the chart (default: png)",
+        description: "Output format for the chart (only used with action=save_file, default: png)",
       },
     },
     required: ["type", "datasets"],
@@ -549,9 +484,9 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  * Handle requests to list available tools
  *
  * Examples:
- *   Request: ListToolsRequest → Response: { tools: [CREATE_CHART_AND_GET_URL_TOOL, CREATE_CHART_AND_SAVE_FILE_TOOL] }
- *   Available tools: create_chart_and_get_url, create_chart_and_save_file
- *   Tool count: 2
+ *   Request: ListToolsRequest → Response: { tools: [CREATE_CHART_TOOL] }
+ *   Available tools: create_chart
+ *   Tool count: 1
  *   This handler responds to MCP clients asking what tools are available
  *
  * 9. ツールリストハンドラー
@@ -559,13 +494,13 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  * 利用可能なツールをリストするリクエストを処理
  *
  * 例:
- *   リクエスト: ListToolsRequest → レスポンス: { tools: [CREATE_CHART_AND_GET_URL_TOOL, CREATE_CHART_AND_SAVE_FILE_TOOL] }
- *   利用可能なツール: create_chart_and_get_url, create_chart_and_save_file
- *   ツール数: 2
+ *   リクエスト: ListToolsRequest → レスポンス: { tools: [CREATE_CHART_TOOL] }
+ *   利用可能なツール: create_chart
+ *   ツール数: 1
  *   このハンドラーは利用可能なツールを尋ねるMCPクライアントに応答
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [CREATE_CHART_AND_GET_URL_TOOL, CREATE_CHART_AND_SAVE_FILE_TOOL],
+  tools: [CREATE_CHART_TOOL],
 }));
 
 /**
@@ -585,8 +520,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
  * ツール呼び出しのリクエストハンドラーを設定
  *
  * 例:
- *   リクエスト: { name: "create_chart_and_get_url", arguments: { type: "bar", ... } } → チャートURLを返す
- *   リクエスト: { name: "create_chart_and_save_file", arguments: { type: "bar", ... } } → ファイルを保存してパスを返す
+ *   リクエスト: { name: "create_chart", arguments: { action: "get_url", type: "bar", ... } } → チャートURLを返す
+ *   リクエスト: { name: "create_chart", arguments: { action: "save_file", type: "bar", ... } } → ファイルを保存してパスを返す
  *   リクエスト: { name: "unknown_tool" } → エラー: "Unknown tool: unknown_tool"
  *   無効なパラメータ → 特定の検証メッセージを含むエラー
  *   ネットワークエラー → エラー: "Failed to generate/download chart"
@@ -595,78 +530,76 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    if (name === "create_chart_and_get_url") {
+    if (name === "create_chart") {
       if (!args) {
         throw new McpError(
           ErrorCode.InvalidParams,
-          "Missing arguments for create_chart_and_get_url"
+          "Missing arguments for create_chart"
         );
       }
       validateChartType(args.type as string);
       validateDatasets(args.datasets as any[]);
 
+      const action = (args.action as string) || "get_url";
       const config = buildChartConfig(args);
-      const chartUrl = generateChartUrl(config);
 
-      return {
-        content: [
-          {
-            type: "text",
-            text: chartUrl,
-          },
-        ],
-      };
-    }
-
-    if (name === "create_chart_and_save_file") {
-      if (!args) {
-        throw new McpError(
-          ErrorCode.InvalidParams,
-          "Missing arguments for create_chart_and_save_file"
-        );
-      }
-      validateChartType(args.type as string);
-      validateDatasets(args.datasets as any[]);
-
-      const format = (args.format as string) || "png";
-      const config = buildChartConfig(args);
-      const chartUrl = generateChartUrl(config, QUICKCHART_BASE_URL, format);
-      const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
-
-      try {
-        const responseType = format === "svg" ? "text" : "arraybuffer";
-        const response = await axios.get(chartUrl, {
-          responseType: responseType as any,
-          timeout: 30000,
-        });
-
-        const dir = path.dirname(outputPath);
-        if (!fs.existsSync(dir)) {
-          fs.mkdirSync(dir, { recursive: true });
-        }
-
-        if (format === "svg") {
-          fs.writeFileSync(outputPath, response.data, "utf8");
-        } else {
-          fs.writeFileSync(outputPath, response.data);
-        }
-
+      if (action === "get_url") {
+        const chartUrl = generateChartUrl(config);
         return {
           content: [
             {
               type: "text",
-              text: `Chart downloaded successfully to: ${outputPath}`,
+              text: chartUrl,
             },
           ],
         };
-      } catch (error) {
-        throw new McpError(
-          ErrorCode.InternalError,
-          `Failed to download chart: ${
-            error instanceof Error ? error.message : String(error)
-          }`
-        );
       }
+
+      if (action === "save_file") {
+        const format = (args.format as string) || "png";
+        const chartUrl = generateChartUrl(config, QUICKCHART_BASE_URL, format);
+        const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
+
+        try {
+          const responseType = format === "svg" ? "text" : "arraybuffer";
+          const response = await axios.get(chartUrl, {
+            responseType: responseType as any,
+            timeout: 30000,
+          });
+
+          const dir = path.dirname(outputPath);
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+
+          if (format === "svg") {
+            fs.writeFileSync(outputPath, response.data, "utf8");
+          } else {
+            fs.writeFileSync(outputPath, response.data);
+          }
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: `Chart saved successfully to: ${outputPath}`,
+              },
+            ],
+          };
+        } catch (error) {
+          throw new McpError(
+            ErrorCode.InternalError,
+            `Failed to save chart: ${
+              error instanceof Error ? error.message : String(error)
+            }`
+          );
+        }
+      }
+
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+      );
     }
 
     throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
