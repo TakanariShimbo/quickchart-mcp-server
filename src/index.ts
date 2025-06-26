@@ -229,7 +229,7 @@ const CREATE_CHART_TOOL: Tool = {
 const server = new Server(
   {
     name: "quickchart-server",
-    version: "0.4.0",
+    version: "0.4.1",
   },
   {
     capabilities: {
