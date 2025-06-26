@@ -61,14 +61,10 @@ VERSION_ARG=$1
 #   入力: "invalid" → エラー: "Version must follow semantic versioning"
 # =====================
 if [[ "$VERSION_ARG" =~ ^(patch|minor|major)$ ]]; then
-  # It's a semantic increment
-  # セマンティック増分
   INCREMENT_TYPE=$VERSION_ARG
   CURRENT_VERSION=$(grep -o '"version": "[^"]*"' package.json | cut -d'"' -f4)
   echo "Using semantic increment: $INCREMENT_TYPE (current version: $CURRENT_VERSION)"
 else
-  # It's a specific version - validate semver format
-  # 特定のバージョン - semver形式を検証
   if ! [[ $VERSION_ARG =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+)?(\+[0-9A-Za-z-]+)?$ ]]; then
     echo "Error: Version must follow semantic versioning (e.g., 1.2.3, 1.2.3-beta, etc.)"
     echo "Or use one of: patch, minor, major"
@@ -299,8 +295,6 @@ fi
 #   タグ作成 → "v0.1.4" メッセージ "Version 0.1.4"
 # =====================
 if [ -n "$INCREMENT_TYPE" ]; then
-  # For semantic increments (patch/minor/major)
-  # セマンティック増分用 (patch/minor/major)
   echo "Incrementing version ($INCREMENT_TYPE)..."
   
   npm version $INCREMENT_TYPE --no-git-tag-version
@@ -312,8 +306,6 @@ if [ -n "$INCREMENT_TYPE" ]; then
   git commit -m "chore: release version $NEW_VERSION"
   git tag -a "v$NEW_VERSION" -m "Version $NEW_VERSION"
 else
-  # For specific version (e.g., 0.1.4)
-  # 特定のバージョン用 (例: 0.1.4)
   echo "Updating version in package.json and package-lock.json..."
   
   npm version $SPECIFIC_VERSION --no-git-tag-version
