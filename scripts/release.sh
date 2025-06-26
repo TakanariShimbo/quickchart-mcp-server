@@ -184,12 +184,12 @@ git pull origin main
 # =====================
 PACKAGE_VERSION=$(grep -o '"version": "[^"]*"' package.json | cut -d'"' -f4)
 PACKAGE_LOCK_VERSION=$(grep -o '"version": "[^"]*"' package-lock.json | head -1 | cut -d'"' -f4)
-INDEX_VERSION=$(grep -o 'version: "[^"]*"' index.ts | cut -d'"' -f2)
+INDEX_VERSION=$(grep -o 'version: "[^"]*"' src/index.ts | cut -d'"' -f2)
 
 echo "Current versions:"
 echo "- package.json: $PACKAGE_VERSION"
 echo "- package-lock.json: $PACKAGE_LOCK_VERSION"
-echo "- index.ts: $INDEX_VERSION"
+echo "- src/index.ts: $INDEX_VERSION"
 
 # =====================
 # 7. Version Update Function
@@ -217,15 +217,15 @@ update_index_version() {
   local new_version=$2
   local commit_msg=$3
   
-  echo "Updating version in index.ts from $old_version to $new_version..."
+  echo "Updating version in src/index.ts from $old_version to $new_version..."
   if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
-    sed -i '' "s/version: \"$old_version\"/version: \"$new_version\"/" index.ts
+    sed -i '' "s/version: \"$old_version\"/version: \"$new_version\"/" src/index.ts
   else
     # Linux
-    sed -i "s/version: \"$old_version\"/version: \"$new_version\"/" index.ts
+    sed -i "s/version: \"$old_version\"/version: \"$new_version\"/" src/index.ts
   fi
-  git add index.ts
+  git add src/index.ts
   
   if [ -n "$commit_msg" ]; then
     git commit -m "$commit_msg"

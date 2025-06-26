@@ -1,3 +1,5 @@
+[English](README.md) | [日本語](README_ja.md) | **README**
+
 # QuickChart MCP Server
 
 A Model Context Protocol (MCP) server that generates charts using QuickChart.io API. Create beautiful charts directly from your AI assistant with simple commands.
@@ -239,16 +241,16 @@ Use the included release script to automatically version, tag, and trigger publi
 
 ```bash
 # Increment patch version (0.1.0 → 0.1.1)
-./scripts/release.sh patch
+npm run release patch
 
 # Increment minor version (0.1.0 → 0.2.0)
-./scripts/release.sh minor
+npm run release minor
 
 # Increment major version (0.1.0 → 1.0.0)
-./scripts/release.sh major
+npm run release major
 
 # Set specific version
-./scripts/release.sh 1.2.3
+npm run release 1.2.3
 ```
 
 ### 5. Verify Publication
@@ -300,32 +302,15 @@ Use the included release script to automatically version, tag, and trigger publi
    npx @modelcontextprotocol/inspector node dist/index.js
    ```
 
-### Method 2: Using Docker (No Local Node.js Required)
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/TakanariShimbo/quickchart-mcp-server.git
-   cd quickchart-mcp-server
-   ```
-
-2. **Build and extract with one command**
-
-   ```bash
-   # Build the project inside Docker and output directly to local directory
-   docker build -t quickchart-mcp-build .
-   docker run --rm -v $(pwd):/app quickchart-mcp-build
-   ```
-
 ## Project Structure
 
 ```
 quickchart-mcp-server/
-├── index.ts              # Main server implementation
+├── src/
+│   └── index.ts          # Main server implementation
 ├── package.json          # Package configuration
+├── package-lock.json
 ├── tsconfig.json         # TypeScript configuration
-├── Dockerfile            # Docker configuration
-├── .gitignore            # Git ignore file
 ├── .github/
 │   └── workflows/
 │       └── npm-publish.yml   # NPM publish workflow
@@ -334,7 +319,7 @@ quickchart-mcp-server/
 ├── docs/
 │   ├── README.md         # This file
 │   └── README_ja.md      # Japanese documentation
-└── dist/                 # Compiled JavaScript (after build)
+└── .gitignore            # Git ignore file
 ```
 
 ## Resources

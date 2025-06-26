@@ -1,3 +1,5 @@
+[English](README.md) | [日本語](README_ja.md) | **README**
+
 # QuickChart MCP サーバー
 
 QuickChart.io API を使用してチャートを生成する Model Context Protocol (MCP)サーバーです。AI アシスタントから簡単なコマンドで美しいチャートを直接作成できます。
@@ -239,16 +241,16 @@ Claude Desktop の設定に追加：
 
 ```bash
 # パッチバージョンを増分 (0.1.0 → 0.1.1)
-./scripts/release.sh patch
+npm run release patch
 
 # マイナーバージョンを増分 (0.1.0 → 0.2.0)
-./scripts/release.sh minor
+npm run release minor
 
 # メジャーバージョンを増分 (0.1.0 → 1.0.0)
-./scripts/release.sh major
+npm run release major
 
 # 特定のバージョンを設定
-./scripts/release.sh 1.2.3
+npm run release 1.2.3
 ```
 
 ### 5. 公開の確認
@@ -300,32 +302,15 @@ Claude Desktop の設定に追加：
    npx @modelcontextprotocol/inspector node dist/index.js
    ```
 
-### 方法 2: Docker を使用（ローカルに Node.js 不要）
-
-1. **リポジトリをクローン**
-
-   ```bash
-   git clone https://github.com/TakanariShimbo/quickchart-mcp-server.git
-   cd quickchart-mcp-server
-   ```
-
-2. **ワンコマンドでビルドと抽出**
-
-   ```bash
-   # Docker 内でプロジェクトをビルドし、ローカルディレクトリに直接出力
-   docker build -t quickchart-mcp-build .
-   docker run --rm -v $(pwd):/app quickchart-mcp-build
-   ```
-
 ## プロジェクト構造
 
 ```
 quickchart-mcp-server/
-├── index.ts              # メインサーバー実装
+├── src/
+│   └── index.ts          # メインサーバー実装
 ├── package.json          # パッケージ設定
+├── package-lock.json
 ├── tsconfig.json         # TypeScript設定
-├── Dockerfile            # Docker設定
-├── .gitignore            # Gitの無視ファイル
 ├── .github/
 │   └── workflows/
 │       └── npm-publish.yml   # NPM公開ワークフロー
@@ -334,7 +319,7 @@ quickchart-mcp-server/
 ├── docs/
 │   ├── README.md         # 英語版ドキュメント
 │   └── README_ja.md      # このファイル
-└── dist/                 # コンパイル済みJavaScript（ビルド後）
+└── .gitignore            # Gitの無視ファイル
 ```
 
 ## リソース

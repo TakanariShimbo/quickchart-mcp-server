@@ -1,21 +1,5 @@
 #!/usr/bin/env node
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-  Tool,
-  McpError,
-  ErrorCode,
-} from "@modelcontextprotocol/sdk/types.js";
-import axios from 'axios';
-import getenv from 'getenv';
-import * as fs from 'fs';
-import * as path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
 /**
  * 0. QuickChart MCP Server
  *
@@ -42,8 +26,21 @@ import { dirname } from 'path';
  *   node dist/index.js  # デフォルトのQuickChart.ioを使用
  */
 
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  Tool,
+  McpError,
+  ErrorCode,
+} from "@modelcontextprotocol/sdk/types.js";
+import axios from "axios";
+import getenv from "getenv";
+import * as fs from "fs";
+import * as path from "path";
+
 /**
- * =====================
  * 1. Environment Configuration
  *
  * Get configuration from environment variables
@@ -61,12 +58,13 @@ import { dirname } from 'path';
  *   QUICKCHART_BASE_URL="https://quickchart.io/chart" → デフォルトのQuickChart.io API
  *   QUICKCHART_BASE_URL="https://custom.domain.com/chart" → カスタムQuickChartインスタンス
  *   環境変数なし → デフォルトのQuickChart.io URLを使用
- * =====================
  */
-const QUICKCHART_BASE_URL = getenv('QUICKCHART_BASE_URL', 'https://quickchart.io/chart');
+const QUICKCHART_BASE_URL = getenv(
+  "QUICKCHART_BASE_URL",
+  "https://quickchart.io/chart"
+);
 
 /**
- * =====================
  * 2. Type Definitions
  *
  * Define interfaces for chart configurations
@@ -86,10 +84,12 @@ const QUICKCHART_BASE_URL = getenv('QUICKCHART_BASE_URL', 'https://quickchart.io
  *   ChartConfiguration: { type: "bar", labels: ["Q1", "Q2"], datasets: [...] }
  *   ScatterData: { x: 10, y: 20 }
  *   BubbleData: { x: 10, y: 20, r: 5 }
- * =====================
  */
 interface Dataset {
-  data: number[] | { x: number; y: number }[] | { x: number; y: number; r: number }[];
+  data:
+    | number[]
+    | { x: number; y: number }[]
+    | { x: number; y: number; r: number }[];
   label?: string;
   backgroundColor?: string | string[];
   borderColor?: string | string[];
@@ -105,7 +105,6 @@ interface ChartConfiguration {
 }
 
 /**
- * =====================
  * 3. Tool Definitions
  *
  * Define the chart generation tools with their schemas
@@ -125,7 +124,6 @@ interface ChartConfiguration {
  *   ツール2: "download_chart" → チャートを画像ファイルとしてダウンロード
  *   チャートタイプ: bar, line, pie, doughnut, radar, polarArea, scatter, bubble, radialGauge, speedometer
  *   戻り値: URL文字列またはファイルパス確認
- * =====================
  */
 const GENERATE_CHART_TOOL: Tool = {
   name: "generate_chart",
@@ -135,13 +133,25 @@ const GENERATE_CHART_TOOL: Tool = {
     properties: {
       type: {
         type: "string",
-        enum: ["bar", "line", "pie", "doughnut", "radar", "polarArea", "scatter", "bubble", "radialGauge", "speedometer"],
-        description: "The type of chart to generate"
+        enum: [
+          "bar",
+          "line",
+          "pie",
+          "doughnut",
+          "radar",
+          "polarArea",
+          "scatter",
+          "bubble",
+          "radialGauge",
+          "speedometer",
+        ],
+        description: "The type of chart to generate",
       },
       labels: {
         type: "array",
         items: { type: "string" },
-        description: "Labels for the data points (not used for scatter/bubble charts)"
+        description:
+          "Labels for the data points (not used for scatter/bubble charts)",
       },
       datasets: {
         type: "array",
@@ -149,38 +159,40 @@ const GENERATE_CHART_TOOL: Tool = {
           type: "object",
           properties: {
             data: {
-              description: "Data points - array of numbers for most charts, array of {x,y} for scatter, array of {x,y,r} for bubble"
+              description:
+                "Data points - array of numbers for most charts, array of {x,y} for scatter, array of {x,y,r} for bubble",
             },
             label: {
               type: "string",
-              description: "Label for this dataset"
+              description: "Label for this dataset",
             },
             backgroundColor: {
-              description: "Background color(s) - single color or array of colors"
+              description:
+                "Background color(s) - single color or array of colors",
             },
             borderColor: {
-              description: "Border color(s) - single color or array of colors"
+              description: "Border color(s) - single color or array of colors",
             },
             additionalConfig: {
               type: "object",
-              description: "Additional Chart.js configuration for this dataset"
-            }
+              description: "Additional Chart.js configuration for this dataset",
+            },
           },
-          required: ["data"]
+          required: ["data"],
         },
-        description: "Datasets to display in the chart"
+        description: "Datasets to display in the chart",
       },
       title: {
         type: "string",
-        description: "Title of the chart"
+        description: "Title of the chart",
       },
       options: {
         type: "object",
-        description: "Additional Chart.js options"
-      }
+        description: "Additional Chart.js options",
+      },
     },
-    required: ["type", "datasets"]
-  }
+    required: ["type", "datasets"],
+  },
 };
 
 const DOWNLOAD_CHART_TOOL: Tool = {
@@ -191,19 +203,19 @@ const DOWNLOAD_CHART_TOOL: Tool = {
     properties: {
       config: {
         type: "object",
-        description: "Chart configuration object (Chart.js format)"
+        description: "Chart configuration object (Chart.js format)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the image (optional, defaults to Desktop or home directory)"
-      }
+        description:
+          "Path where to save the image (optional, defaults to Desktop or home directory)",
+      },
     },
-    required: ["config"]
-  }
+    required: ["config"],
+  },
 };
 
 /**
- * =====================
  * 4. Server Initialization
  *
  * Create MCP server instance with metadata and capabilities
@@ -225,7 +237,6 @@ const DOWNLOAD_CHART_TOOL: Tool = {
  *   機能: tools (ツール機能を提供)
  *   トランスポート: StdioServerTransport (stdin/stdout経由で通信)
  *   プロトコル: Model Context Protocol (MCP)
- * =====================
  */
 const server = new Server(
   {
@@ -240,7 +251,6 @@ const server = new Server(
 );
 
 /**
- * =====================
  * 5. Input Validation Functions
  *
  * Helper functions to validate chart inputs
@@ -264,14 +274,24 @@ const server = new Server(
  *   validateDatasets([]) → エラーをスロー
  *   validateScatterData([{ x: 1, y: 2 }]) → true
  *   validateBubbleData([{ x: 1, y: 2, r: 3 }]) → true
- * =====================
  */
 function validateChartType(type: string): void {
-  const validTypes = ["bar", "line", "pie", "doughnut", "radar", "polarArea", "scatter", "bubble", "radialGauge", "speedometer"];
+  const validTypes = [
+    "bar",
+    "line",
+    "pie",
+    "doughnut",
+    "radar",
+    "polarArea",
+    "scatter",
+    "bubble",
+    "radialGauge",
+    "speedometer",
+  ];
   if (!validTypes.includes(type)) {
     throw new McpError(
       ErrorCode.InvalidParams,
-      `Invalid chart type: ${type}. Valid types are: ${validTypes.join(', ')}`
+      `Invalid chart type: ${type}. Valid types are: ${validTypes.join(", ")}`
     );
   }
 }
@@ -295,7 +315,6 @@ function validateDatasets(datasets: any[]): void {
 }
 
 /**
- * =====================
  * 6. Chart Configuration Builder
  *
  * Build Chart.js configuration from parameters
@@ -319,13 +338,13 @@ function validateDatasets(datasets: any[]): void {
  *   → ラベルなしのscatterチャート設定を返す
  *   buildChartConfig({ type: "radialGauge", datasets: [{ data: [75] }] })
  *   → 特別なプラグインを持つゲージチャート設定を返す
- * =====================
  */
 function buildChartConfig(params: any): any {
   const { type, labels, datasets, title, options } = params;
 
   const config: any = {
-    type: type === 'radialGauge' || type === 'speedometer' ? 'radialGauge' : type,
+    type:
+      type === "radialGauge" || type === "speedometer" ? "radialGauge" : type,
     data: {
       datasets: datasets.map((dataset: Dataset) => {
         const chartDataset: any = {
@@ -333,35 +352,37 @@ function buildChartConfig(params: any): any {
           label: dataset.label,
           backgroundColor: dataset.backgroundColor,
           borderColor: dataset.borderColor,
-          ...dataset.additionalConfig
+          ...dataset.additionalConfig,
         };
         return chartDataset;
-      })
+      }),
     },
     options: {
       ...options,
       plugins: {
-        title: title ? {
-          display: true,
-          text: title
-        } : undefined
-      }
-    }
+        title: title
+          ? {
+              display: true,
+              text: title,
+            }
+          : undefined,
+      },
+    },
   };
 
-  if (labels && type !== 'scatter' && type !== 'bubble') {
+  if (labels && type !== "scatter" && type !== "bubble") {
     config.data.labels = labels;
   }
 
-  if (type === 'radialGauge' || type === 'speedometer') {
+  if (type === "radialGauge" || type === "speedometer") {
     config.options.plugins.datalabels = {
       display: true,
       formatter: (value: number) => `${value}%`,
-      color: 'black',
+      color: "black",
       font: {
         size: 20,
-        weight: 'bold'
-      }
+        weight: "bold",
+      },
     };
   }
 
@@ -369,7 +390,6 @@ function buildChartConfig(params: any): any {
 }
 
 /**
- * =====================
  * 7. URL Generation Function
  *
  * Generate QuickChart URL from configuration
@@ -391,16 +411,17 @@ function buildChartConfig(params: any): any {
  *   generateChartUrl({ type: "line", data: {...} }, "https://custom.io/chart")
  *   → "https://custom.io/chart?c=%7B%22type%22%3A%22line%22..."
  *   大きな設定は自動的にURLエンコードされる
- * =====================
  */
-function generateChartUrl(config: any, baseUrl: string = QUICKCHART_BASE_URL): string {
+function generateChartUrl(
+  config: any,
+  baseUrl: string = QUICKCHART_BASE_URL
+): string {
   const chartJson = JSON.stringify(config);
   const encodedChart = encodeURIComponent(chartJson);
   return `${baseUrl}?c=${encodedChart}`;
 }
 
 /**
- * =====================
  * 8. File Path Helper
  *
  * Get appropriate download path for chart images
@@ -420,33 +441,46 @@ function generateChartUrl(config: any, baseUrl: string = QUICKCHART_BASE_URL): s
  *   getDownloadPath("/custom/path.png") → "/custom/path.png"
  *   getDownloadPath("mychart.png") → "/Users/username/Desktop/mychart.png"
  *   デスクトップが存在しない場合はホームディレクトリにフォールバック
- * =====================
  */
 function getDownloadPath(outputPath?: string): string {
   if (outputPath) {
     if (path.isAbsolute(outputPath)) {
       return outputPath;
     }
-    const desktopPath = path.join(process.env.HOME || process.env.USERPROFILE || '.', 'Desktop');
+    const desktopPath = path.join(
+      process.env.HOME || process.env.USERPROFILE || ".",
+      "Desktop"
+    );
     if (fs.existsSync(desktopPath)) {
       return path.join(desktopPath, outputPath);
     }
-    return path.join(process.env.HOME || process.env.USERPROFILE || '.', outputPath);
+    return path.join(
+      process.env.HOME || process.env.USERPROFILE || ".",
+      outputPath
+    );
   }
 
-  const timestamp = new Date().toISOString().replace(/[-:T]/g, '').split('.')[0];
+  const timestamp = new Date()
+    .toISOString()
+    .replace(/[-:T]/g, "")
+    .split(".")[0];
   const filename = `chart_${timestamp}.png`;
-  const desktopPath = path.join(process.env.HOME || process.env.USERPROFILE || '.', 'Desktop');
-  
+  const desktopPath = path.join(
+    process.env.HOME || process.env.USERPROFILE || ".",
+    "Desktop"
+  );
+
   if (fs.existsSync(desktopPath)) {
     return path.join(desktopPath, filename);
   }
-  
-  return path.join(process.env.HOME || process.env.USERPROFILE || '.', filename);
+
+  return path.join(
+    process.env.HOME || process.env.USERPROFILE || ".",
+    filename
+  );
 }
 
 /**
- * =====================
  * 9. Tool List Handler
  *
  * Handle requests to list available tools
@@ -466,14 +500,12 @@ function getDownloadPath(outputPath?: string): string {
  *   利用可能なツール: generate_chart, download_chart
  *   ツール数: 2
  *   このハンドラーは利用可能なツールを尋ねるMCPクライアントに応答
- * =====================
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [GENERATE_CHART_TOOL, DOWNLOAD_CHART_TOOL],
 }));
 
 /**
- * =====================
  * 10. Tool Call Handler
  *
  * Set up the request handler for tool calls
@@ -495,7 +527,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
  *   リクエスト: { name: "unknown_tool" } → エラー: "Unknown tool: unknown_tool"
  *   無効なパラメータ → 特定の検証メッセージを含むエラー
  *   ネットワークエラー → エラー: "Failed to generate/download chart"
- * =====================
  */
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
@@ -531,7 +562,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           "Missing arguments for download_chart"
         );
       }
-      if (!args.config || typeof args.config !== 'object') {
+      if (!args.config || typeof args.config !== "object") {
         throw new McpError(
           ErrorCode.InvalidParams,
           "config parameter must be a valid Chart.js configuration object"
@@ -543,8 +574,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       try {
         const response = await axios.get(chartUrl, {
-          responseType: 'arraybuffer',
-          timeout: 30000
+          responseType: "arraybuffer",
+          timeout: 30000,
         });
 
         const dir = path.dirname(outputPath);
@@ -565,28 +596,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       } catch (error) {
         throw new McpError(
           ErrorCode.InternalError,
-          `Failed to download chart: ${error instanceof Error ? error.message : String(error)}`
+          `Failed to download chart: ${
+            error instanceof Error ? error.message : String(error)
+          }`
         );
       }
     }
 
-    throw new McpError(
-      ErrorCode.MethodNotFound,
-      `Unknown tool: ${name}`
-    );
+    throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
   } catch (error) {
     if (error instanceof McpError) {
       throw error;
     }
     throw new McpError(
       ErrorCode.InternalError,
-      `Error executing tool ${name}: ${error instanceof Error ? error.message : String(error)}`
+      `Error executing tool ${name}: ${
+        error instanceof Error ? error.message : String(error)
+      }`
     );
   }
 });
 
 /**
- * =====================
  * 11. Server Startup Function
  *
  * Initialize and run the MCP server with stdio transport
@@ -606,7 +637,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  *   カスタムURLで → "QuickChart API URL: https://custom.quickchart.io/chart"
  *   デフォルトURL → "QuickChart API URL: https://quickchart.io/chart"
  *   接続エラー → プロセスはコード1で終了
- * =====================
  */
 async function runServer() {
   const transport = new StdioServerTransport();
@@ -616,7 +646,6 @@ async function runServer() {
 }
 
 /**
- * =====================
  * 12. Server Execution
  *
  * Execute the server and handle fatal errors
@@ -638,7 +667,6 @@ async function runServer() {
  *   依存関係が不足 → "Fatal error running server: Cannot find module"
  *   権限が拒否された → "Fatal error running server: EACCES"
  *   任意の致命的エラー → エラーをログに記録し、コード1で終了
- * =====================
  */
 runServer().catch((error) => {
   console.error("Fatal error running server:", error);
