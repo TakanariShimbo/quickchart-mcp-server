@@ -275,8 +275,6 @@ npm run release 1.2.3
 
 ## Development
 
-### Method 1: Using Node.js locally
-
 1. **Clone this repository**
 
    ```bash
