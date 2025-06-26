@@ -76,7 +76,11 @@ Claude Desktop の設定に追加：
 
 ## 使用例
 
-### 棒グラフの生成
+### `generate_chart` ツールの使用
+
+`generate_chart` ツールは、ブラウザで表示したりアプリケーションに埋め込んだりできるチャート URL を作成します。
+
+#### 棒グラフの生成
 
 ```json
 {
@@ -94,7 +98,7 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### 複数データセットの折れ線グラフ作成
+#### 複数データセットの折れ線グラフ作成
 
 ```json
 {
@@ -118,7 +122,7 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### 円グラフの生成
+#### 円グラフの生成
 
 ```json
 {
@@ -134,7 +138,7 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### 散布図の作成
+#### 散布図の作成
 
 ```json
 {
@@ -154,7 +158,7 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### 放射状ゲージの生成
+#### 放射状ゲージの生成
 
 ```json
 {
@@ -168,6 +172,82 @@ Claude Desktop の設定に追加：
   "title": "パフォーマンススコア"
 }
 ```
+
+### `download_chart` ツールの使用
+
+`download_chart` ツールは、チャートファイルを直接ローカルマシンにダウンロードします。`generate_chart` と同じチャート設定を使用しますが、結果をファイルとして保存します。
+
+#### PNG形式でダウンロード（デフォルト）
+
+```json
+{
+  "type": "bar",
+  "labels": ["1月", "2月", "3月", "4月"],
+  "datasets": [
+    {
+      "label": "2024年売上",
+      "data": [65, 59, 80, 81],
+      "backgroundColor": "rgba(54, 162, 235, 0.8)"
+    }
+  ],
+  "title": "月次売上レポート"
+}
+```
+*デスクトップに次の名前で保存：`chart_20240626123456.png`*
+
+#### カスタムパスでSVG形式でダウンロード
+
+```json
+{
+  "type": "pie",
+  "labels": ["デスクトップ", "モバイル", "タブレット"],
+  "datasets": [
+    {
+      "data": [65, 25, 10],
+      "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
+    }
+  ],
+  "title": "デバイス使用統計",
+  "format": "svg",
+  "outputPath": "reports/device-usage.svg"
+}
+```
+*保存先：`デスクトップ/reports/device-usage.svg`*
+
+#### 絶対パスでダウンロード
+
+```json
+{
+  "type": "line",
+  "labels": ["第1週", "第2週", "第3週", "第4週"],
+  "datasets": [
+    {
+      "label": "売上",
+      "data": [1200, 1900, 3000, 5000],
+      "borderColor": "rgb(75, 192, 192)",
+      "backgroundColor": "rgba(75, 192, 192, 0.2)"
+    }
+  ],
+  "title": "週次売上成長",
+  "format": "pdf",
+  "outputPath": "/Users/username/Documents/charts/revenue-chart.pdf"
+}
+```
+*保存先：`/Users/username/Documents/charts/revenue-chart.pdf`*
+
+#### サポートされる形式
+
+- **PNG**（デフォルト）：`"format": "png"`
+- **SVG**：`"format": "svg"`
+- **JPEG**：`"format": "jpg"`
+- **WebP**：`"format": "webp"`
+- **PDF**：`"format": "pdf"`
+
+#### ダウンロード場所
+
+- **パス未指定**：デスクトップ（デスクトップが存在しない場合はホームディレクトリ）
+- **相対パス**：デスクトップ（またはホームディレクトリ）を基準とした相対パス
+- **絶対パス**：指定された正確なパス
 
 ## 設定
 

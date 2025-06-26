@@ -76,7 +76,11 @@ Add to your Claude Desktop configuration:
 
 ## Usage Examples
 
-### Generate a Bar Chart
+### Using `generate_chart` Tool
+
+The `generate_chart` tool creates a chart URL that you can view in a browser or embed in applications.
+
+#### Generate a Bar Chart
 
 ```json
 {
@@ -94,7 +98,7 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### Create a Line Chart with Multiple Datasets
+#### Create a Line Chart with Multiple Datasets
 
 ```json
 {
@@ -118,7 +122,7 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### Generate a Pie Chart
+#### Generate a Pie Chart
 
 ```json
 {
@@ -134,7 +138,7 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### Create a Scatter Plot
+#### Create a Scatter Plot
 
 ```json
 {
@@ -154,7 +158,7 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### Generate a Radial Gauge
+#### Generate a Radial Gauge
 
 ```json
 {
@@ -168,6 +172,82 @@ Add to your Claude Desktop configuration:
   "title": "Performance Score"
 }
 ```
+
+### Using `download_chart` Tool
+
+The `download_chart` tool downloads chart files directly to your local machine. It uses the same chart configuration as `generate_chart` but saves the result as a file.
+
+#### Download as PNG (Default)
+
+```json
+{
+  "type": "bar",
+  "labels": ["January", "February", "March", "April"],
+  "datasets": [
+    {
+      "label": "Sales 2024",
+      "data": [65, 59, 80, 81],
+      "backgroundColor": "rgba(54, 162, 235, 0.8)"
+    }
+  ],
+  "title": "Monthly Sales Report"
+}
+```
+*Downloads to Desktop as: `chart_20240626123456.png`*
+
+#### Download as SVG with Custom Path
+
+```json
+{
+  "type": "pie",
+  "labels": ["Desktop", "Mobile", "Tablet"],
+  "datasets": [
+    {
+      "data": [65, 25, 10],
+      "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
+    }
+  ],
+  "title": "Device Usage Statistics",
+  "format": "svg",
+  "outputPath": "reports/device-usage.svg"
+}
+```
+*Downloads to: `Desktop/reports/device-usage.svg`*
+
+#### Download with Absolute Path
+
+```json
+{
+  "type": "line",
+  "labels": ["Week 1", "Week 2", "Week 3", "Week 4"],
+  "datasets": [
+    {
+      "label": "Revenue",
+      "data": [1200, 1900, 3000, 5000],
+      "borderColor": "rgb(75, 192, 192)",
+      "backgroundColor": "rgba(75, 192, 192, 0.2)"
+    }
+  ],
+  "title": "Weekly Revenue Growth",
+  "format": "pdf",
+  "outputPath": "/Users/username/Documents/charts/revenue-chart.pdf"
+}
+```
+*Downloads to: `/Users/username/Documents/charts/revenue-chart.pdf`*
+
+#### Supported Formats
+
+- **PNG** (default): `"format": "png"`
+- **SVG**: `"format": "svg"`
+- **JPEG**: `"format": "jpg"`
+- **WebP**: `"format": "webp"`
+- **PDF**: `"format": "pdf"`
+
+#### Download Locations
+
+- **No path specified**: Desktop (or home directory if Desktop doesn't exist)
+- **Relative path**: Relative to Desktop (or home directory)
+- **Absolute path**: Exact path specified
 
 ## Configuration
 

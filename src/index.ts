@@ -201,9 +201,64 @@ const DOWNLOAD_CHART_TOOL: Tool = {
   inputSchema: {
     type: "object",
     properties: {
-      config: {
+      type: {
+        type: "string",
+        enum: [
+          "bar",
+          "line",
+          "pie",
+          "doughnut",
+          "radar",
+          "polarArea",
+          "scatter",
+          "bubble",
+          "radialGauge",
+          "speedometer",
+        ],
+        description: "The type of chart to generate",
+      },
+      labels: {
+        type: "array",
+        items: { type: "string" },
+        description:
+          "Labels for the data points (not used for scatter/bubble charts)",
+      },
+      datasets: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            data: {
+              description:
+                "Data points - array of numbers for most charts, array of {x,y} for scatter, array of {x,y,r} for bubble",
+            },
+            label: {
+              type: "string",
+              description: "Label for this dataset",
+            },
+            backgroundColor: {
+              description:
+                "Background color(s) - single color or array of colors",
+            },
+            borderColor: {
+              description: "Border color(s) - single color or array of colors",
+            },
+            additionalConfig: {
+              type: "object",
+              description: "Additional Chart.js configuration for this dataset",
+            },
+          },
+          required: ["data"],
+        },
+        description: "Datasets to display in the chart",
+      },
+      title: {
+        type: "string",
+        description: "Title of the chart",
+      },
+      options: {
         type: "object",
-        description: "Chart configuration object (Chart.js format)",
+        description: "Additional Chart.js options",
       },
       outputPath: {
         type: "string",
@@ -216,7 +271,7 @@ const DOWNLOAD_CHART_TOOL: Tool = {
         description: "Output format for the chart (default: png)",
       },
     },
-    required: ["config"],
+    required: ["type", "datasets"],
   },
 };
 
@@ -570,15 +625,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           "Missing arguments for download_chart"
         );
       }
-      if (!args.config || typeof args.config !== "object") {
-        throw new McpError(
-          ErrorCode.InvalidParams,
-          "config parameter must be a valid Chart.js configuration object"
-        );
-      }
+      validateChartType(args.type as string);
+      validateDatasets(args.datasets as any[]);
 
       const format = (args.format as string) || "png";
-      const chartUrl = generateChartUrl(args.config, QUICKCHART_BASE_URL, format);
+      const config = buildChartConfig(args);
+      const chartUrl = generateChartUrl(config, QUICKCHART_BASE_URL, format);
       const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
 
       try {
