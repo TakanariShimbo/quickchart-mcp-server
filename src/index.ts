@@ -241,7 +241,7 @@ const DOWNLOAD_CHART_TOOL: Tool = {
 const server = new Server(
   {
     name: "quickchart-server",
-    version: "0.1.1",
+    version: "0.2.0",
   },
   {
     capabilities: {
