@@ -96,13 +96,6 @@ interface Dataset {
   additionalConfig?: any;
 }
 
-interface ChartConfiguration {
-  type: string;
-  labels?: string[];
-  datasets: Dataset[];
-  title?: string;
-  options?: any;
-}
 
 /**
  * 3. Tool Definitions
