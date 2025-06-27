@@ -64,37 +64,8 @@ const QUICKCHART_BASE_URL = getenv(
   "https://quickchart.io/chart"
 );
 
-/**
- * 2. Type Definitions
- *
- * Define interfaces for chart configurations
- *
- * Examples:
- *   Dataset: { data: [10, 20, 30], label: "Sales", backgroundColor: "blue" }
- *   ChartConfiguration: { type: "bar", labels: ["Q1", "Q2"], datasets: [...] }
- *   ScatterData: { x: 10, y: 20 }
- *   BubbleData: { x: 10, y: 20, r: 5 }
- *
- * 2. 型定義
- *
- * チャート設定のインターフェースを定義
- *
- * 例:
- *   Dataset: { data: [10, 20, 30], label: "売上", backgroundColor: "blue" }
- *   ChartConfiguration: { type: "bar", labels: ["Q1", "Q2"], datasets: [...] }
- *   ScatterData: { x: 10, y: 20 }
- *   BubbleData: { x: 10, y: 20, r: 5 }
- */
-interface Dataset {
-  data:
-    | number[]
-    | { x: number; y: number }[]
-    | { x: number; y: number; r: number }[];
-  label?: string;
-  backgroundColor?: string | string[];
-  borderColor?: string | string[];
-  additionalConfig?: any;
-}
+// Note: Type definitions are no longer needed as we now accept
+// Chart.js configuration directly in the new schema
 
 
 /**
@@ -127,93 +98,102 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
         enum: ["get_url", "save_file"],
         description: "Whether to get chart URL or save chart as file (default: get_url)",
       },
-      type: {
-        type: "string",
-        enum: [
-          "bar",
-          "line",
-          "pie",
-          "doughnut",
-          "radar",
-          "polarArea",
-          "scatter",
-          "bubble",
-          "radialGauge",
-          "speedometer",
-        ],
-        description: "The type of chart to generate",
-      },
-      labels: {
-        type: "array",
-        items: { type: "string" },
-        description:
-          "Labels for the data points (not used for scatter/bubble charts)",
-      },
-      datasets: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            data: {
-              description:
-                "Data points - array of numbers for most charts, array of {x,y} for scatter, array of {x,y,r} for bubble",
-            },
-            label: {
-              type: "string",
-              description: "Label for this dataset",
-            },
-            backgroundColor: {
-              description:
-                "Background color(s) - single color or array of colors",
-            },
-            borderColor: {
-              description: "Border color(s) - single color or array of colors",
-            },
-            additionalConfig: {
-              type: "object",
-              description: "Additional Chart.js configuration for this dataset",
-            },
-          },
-          required: ["data"],
-        },
-        description: "Datasets to display in the chart",
-      },
-      title: {
-        type: "string",
-        description: "Title of the chart",
-      },
-      options: {
-        type: "object",
-        description: "Additional Chart.js options",
-      },
       outputPath: {
         type: "string",
-        description:
-          "Path where to save the file (only used with action=save_file, optional, defaults to Desktop)",
-      },
-      format: {
-        type: "string",
-        enum: ["png", "webp", "jpg", "svg", "pdf"],
-        description: "Output format for the chart (only used with action=save_file, default: png)",
+        description: "Path where to save the file (only used with action=save_file)",
       },
       width: {
-        type: "number",
-        description: "Width of the chart in pixels (default: 500)",
+        type: "string",
+        description: "Pixel width (default: '500')",
       },
       height: {
-        type: "number",
-        description: "Height of the chart in pixels (default: 300)",
-      },
-      backgroundColor: {
         type: "string",
-        description: "Background color of the chart (default: transparent)",
+        description: "Pixel height (default: '300')",
       },
       devicePixelRatio: {
         type: "number",
-        description: "Device pixel ratio for high DPI screens (default: 1.0)",
+        description: "Pixel ratio (default: 2.0)",
+      },
+      format: {
+        type: "string",
+        enum: ["png", "svg", "webp"],
+        description: "Output format: png, svg, or webp (default: png)",
+      },
+      backgroundColor: {
+        type: "string",
+        description: "Canvas background color (default: transparent)",
+      },
+      version: {
+        type: "string",
+        description: "Chart.js version (default: '2')",
+      },
+      key: {
+        type: "string",
+        description: "API key (optional)",
+      },
+      chart: {
+        type: "object",
+        description: "Chart.js configuration object",
+        properties: {
+          type: {
+            type: "string",
+            enum: [
+              "bar",
+              "line",
+              "pie",
+              "doughnut",
+              "radar",
+              "polarArea",
+              "scatter",
+              "bubble",
+              "radialGauge",
+              "speedometer",
+            ],
+            description: "The type of chart to generate",
+          },
+          data: {
+            type: "object",
+            properties: {
+              labels: {
+                type: "array",
+                items: { type: "string" },
+                description: "Labels for the data points",
+              },
+              datasets: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    data: {
+                      description: "Data points - array of numbers or objects",
+                    },
+                    label: {
+                      type: "string",
+                      description: "Label for this dataset",
+                    },
+                    backgroundColor: {
+                      description: "Background color(s)",
+                    },
+                    borderColor: {
+                      description: "Border color(s)",
+                    },
+                  },
+                  required: ["data"],
+                },
+                description: "Datasets to display in the chart",
+              },
+            },
+            required: ["datasets"],
+          },
+          options: {
+            type: "object",
+            description: "Chart.js options",
+          },
+        },
+        required: ["type", "data"],
       },
     },
-    required: ["type", "datasets"],
+    required: ["chart"],
   },
 };
 
@@ -316,80 +296,8 @@ function validateDatasets(datasets: any[]): void {
   });
 }
 
-/**
- * 6. Chart Configuration Builder
- *
- * Build Chart.js configuration from parameters
- *
- * Examples:
- *   buildChartConfig({ type: "bar", labels: ["A", "B"], datasets: [...] })
- *   → Returns Chart.js config object with proper structure
- *   buildChartConfig({ type: "scatter", datasets: [{ data: [{x:1, y:2}] }] })
- *   → Returns scatter chart config without labels
- *   buildChartConfig({ type: "radialGauge", datasets: [{ data: [75] }] })
- *   → Returns gauge chart config with special plugin
- *
- * 6. チャート設定ビルダー
- *
- * パラメータからChart.js設定を構築
- *
- * 例:
- *   buildChartConfig({ type: "bar", labels: ["A", "B"], datasets: [...] })
- *   → 適切な構造を持つChart.js設定オブジェクトを返す
- *   buildChartConfig({ type: "scatter", datasets: [{ data: [{x:1, y:2}] }] })
- *   → ラベルなしのscatterチャート設定を返す
- *   buildChartConfig({ type: "radialGauge", datasets: [{ data: [75] }] })
- *   → 特別なプラグインを持つゲージチャート設定を返す
- */
-function buildChartConfig(params: any): any {
-  const { type, labels, datasets, title, options } = params;
-
-  const config: any = {
-    type:
-      type === "radialGauge" || type === "speedometer" ? "radialGauge" : type,
-    data: {
-      datasets: datasets.map((dataset: Dataset) => {
-        const chartDataset: any = {
-          data: dataset.data,
-          label: dataset.label,
-          backgroundColor: dataset.backgroundColor,
-          borderColor: dataset.borderColor,
-          ...dataset.additionalConfig,
-        };
-        return chartDataset;
-      }),
-    },
-    options: {
-      ...options,
-      plugins: {
-        title: title
-          ? {
-              display: true,
-              text: title,
-            }
-          : undefined,
-      },
-    },
-  };
-
-  if (labels && type !== "scatter" && type !== "bubble") {
-    config.data.labels = labels;
-  }
-
-  if (type === "radialGauge" || type === "speedometer") {
-    config.options.plugins.datalabels = {
-      display: true,
-      formatter: (value: number) => `${value}%`,
-      color: "black",
-      font: {
-        size: 20,
-        weight: "bold",
-      },
-    };
-  }
-
-  return config;
-}
+// Note: buildChartConfig function is no longer needed as we now accept
+// Chart.js configuration directly in the new schema
 
 /**
  * 7. POST Request Configuration
@@ -397,8 +305,8 @@ function buildChartConfig(params: any): any {
  * Build POST request configuration for QuickChart API
  *
  * Examples:
- *   buildPostConfig({ type: "bar", data: {...} }, { width: 800, height: 600 })
- *   → { chart: {...}, width: 800, height: 600, format: "png" }
+ *   buildPostConfig({ type: "bar", data: {...} }, { width: "800", height: "600" })
+ *   → { chart: {...}, width: "800", height: "600", format: "png" }
  *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
  *   → { chart: {...}, backgroundColor: "white", format: "png" }
  *
@@ -407,8 +315,8 @@ function buildChartConfig(params: any): any {
  * QuickChart API用のPOSTリクエスト設定を構築
  *
  * 例:
- *   buildPostConfig({ type: "bar", data: {...} }, { width: 800, height: 600 })
- *   → { chart: {...}, width: 800, height: 600, format: "png" }
+ *   buildPostConfig({ type: "bar", data: {...} }, { width: "800", height: "600" })
+ *   → { chart: {...}, width: "800", height: "600", format: "png" }
  *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
  *   → { chart: {...}, backgroundColor: "white", format: "png" }
  */
@@ -416,20 +324,23 @@ function buildPostConfig(
   chartConfig: any,
   options: {
     format?: string;
-    width?: number;
-    height?: number;
+    width?: string;
+    height?: string;
     backgroundColor?: string;
     devicePixelRatio?: number;
+    version?: string;
+    key?: string;
   } = {}
 ): any {
   return {
-    chart: chartConfig,
+    width: options.width || "500",
+    height: options.height || "300",
+    devicePixelRatio: options.devicePixelRatio || 2.0,
     format: options.format || "png",
-    width: options.width || 500,
-    height: options.height || 300,
     backgroundColor: options.backgroundColor || "transparent",
-    devicePixelRatio: options.devicePixelRatio || 1.0,
-    version: "2",
+    version: options.version || "2",
+    ...(options.key && { key: options.key }),
+    chart: chartConfig,
   };
 }
 
@@ -553,19 +464,29 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           "Missing arguments for create-chart-using-chartjs"
         );
       }
-      validateChartType(args.type as string);
-      validateDatasets(args.datasets as any[]);
+      // Extract chart configuration from args
+      const chartConfig = args.chart as any;
+      if (!chartConfig) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          "Missing chart configuration"
+        );
+      }
+
+      validateChartType(chartConfig.type as string);
+      validateDatasets(chartConfig.data?.datasets as any[]);
 
       const action = (args.action as string) || "get_url";
-      const config = buildChartConfig(args);
 
       if (action === "get_url") {
-        const postConfig = buildPostConfig(config, {
-          format: (args.format as string) || "png",
-          width: args.width as number,
-          height: args.height as number,
+        const postConfig = buildPostConfig(chartConfig, {
+          format: args.format as string,
+          width: args.width as string,
+          height: args.height as string,
           backgroundColor: args.backgroundColor as string,
           devicePixelRatio: args.devicePixelRatio as number,
+          version: args.version as string,
+          key: args.key as string,
         });
         
         return {
@@ -582,12 +503,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const format = (args.format as string) || "png";
         const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
         
-        const postConfig = buildPostConfig(config, {
-          format,
-          width: args.width as number,
-          height: args.height as number,
+        const postConfig = buildPostConfig(chartConfig, {
+          format: args.format as string,
+          width: args.width as string,
+          height: args.height as string,
           backgroundColor: args.backgroundColor as string,
           devicePixelRatio: args.devicePixelRatio as number,
+          version: args.version as string,
+          key: args.key as string,
         });
 
         try {
