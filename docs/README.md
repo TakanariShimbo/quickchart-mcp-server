@@ -687,9 +687,47 @@ quickchart-mcp-server/
 
 ## Resources
 
-- [QuickChart Documentation](https://quickchart.io/documentation/)
-- [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
-- [Model Context Protocol](https://modelcontextprotocol.io/)
+### Official Documentation
+
+#### QuickChart API
+
+- [QuickChart Main Documentation](https://quickchart.io/documentation/) - Comprehensive guide to all QuickChart APIs
+
+#### Chart Libraries
+
+- [Chart.js Documentation](https://www.chartjs.org/docs/latest/) - Popular JavaScript charting library
+- [ApexCharts Documentation](https://apexcharts.com/docs/) - Modern charting library
+- [Google Charts Documentation](https://developers.google.com/chart) - Google's visualization API
+- [GraphViz Documentation](https://graphviz.org/documentation/) - Graph visualization software
+
+#### MCP Protocol
+
+- [Model Context Protocol](https://modelcontextprotocol.io/) - Official MCP specification
+- [MCP SDK Documentation](https://github.com/modelcontextprotocol/typescript-sdk) - TypeScript SDK for MCP
+- [Claude Desktop MCP Guide](https://docs.anthropic.com/en/docs/build-with-claude/mcp) - Using MCP with Claude
+- [MCP Inspector](https://github.com/modelcontextprotocol/inspector) - Debug and test MCP servers
+
+### Tutorials & Examples
+
+#### Getting Started
+
+- [QuickChart Gallery](https://quickchart.io/gallery/) - Chart examples and inspiration
+- [Chart.js Examples](https://www.chartjs.org/docs/latest/samples/) - Interactive chart examples
+- [ApexCharts Demos](https://apexcharts.com/javascript-chart-demos/) - Live chart demonstrations
+- [GraphViz Gallery](https://graphviz.org/gallery/) - Graph visualization examples
+
+#### Advanced Usage
+
+- [Chart.js Configuration](https://www.chartjs.org/docs/latest/configuration/) - Detailed configuration options
+- [DOT Language Guide](https://graphviz.org/doc/info/lang.html) - GraphViz syntax reference
+- [QR Code Best Practices](https://blog.qr4.nl/post/qr-code-best-practices/) - QR code design guidelines
+- [Data Visualization Guidelines](https://www.data-to-viz.com/) - Choosing the right chart type
+
+#### Development Tools
+
+- [Chart.js Chart Builder](https://www.chartjs.org/docs/latest/getting-started/) - Interactive chart builder
+- [QR Code Generator](https://www.qr-code-generator.com/) - Online QR code testing
+- [GraphViz Online](https://dreampuf.github.io/GraphvizOnline/) - Test DOT syntax online
 
 ## License
 

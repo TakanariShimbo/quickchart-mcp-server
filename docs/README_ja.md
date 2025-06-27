@@ -687,9 +687,47 @@ quickchart-mcp-server/
 
 ## リソース
 
-- [QuickChart ドキュメント](https://quickchart.io/documentation/)
-- [Chart.js ドキュメント](https://www.chartjs.org/docs/latest/)
-- [Model Context Protocol](https://modelcontextprotocol.io/)
+### 公式ドキュメント
+
+#### QuickChart API
+
+- [QuickChart メインドキュメント](https://quickchart.io/documentation/) - 全 QuickChart API の包括的ガイド
+
+#### チャートライブラリ
+
+- [Chart.js ドキュメント](https://www.chartjs.org/docs/latest/) - 人気の JavaScript チャートライブラリ
+- [ApexCharts ドキュメント](https://apexcharts.com/docs/) - モダンなチャートライブラリ
+- [Google Charts ドキュメント](https://developers.google.com/chart) - Google の可視化 API
+- [GraphViz ドキュメント](https://graphviz.org/documentation/) - グラフ可視化ソフトウェア
+
+#### MCP プロトコル
+
+- [Model Context Protocol](https://modelcontextprotocol.io/) - 公式 MCP 仕様
+- [MCP SDK ドキュメント](https://github.com/modelcontextprotocol/typescript-sdk) - MCP 用 TypeScript SDK
+- [Claude Desktop MCP ガイド](https://docs.anthropic.com/en/docs/build-with-claude/mcp) - Claude での MCP 使用方法
+- [MCP Inspector](https://github.com/modelcontextprotocol/inspector) - MCP サーバーのデバッグとテスト
+
+### チュートリアル・例
+
+#### 入門ガイド
+
+- [QuickChart ギャラリー](https://quickchart.io/gallery/) - チャート例とインスピレーション
+- [Chart.js 例](https://www.chartjs.org/docs/latest/samples/) - インタラクティブチャート例
+- [ApexCharts デモ](https://apexcharts.com/javascript-chart-demos/) - ライブチャートデモンストレーション
+- [GraphViz ギャラリー](https://graphviz.org/gallery/) - グラフ可視化例
+
+#### 高度な使用法
+
+- [Chart.js 設定](https://www.chartjs.org/docs/latest/configuration/) - 詳細な設定オプション
+- [DOT 言語ガイド](https://graphviz.org/doc/info/lang.html) - GraphViz 構文リファレンス
+- [QR コードベストプラクティス](https://blog.qr4.nl/post/qr-code-best-practices/) - QR コード設計ガイドライン
+- [データ可視化ガイドライン](https://www.data-to-viz.com/) - 適切なチャートタイプの選択
+
+#### 開発ツール
+
+- [Chart.js チャートビルダー](https://www.chartjs.org/docs/latest/getting-started/) - インタラクティブチャートビルダー
+- [QR コードジェネレーター](https://www.qr-code-generator.com/) - オンライン QR コードテスト
+- [GraphViz オンライン](https://dreampuf.github.io/GraphvizOnline/) - DOT 構文のオンラインテスト
 
 ## ライセンス
 
