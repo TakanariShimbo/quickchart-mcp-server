@@ -14,19 +14,7 @@ import {
   McpError,
   ErrorCode,
 } from "@modelcontextprotocol/sdk/types.js";
-import getenv from "getenv";
 import { TOOLS, TOOL_HANDLERS } from "./tools/index.js";
-
-// Environment Configuration
-const QUICKCHART_BASE_URL = getenv(
-  "QUICKCHART_BASE_URL",
-  "https://quickchart.io/chart"
-);
-
-const QUICKCHART_WORDCLOUD_URL = getenv(
-  "QUICKCHART_WORDCLOUD_URL",
-  "https://quickchart.io/wordcloud"
-);
 
 // Server Initialization
 const server = new Server(
@@ -83,8 +71,6 @@ async function runServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(`QuickChart MCP Server running on stdio`);
-  console.error(`QuickChart API URL: ${QUICKCHART_BASE_URL}`);
-  console.error(`QuickChart Word Cloud URL: ${QUICKCHART_WORDCLOUD_URL}`);
   console.error(`Available tools: ${TOOLS.map(t => t.name).join(", ")}`);
 }
 
