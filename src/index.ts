@@ -198,6 +198,22 @@ const CREATE_CHART_TOOL: Tool = {
         enum: ["png", "webp", "jpg", "svg", "pdf"],
         description: "Output format for the chart (only used with action=save_file, default: png)",
       },
+      width: {
+        type: "number",
+        description: "Width of the chart in pixels (default: 500)",
+      },
+      height: {
+        type: "number",
+        description: "Height of the chart in pixels (default: 300)",
+      },
+      backgroundColor: {
+        type: "string",
+        description: "Background color of the chart (default: transparent)",
+      },
+      devicePixelRatio: {
+        type: "number",
+        description: "Device pixel ratio for high DPI screens (default: 1.0)",
+      },
     },
     required: ["type", "datasets"],
   },
@@ -378,36 +394,45 @@ function buildChartConfig(params: any): any {
 }
 
 /**
- * 7. URL Generation Function
+ * 7. POST Request Configuration
  *
- * Generate QuickChart URL from configuration
+ * Build POST request configuration for QuickChart API
  *
  * Examples:
- *   generateChartUrl({ type: "bar", data: {...} })
- *   → "https://quickchart.io/chart?c=%7B%22type%22%3A%22bar%22..."
- *   generateChartUrl({ type: "line", data: {...} }, "https://custom.io/chart")
- *   → "https://custom.io/chart?c=%7B%22type%22%3A%22line%22..."
- *   Large configurations are automatically URL-encoded
+ *   buildPostConfig({ type: "bar", data: {...} }, { width: 800, height: 600 })
+ *   → { chart: {...}, width: 800, height: 600, format: "png" }
+ *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
+ *   → { chart: {...}, backgroundColor: "white", format: "png" }
  *
- * 7. URL生成関数
+ * 7. POSTリクエスト設定
  *
- * 設定からQuickChart URLを生成
+ * QuickChart API用のPOSTリクエスト設定を構築
  *
  * 例:
- *   generateChartUrl({ type: "bar", data: {...} })
- *   → "https://quickchart.io/chart?c=%7B%22type%22%3A%22bar%22..."
- *   generateChartUrl({ type: "line", data: {...} }, "https://custom.io/chart")
- *   → "https://custom.io/chart?c=%7B%22type%22%3A%22line%22..."
- *   大きな設定は自動的にURLエンコードされる
+ *   buildPostConfig({ type: "bar", data: {...} }, { width: 800, height: 600 })
+ *   → { chart: {...}, width: 800, height: 600, format: "png" }
+ *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
+ *   → { chart: {...}, backgroundColor: "white", format: "png" }
  */
-function generateChartUrl(
-  config: any,
-  baseUrl: string = QUICKCHART_BASE_URL,
-  format: string = "png"
-): string {
-  const chartJson = JSON.stringify(config);
-  const encodedChart = encodeURIComponent(chartJson);
-  return `${baseUrl}?c=${encodedChart}&format=${format}`;
+function buildPostConfig(
+  chartConfig: any,
+  options: {
+    format?: string;
+    width?: number;
+    height?: number;
+    backgroundColor?: string;
+    devicePixelRatio?: number;
+  } = {}
+): any {
+  return {
+    chart: chartConfig,
+    format: options.format || "png",
+    width: options.width || 500,
+    height: options.height || 300,
+    backgroundColor: options.backgroundColor || "transparent",
+    devicePixelRatio: options.devicePixelRatio || 1.0,
+    version: "2",
+  };
 }
 
 /**
@@ -537,12 +562,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const config = buildChartConfig(args);
 
       if (action === "get_url") {
-        const chartUrl = generateChartUrl(config);
+        const postConfig = buildPostConfig(config, {
+          format: (args.format as string) || "png",
+          width: args.width as number,
+          height: args.height as number,
+          backgroundColor: args.backgroundColor as string,
+          devicePixelRatio: args.devicePixelRatio as number,
+        });
+        
         return {
           content: [
             {
               type: "text",
-              text: chartUrl,
+              text: `POST to ${QUICKCHART_BASE_URL}\nContent-Type: application/json\n\n${JSON.stringify(postConfig, null, 2)}`,
             },
           ],
         };
@@ -550,14 +582,24 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       if (action === "save_file") {
         const format = (args.format as string) || "png";
-        const chartUrl = generateChartUrl(config, QUICKCHART_BASE_URL, format);
         const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
+        
+        const postConfig = buildPostConfig(config, {
+          format,
+          width: args.width as number,
+          height: args.height as number,
+          backgroundColor: args.backgroundColor as string,
+          devicePixelRatio: args.devicePixelRatio as number,
+        });
 
         try {
           const responseType = format === "svg" ? "text" : "arraybuffer";
-          const response = await axios.get(chartUrl, {
+          const response = await axios.post(QUICKCHART_BASE_URL, postConfig, {
             responseType: responseType as any,
             timeout: 30000,
+            headers: {
+              'Content-Type': 'application/json',
+            },
           });
 
           const dir = path.dirname(outputPath);
