@@ -103,8 +103,7 @@ interface Dataset {
  * Define the chart generation tools with their schemas
  *
  * Examples:
- *   Tool 1: "generate_chart" → Creates a chart URL
- *   Tool 2: "download_chart" → Downloads chart as image file
+ *   Tool 1: "create-chart-using-chartjs" → Creates a chart URL or saves as file
  *   Chart types: bar, line, pie, doughnut, radar, polarArea, scatter, bubble, radialGauge, speedometer
  *   Returns: URL string or file path confirmation
  *
@@ -113,13 +112,12 @@ interface Dataset {
  * チャート生成ツールとそのスキーマを定義
  *
  * 例:
- *   ツール1: "generate_chart" → チャートURLを作成
- *   ツール2: "download_chart" → チャートを画像ファイルとしてダウンロード
+ *   ツール1: "create-chart-using-chartjs" → チャートURLを作成またはファイルとして保存
  *   チャートタイプ: bar, line, pie, doughnut, radar, polarArea, scatter, bubble, radialGauge, speedometer
  *   戻り値: URL文字列またはファイルパス確認
  */
-const CREATE_CHART_TOOL: Tool = {
-  name: "create_chart",
+const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
+  name: "create-chart-using-chartjs",
   description: "Create a chart using QuickChart.io - get URL or save as file",
   inputSchema: {
     type: "object",
@@ -502,8 +500,8 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  * Handle requests to list available tools
  *
  * Examples:
- *   Request: ListToolsRequest → Response: { tools: [CREATE_CHART_TOOL] }
- *   Available tools: create_chart
+ *   Request: ListToolsRequest → Response: { tools: [CREATE_CHART_USING_CHARTJS_TOOL] }
+ *   Available tools: create-chart-using-chartjs
  *   Tool count: 1
  *   This handler responds to MCP clients asking what tools are available
  *
@@ -512,13 +510,13 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  * 利用可能なツールをリストするリクエストを処理
  *
  * 例:
- *   リクエスト: ListToolsRequest → レスポンス: { tools: [CREATE_CHART_TOOL] }
- *   利用可能なツール: create_chart
+ *   リクエスト: ListToolsRequest → レスポンス: { tools: [CREATE_CHART_USING_CHARTJS_TOOL] }
+ *   利用可能なツール: create-chart-using-chartjs
  *   ツール数: 1
  *   このハンドラーは利用可能なツールを尋ねるMCPクライアントに応答
  */
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
-  tools: [CREATE_CHART_TOOL],
+  tools: [CREATE_CHART_USING_CHARTJS_TOOL],
 }));
 
 /**
@@ -527,8 +525,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
  * Set up the request handler for tool calls
  *
  * Examples:
- *   Request: { name: "generate_chart", arguments: { type: "bar", ... } } → Returns chart URL
- *   Request: { name: "download_chart", arguments: { config: {...} } } → Downloads and returns file path
+ *   Request: { name: "create-chart-using-chartjs", arguments: { action: "get_url", type: "bar", ... } } → Returns chart URL
+ *   Request: { name: "create-chart-using-chartjs", arguments: { action: "save_file", type: "bar", ... } } → Downloads and returns file path
  *   Request: { name: "unknown_tool" } → Error: "Unknown tool: unknown_tool"
  *   Invalid parameters → Error with specific validation message
  *   Network error → Error: "Failed to generate/download chart"
@@ -538,8 +536,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
  * ツール呼び出しのリクエストハンドラーを設定
  *
  * 例:
- *   リクエスト: { name: "create_chart", arguments: { action: "get_url", type: "bar", ... } } → チャートURLを返す
- *   リクエスト: { name: "create_chart", arguments: { action: "save_file", type: "bar", ... } } → ファイルを保存してパスを返す
+ *   リクエスト: { name: "create-chart-using-chartjs", arguments: { action: "get_url", type: "bar", ... } } → チャートURLを返す
+ *   リクエスト: { name: "create-chart-using-chartjs", arguments: { action: "save_file", type: "bar", ... } } → ファイルを保存してパスを返す
  *   リクエスト: { name: "unknown_tool" } → エラー: "Unknown tool: unknown_tool"
  *   無効なパラメータ → 特定の検証メッセージを含むエラー
  *   ネットワークエラー → エラー: "Failed to generate/download chart"
@@ -548,11 +546,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
   try {
-    if (name === "create_chart") {
+    if (name === "create-chart-using-chartjs") {
       if (!args) {
         throw new McpError(
           ErrorCode.InvalidParams,
-          "Missing arguments for create_chart"
+          "Missing arguments for create-chart-using-chartjs"
         );
       }
       validateChartType(args.type as string);
