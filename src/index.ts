@@ -232,7 +232,7 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
 const server = new Server(
   {
     name: "quickchart-server",
-    version: "0.4.4",
+    version: "0.4.5",
   },
   {
     capabilities: {
