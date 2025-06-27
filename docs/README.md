@@ -234,6 +234,22 @@ Add to your Claude Desktop configuration:
 }
 ```
 
+You can customize API endpoints by setting these environment variables:
+
+- **QUICKCHART_BASE_URL**: Chart.js charts API (default: `https://quickchart.io/chart`)
+- **QUICKCHART_WORDCLOUD_URL**: Word cloud API (default: `https://quickchart.io/wordcloud`)
+- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API (default: `https://quickchart.io/apex-charts/render`)
+- **QUICKCHART_BARCODE_URL**: Barcode API (default: `https://quickchart.io/barcode`)
+- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API (default: `https://quickchart.io/google-charts/render`)
+- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API (default: `https://quickchart.io/graphviz`)
+- **QUICKCHART_SPARKLINE_URL**: Sparkline API (default: `https://quickchart.io/chart`)
+- **QUICKCHART_TABLE_URL**: Table API (default: `https://api.quickchart.io/v1/table`)
+- **QUICKCHART_TEXTCHART_URL**: Text-to-Chart API (default: `https://quickchart.io/natural`)
+- **QUICKCHART_WATERMARK_URL**: Watermark API (default: `https://quickchart.io/watermark`)
+- **QUICKCHART_QRCODE_URL**: QR Code API (default: `https://quickchart.io/qr`)
+
+Use these to point to self-hosted QuickChart instances or alternative endpoints.
+
 ## Usage Examples
 
 ### Use Cases for human
@@ -509,26 +525,6 @@ The beauty of this MCP server is that you don't need to know the technical detai
   "opacity": 0.7
 }
 ```
-
-## Configuration
-
-### Environment Variables
-
-You can customize API endpoints by setting these environment variables:
-
-- **QUICKCHART_BASE_URL**: Chart.js charts API (default: `https://quickchart.io/chart`)
-- **QUICKCHART_WORDCLOUD_URL**: Word cloud API (default: `https://quickchart.io/wordcloud`)
-- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API (default: `https://quickchart.io/apex-charts/render`)
-- **QUICKCHART_BARCODE_URL**: Barcode API (default: `https://quickchart.io/barcode`)
-- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API (default: `https://quickchart.io/google-charts/render`)
-- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API (default: `https://quickchart.io/graphviz`)
-- **QUICKCHART_SPARKLINE_URL**: Sparkline API (default: `https://quickchart.io/chart`)
-- **QUICKCHART_TABLE_URL**: Table API (default: `https://api.quickchart.io/v1/table`)
-- **QUICKCHART_TEXTCHART_URL**: Text-to-Chart API (default: `https://quickchart.io/natural`)
-- **QUICKCHART_WATERMARK_URL**: Watermark API (default: `https://quickchart.io/watermark`)
-- **QUICKCHART_QRCODE_URL**: QR Code API (default: `https://quickchart.io/qr`)
-
-Use these to point to self-hosted QuickChart instances or alternative endpoints.
 
 ## Development
 

@@ -234,6 +234,22 @@ Claude Desktop の設定に追加：
 }
 ```
 
+これらの環境変数を設定して API エンドポイントをカスタマイズできます：
+
+- **QUICKCHART_BASE_URL**: Chart.js チャート API（デフォルト: `https://quickchart.io/chart`）
+- **QUICKCHART_WORDCLOUD_URL**: ワードクラウド API（デフォルト: `https://quickchart.io/wordcloud`）
+- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API（デフォルト: `https://quickchart.io/apex-charts/render`）
+- **QUICKCHART_BARCODE_URL**: バーコード API（デフォルト: `https://quickchart.io/barcode`）
+- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API（デフォルト: `https://quickchart.io/google-charts/render`）
+- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API（デフォルト: `https://quickchart.io/graphviz`）
+- **QUICKCHART_SPARKLINE_URL**: スパークライン API（デフォルト: `https://quickchart.io/chart`）
+- **QUICKCHART_TABLE_URL**: テーブル API（デフォルト: `https://api.quickchart.io/v1/table`）
+- **QUICKCHART_TEXTCHART_URL**: テキストからチャート API（デフォルト: `https://quickchart.io/natural`）
+- **QUICKCHART_WATERMARK_URL**: ウォーターマーク API（デフォルト: `https://quickchart.io/watermark`）
+- **QUICKCHART_QRCODE_URL**: QR コード API（デフォルト: `https://quickchart.io/qr`）
+
+これらを使用してセルフホストの QuickChart インスタンスや代替エンドポイントを指定できます。
+
 ## 使用例
 
 ### 人のための使用例
@@ -509,26 +525,6 @@ Claude Desktop の設定に追加：
   "opacity": 0.7
 }
 ```
-
-## 設定
-
-### 環境変数
-
-これらの環境変数を設定して API エンドポイントをカスタマイズできます：
-
-- **QUICKCHART_BASE_URL**: Chart.js チャート API（デフォルト: `https://quickchart.io/chart`）
-- **QUICKCHART_WORDCLOUD_URL**: ワードクラウド API（デフォルト: `https://quickchart.io/wordcloud`）
-- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API（デフォルト: `https://quickchart.io/apex-charts/render`）
-- **QUICKCHART_BARCODE_URL**: バーコード API（デフォルト: `https://quickchart.io/barcode`）
-- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API（デフォルト: `https://quickchart.io/google-charts/render`）
-- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API（デフォルト: `https://quickchart.io/graphviz`）
-- **QUICKCHART_SPARKLINE_URL**: スパークライン API（デフォルト: `https://quickchart.io/chart`）
-- **QUICKCHART_TABLE_URL**: テーブル API（デフォルト: `https://api.quickchart.io/v1/table`）
-- **QUICKCHART_TEXTCHART_URL**: テキストからチャート API（デフォルト: `https://quickchart.io/natural`）
-- **QUICKCHART_WATERMARK_URL**: ウォーターマーク API（デフォルト: `https://quickchart.io/watermark`）
-- **QUICKCHART_QRCODE_URL**: QR コード API（デフォルト: `https://quickchart.io/qr`）
-
-これらを使用してセルフホストの QuickChart インスタンスや代替エンドポイントを指定できます。
 
 ## 開発
 
