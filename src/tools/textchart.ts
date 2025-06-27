@@ -6,8 +6,8 @@ import { getDownloadPath } from "../utils/file.js";
 
 const TEXT_TO_CHART_URL = process.env.QUICKCHART_TEXTCHART_URL || "https://quickchart.io/natural";
 
-export const CREATE_TEXTCHART_TOOL: Tool = {
-  name: "create-textchart",
+export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
+  name: "create-chart-using-natural-language",
   description: "Create charts from natural language descriptions - get URL or save as file",
   inputSchema: {
     type: "object",

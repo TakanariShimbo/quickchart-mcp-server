@@ -6,8 +6,8 @@ import { getDownloadPath } from "../utils/file.js";
 
 const SPARKLINE_URL = process.env.QUICKCHART_SPARKLINE_URL || "https://quickchart.io/chart";
 
-export const CREATE_SPARKLINE_TOOL: Tool = {
-  name: "create-sparkline",
+export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
+  name: "create-sparkline-using-chartjs",
   description: "Create sparkline charts using Chart.js - get URL or save as file",
   inputSchema: {
     type: "object",

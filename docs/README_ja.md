@@ -2,7 +2,7 @@
 
 # QuickChart MCP サーバー
 
-QuickChart.io API を使用してチャートを生成する Model Context Protocol (MCP)サーバーです。AI アシスタントから簡単なコマンドで美しいチャートを直接作成できます。
+QuickChart.io API を使用した 10 種類の強力な可視化ツールを提供する包括的な Model Context Protocol (MCP)サーバーです。AI アシスタントから簡単なコマンドで、チャート、図表、バーコード、ワードクラウド、テーブルなどを直接作成できます。
 
 ## 機能
 
@@ -10,10 +10,73 @@ QuickChart.io API を使用してチャートを生成する Model Context Proto
 
 #### `create-chart-using-chartjs`
 
-QuickChart.io を使用してチャートを作成 - URL取得またはファイル保存
+Chart.js と QuickChart.io を使用してチャートを作成 - URL 取得またはファイル保存
 
-- **入力**: アクション（get_url/save_file）、出力パス、寸法（整数）、フォーマットオプション、エンコード方式、Chart.js設定オブジェクト
-- **出力**: チャートURLまたは保存されたファイルパスを含む確認メッセージ
+- **入力**: アクション（get_url/save_file）、出力パス、寸法（整数）、フォーマットオプション、エンコード方式、Chart.js 設定オブジェクト
+- **出力**: チャート URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-chart-using-apexcharts`
+
+ApexCharts ライブラリを使用してチャートを作成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、ApexCharts 設定、寸法、バージョンオプション
+- **出力**: ApexCharts URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-chart-using-googlecharts`
+
+Google Charts ライブラリを使用してチャートを作成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、JavaScript 描画コード、パッケージ、寸法、API キー
+- **出力**: Google Charts URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-chart-using-natural-language`
+
+自然言語記述からチャートを生成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、自然言語記述、データ値、チャートオプション
+- **出力**: AI 生成チャート URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-sparkline-using-chartjs`
+
+コンパクトなスパークラインチャートを作成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、Chart.js 設定、寸法、表示オプション
+- **出力**: スパークライン URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-diagram-using-graphviz`
+
+GraphViz を使用してグラフ図を作成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、DOT グラフ記述、レイアウトアルゴリズム、フォーマット、寸法
+- **出力**: GraphViz 図 URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-wordcloud`
+
+ワードクラウド可視化を作成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、テキストコンテンツ、フォント、色、レイアウトオプション
+- **出力**: ワードクラウド URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-barcode`
+
+バーコードと QR コードを生成 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、バーコードタイプ、テキストデータ、寸法、書式オプション
+- **出力**: バーコード URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-table`
+
+データをテーブル画像に変換 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、テーブルデータ構造、列定義、スタイリングオプション
+- **出力**: テーブル画像 URL または保存されたファイルパスを含む確認メッセージ
+
+#### `create-watermark`
+
+画像にウォーターマークとロゴを追加 - URL 取得またはファイル保存
+
+- **入力**: アクション（get_url/save_file）、出力パス、メイン画像 URL、ウォーターマーク画像 URL、位置決め、透明度オプション
+- **出力**: ウォーターマーク付き画像 URL または保存されたファイルパスを含む確認メッセージ
 
 ## サポートされているチャートタイプ
 
@@ -136,11 +199,13 @@ Claude Desktop の設定に追加：
   }
 }
 ```
-*保存先：`デスクトップ/reports/device-usage.svg`*
+
+_保存先：`デスクトップ/reports/device-usage.svg`_
 
 #### その他のチャート例
 
 **複数データセットの折れ線グラフ：**
+
 ```json
 {
   "chart": {
@@ -173,6 +238,7 @@ Claude Desktop の設定に追加：
 ```
 
 **散布図：**
+
 ```json
 {
   "chart": {
@@ -203,6 +269,7 @@ Claude Desktop の設定に追加：
 ```
 
 **放射状ゲージ：**
+
 ```json
 {
   "chart": {
@@ -230,6 +297,7 @@ Claude Desktop の設定に追加：
 #### ファイル保存オプション
 
 **サポートされる形式：**
+
 - **PNG**（デフォルト）：`"format": "png"`
 - **WebP**：`"format": "webp"`
 - **JPEG**：`"format": "jpg"`
@@ -238,13 +306,14 @@ Claude Desktop の設定に追加：
 - **Base64**：`"format": "base64"`
 
 **保存場所：**
+
 - **パス未指定**：デスクトップ（デスクトップが存在しない場合はホームディレクトリ）
 - **相対パス**：デスクトップ（またはホームディレクトリ）を基準とした相対パス
 - **絶対パス**：指定された正確なパス
 
 ## 高度な設定例
 
-### カスタム寸法と高DPI
+### カスタム寸法と高 DPI
 
 ```json
 {
@@ -258,16 +327,18 @@ Claude Desktop の設定に追加：
     "type": "line",
     "data": {
       "labels": ["1月", "2月", "3月"],
-      "datasets": [{
-        "data": [10, 20, 30],
-        "borderColor": "blue"
-      }]
+      "datasets": [
+        {
+          "data": [10, 20, 30],
+          "borderColor": "blue"
+        }
+      ]
     }
   }
 }
 ```
 
-### 背景色を指定したPDF出力
+### 背景色を指定した PDF 出力
 
 ```json
 {
@@ -280,10 +351,12 @@ Claude Desktop の設定に追加：
     "type": "bar",
     "data": {
       "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [{
-        "data": [100, 150, 120, 180],
-        "backgroundColor": "rgba(54, 162, 235, 0.8)"
-      }]
+      "datasets": [
+        {
+          "data": [100, 150, 120, 180],
+          "backgroundColor": "rgba(54, 162, 235, 0.8)"
+        }
+      ]
     }
   }
 }

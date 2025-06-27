@@ -6,8 +6,8 @@ import { getDownloadPath } from "../utils/file.js";
 
 const GRAPHVIZ_URL = process.env.QUICKCHART_GRAPHVIZ_URL || "https://quickchart.io/graphviz";
 
-export const CREATE_GRAPHVIZ_TOOL: Tool = {
-  name: "create-graphviz",
+export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
+  name: "create-diagram-using-graphviz",
   description: "Create graph diagrams using GraphViz - get URL or save as file",
   inputSchema: {
     type: "object",

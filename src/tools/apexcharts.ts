@@ -6,8 +6,8 @@ import { getDownloadPath } from "../utils/file.js";
 
 const APEX_CHARTS_URL = process.env.QUICKCHART_APEXCHARTS_URL || "https://quickchart.io/apex-charts/render";
 
-export const CREATE_APEXCHARTS_TOOL: Tool = {
-  name: "create-apexcharts",
+export const CREATE_CHART_USING_APEXCHARTS_TOOL: Tool = {
+  name: "create-chart-using-apexcharts",
   description: "Create charts using Apex Charts - get URL or save as file",
   inputSchema: {
     type: "object",

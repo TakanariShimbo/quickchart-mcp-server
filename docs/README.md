@@ -2,7 +2,7 @@
 
 # QuickChart MCP Server
 
-A Model Context Protocol (MCP) server that generates charts using QuickChart.io API. Create beautiful charts directly from your AI assistant with simple commands.
+A comprehensive Model Context Protocol (MCP) server that provides 10 powerful visualization tools using QuickChart.io APIs. Create charts, diagrams, barcodes, word clouds, tables, and more directly from your AI assistant with simple commands.
 
 ## Features
 
@@ -10,10 +10,73 @@ A Model Context Protocol (MCP) server that generates charts using QuickChart.io 
 
 #### `create-chart-using-chartjs`
 
-Create a chart using QuickChart.io - get URL or save as file
+Create charts using Chart.js and QuickChart.io - get URL or save as file
 
 - **Input**: Action (get_url/save_file), outputPath, dimensions (integers), format options, encoding method, and Chart.js configuration object
 - **Output**: Chart URL or confirmation message with saved file path
+
+#### `create-chart-using-apexcharts`
+
+Create charts using ApexCharts library - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, ApexCharts configuration, dimensions, and version options
+- **Output**: ApexCharts URL or confirmation message with saved file path
+
+#### `create-chart-using-googlecharts`
+
+Create charts using Google Charts library - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, JavaScript drawing code, packages, dimensions, and API keys
+- **Output**: Google Charts URL or confirmation message with saved file path
+
+#### `create-chart-using-natural-language`
+
+Generate charts from natural language descriptions - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, natural language description, data values, and chart options
+- **Output**: AI-generated chart URL or confirmation message with saved file path
+
+#### `create-sparkline-using-chartjs`
+
+Create compact sparkline charts - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, Chart.js configuration, dimensions, and display options
+- **Output**: Sparkline URL or confirmation message with saved file path
+
+#### `create-diagram-using-graphviz`
+
+Create graph diagrams using GraphViz - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, DOT graph description, layout algorithm, format, and dimensions
+- **Output**: GraphViz diagram URL or confirmation message with saved file path
+
+#### `create-wordcloud`
+
+Create word cloud visualizations - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, text content, fonts, colors, and layout options
+- **Output**: Word cloud URL or confirmation message with saved file path
+
+#### `create-barcode`
+
+Generate barcodes and QR codes - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, barcode type, text data, dimensions, and formatting options
+- **Output**: Barcode URL or confirmation message with saved file path
+
+#### `create-table`
+
+Convert data to table images - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, table data structure, column definitions, and styling options
+- **Output**: Table image URL or confirmation message with saved file path
+
+#### `create-watermark`
+
+Add watermarks and logos to images - get URL or save as file
+
+- **Input**: Action (get_url/save_file), outputPath, main image URL, watermark image URL, positioning, and opacity options
+- **Output**: Watermarked image URL or confirmation message with saved file path
 
 ## Supported Chart Types
 
@@ -136,11 +199,13 @@ Set `action` to `"save_file"` to save the chart locally:
   }
 }
 ```
-*Saves to: `Desktop/reports/device-usage.svg`*
+
+_Saves to: `Desktop/reports/device-usage.svg`_
 
 #### More Chart Examples
 
 **Line Chart with Multiple Datasets:**
+
 ```json
 {
   "chart": {
@@ -173,6 +238,7 @@ Set `action` to `"save_file"` to save the chart locally:
 ```
 
 **Scatter Plot:**
+
 ```json
 {
   "chart": {
@@ -203,6 +269,7 @@ Set `action` to `"save_file"` to save the chart locally:
 ```
 
 **Radial Gauge:**
+
 ```json
 {
   "chart": {
@@ -230,6 +297,7 @@ Set `action` to `"save_file"` to save the chart locally:
 #### File Save Options
 
 **Supported Formats:**
+
 - **PNG** (default): `"format": "png"`
 - **WebP**: `"format": "webp"`
 - **JPEG**: `"format": "jpg"`
@@ -238,6 +306,7 @@ Set `action` to `"save_file"` to save the chart locally:
 - **Base64**: `"format": "base64"`
 
 **Save Locations:**
+
 - **No path specified**: Desktop (or home directory if Desktop doesn't exist)
 - **Relative path**: Relative to Desktop (or home directory)
 - **Absolute path**: Exact path specified
@@ -258,10 +327,12 @@ Set `action` to `"save_file"` to save the chart locally:
     "type": "line",
     "data": {
       "labels": ["Jan", "Feb", "Mar"],
-      "datasets": [{
-        "data": [10, 20, 30],
-        "borderColor": "blue"
-      }]
+      "datasets": [
+        {
+          "data": [10, 20, 30],
+          "borderColor": "blue"
+        }
+      ]
     }
   }
 }
@@ -280,12 +351,87 @@ Set `action` to `"save_file"` to save the chart locally:
     "type": "bar",
     "data": {
       "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [{
-        "data": [100, 150, 120, 180],
-        "backgroundColor": "rgba(54, 162, 235, 0.8)"
-      }]
+      "datasets": [
+        {
+          "data": [100, 150, 120, 180],
+          "backgroundColor": "rgba(54, 162, 235, 0.8)"
+        }
+      ]
     }
   }
+}
+```
+
+### Using Other Tools
+
+#### Word Cloud Example
+
+```json
+{
+  "action": "save_file",
+  "outputPath": "wordcloud.png",
+  "text": "artificial intelligence machine learning data science technology innovation",
+  "width": 800,
+  "height": 600,
+  "backgroundColor": "#ffffff"
+}
+```
+
+#### Barcode Generation Example
+
+```json
+{
+  "action": "get_url",
+  "type": "qr",
+  "text": "https://example.com",
+  "width": 200,
+  "height": 200
+}
+```
+
+#### Table Image Example
+
+```json
+{
+  "action": "save_file",
+  "outputPath": "sales-table.png",
+  "data": {
+    "title": "Q4 Sales Report",
+    "columns": [
+      { "title": "Product", "dataIndex": "product" },
+      { "title": "Sales", "dataIndex": "sales" },
+      { "title": "Growth", "dataIndex": "growth" }
+    ],
+    "dataSource": [
+      { "product": "Product A", "sales": "$10,000", "growth": "+15%" },
+      { "product": "Product B", "sales": "$8,500", "growth": "+8%" }
+    ]
+  }
+}
+```
+
+#### GraphViz Diagram Example
+
+```json
+{
+  "action": "get_url",
+  "graph": "digraph G { A -> B; B -> C; A -> C; }",
+  "layout": "dot",
+  "format": "svg"
+}
+```
+
+#### Text-to-Chart Example
+
+```json
+{
+  "action": "save_file",
+  "description": "Show monthly revenue growth as a blue line chart",
+  "data1": "100,120,150,180,200",
+  "labels": "Jan,Feb,Mar,Apr,May",
+  "title": "Revenue Growth",
+  "width": 600,
+  "height": 400
 }
 ```
 
@@ -293,8 +439,20 @@ Set `action` to `"save_file"` to save the chart locally:
 
 ### Environment Variables
 
-- **QUICKCHART_BASE_URL**: Base URL for QuickChart API (default: `https://quickchart.io/chart`)
-  - Use this to point to a self-hosted QuickChart instance
+You can customize API endpoints by setting these environment variables:
+
+- **QUICKCHART_BASE_URL**: Chart.js charts API (default: `https://quickchart.io/chart`)
+- **QUICKCHART_WORDCLOUD_URL**: Word cloud API (default: `https://quickchart.io/wordcloud`)
+- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API (default: `https://quickchart.io/apex-charts/render`)
+- **QUICKCHART_BARCODE_URL**: Barcode API (default: `https://quickchart.io/barcode`)
+- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API (default: `https://quickchart.io/google-charts/render`)
+- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API (default: `https://quickchart.io/graphviz`)
+- **QUICKCHART_SPARKLINE_URL**: Sparkline API (default: `https://quickchart.io/chart`)
+- **QUICKCHART_TABLE_URL**: Table API (default: `https://api.quickchart.io/v1/table`)
+- **QUICKCHART_TEXTCHART_URL**: Text-to-Chart API (default: `https://quickchart.io/natural`)
+- **QUICKCHART_WATERMARK_URL**: Watermark API (default: `https://quickchart.io/watermark`)
+
+Use these to point to self-hosted QuickChart instances or alternative endpoints.
 
 ## Publishing to NPM
 
@@ -425,7 +583,21 @@ npm run release 1.2.3
 ```
 quickchart-mcp-server/
 ├── src/
-│   └── index.ts          # Main server implementation
+│   ├── index.ts          # Main server implementation
+│   ├── tools/
+│   │   ├── index.ts      # Tool registry and exports
+│   │   ├── chart.ts      # Chart.js tool
+│   │   ├── wordcloud.ts  # Word cloud tool
+│   │   ├── apexcharts.ts # ApexCharts tool
+│   │   ├── barcode.ts    # Barcode/QR tool
+│   │   ├── googlecharts.ts # Google Charts tool
+│   │   ├── graphviz.ts   # GraphViz tool
+│   │   ├── sparkline.ts  # Sparkline tool
+│   │   ├── table.ts      # Table image tool
+│   │   ├── textchart.ts  # Text-to-chart tool
+│   │   └── watermark.ts  # Watermark tool
+│   └── utils/
+│       └── file.ts       # File utilities
 ├── package.json          # Package configuration
 ├── package-lock.json
 ├── tsconfig.json         # TypeScript configuration

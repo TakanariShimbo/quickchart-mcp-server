@@ -6,8 +6,8 @@ import { getDownloadPath } from "../utils/file.js";
 
 const GOOGLE_CHARTS_URL = process.env.QUICKCHART_GOOGLECHARTS_URL || "https://quickchart.io/google-charts/render";
 
-export const CREATE_GOOGLECHARTS_TOOL: Tool = {
-  name: "create-googlecharts",
+export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
+  name: "create-chart-using-googlecharts",
   description: "Create charts using Google Charts - get URL or save as file",
   inputSchema: {
     type: "object",
