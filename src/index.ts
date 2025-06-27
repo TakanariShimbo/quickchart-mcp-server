@@ -101,29 +101,35 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
           "Path where to save the file (only used with action=save_file)",
       },
       width: {
-        type: "string",
-        description: "Pixel width (default: '500')",
+        type: "integer",
+        description: "Pixel width (default: 500)",
       },
       height: {
-        type: "string",
-        description: "Pixel height (default: '300')",
+        type: "integer", 
+        description: "Pixel height (default: 300)",
       },
       devicePixelRatio: {
-        type: "number",
-        description: "Pixel ratio (default: 2.0)",
+        type: "integer",
+        enum: [1, 2],
+        description: "Pixel ratio for Retina support (default: 2)",
       },
       format: {
         type: "string",
-        enum: ["png", "svg", "webp"],
-        description: "Output format: png, svg, or webp (default: png)",
+        enum: ["png", "webp", "jpg", "svg", "pdf", "base64"],
+        description: "Output format (default: png)",
       },
       backgroundColor: {
         type: "string",
-        description: "Canvas background color (default: transparent)",
+        description: "Canvas background color - rgb, hex, hsl, or color names (default: transparent)",
       },
       version: {
         type: "string",
-        description: "Chart.js version (default: '2')",
+        description: "Chart.js version - '2', '3', '4', or specific version (default: '2.9.4')",
+      },
+      encoding: {
+        type: "string",
+        enum: ["url", "base64"],
+        description: "Chart configuration encoding method (default: url)",
       },
       key: {
         type: "string",
@@ -305,8 +311,8 @@ function validateDatasets(datasets: any[]): void {
  * Build POST request configuration for QuickChart API
  *
  * Examples:
- *   buildPostConfig({ type: "bar", data: {...} }, { width: "800", height: "600" })
- *   → { chart: {...}, width: "800", height: "600", format: "png" }
+ *   buildPostConfig({ type: "bar", data: {...} }, { width: 800, height: 600 })
+ *   → { chart: {...}, width: 800, height: 600, format: "png" }
  *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
  *   → { chart: {...}, backgroundColor: "white", format: "png" }
  *
@@ -315,8 +321,8 @@ function validateDatasets(datasets: any[]): void {
  * QuickChart API用のPOSTリクエスト設定を構築
  *
  * 例:
- *   buildPostConfig({ type: "bar", data: {...} }, { width: "800", height: "600" })
- *   → { chart: {...}, width: "800", height: "600", format: "png" }
+ *   buildPostConfig({ type: "bar", data: {...} }, { width: 800, height: 600 })
+ *   → { chart: {...}, width: 800, height: 600, format: "png" }
  *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
  *   → { chart: {...}, backgroundColor: "white", format: "png" }
  */
@@ -324,21 +330,23 @@ function buildPostConfig(
   chartConfig: any,
   options: {
     format?: string;
-    width?: string;
-    height?: string;
+    width?: number;
+    height?: number;
     backgroundColor?: string;
     devicePixelRatio?: number;
     version?: string;
+    encoding?: string;
     key?: string;
   } = {}
 ): any {
   return {
-    width: options.width || "500",
-    height: options.height || "300",
-    devicePixelRatio: options.devicePixelRatio || 2.0,
+    width: options.width || 500,
+    height: options.height || 300,
+    devicePixelRatio: options.devicePixelRatio || 2,
     format: options.format || "png",
     backgroundColor: options.backgroundColor || "transparent",
-    version: options.version || "2",
+    version: options.version || "2.9.4",
+    ...(options.encoding && { encoding: options.encoding }),
     ...(options.key && { key: options.key }),
     chart: chartConfig,
   };
@@ -481,11 +489,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       if (action === "get_url") {
         const postConfig = buildPostConfig(chartConfig, {
           format: args.format as string,
-          width: args.width as string,
-          height: args.height as string,
+          width: args.width as number,
+          height: args.height as number,
           backgroundColor: args.backgroundColor as string,
           devicePixelRatio: args.devicePixelRatio as number,
           version: args.version as string,
+          encoding: args.encoding as string,
           key: args.key as string,
         });
 
@@ -512,11 +521,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         const postConfig = buildPostConfig(chartConfig, {
           format: args.format as string,
-          width: args.width as string,
-          height: args.height as string,
+          width: args.width as number,
+          height: args.height as number,
           backgroundColor: args.backgroundColor as string,
           devicePixelRatio: args.devicePixelRatio as number,
           version: args.version as string,
+          encoding: args.encoding as string,
           key: args.key as string,
         });
 

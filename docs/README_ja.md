@@ -8,11 +8,11 @@ QuickChart.io API を使用してチャートを生成する Model Context Proto
 
 ### ツール
 
-#### `create_chart`
+#### `create-chart-using-chartjs`
 
 QuickChart.io を使用してチャートを作成 - URL取得またはファイル保存
 
-- **入力**: アクション（get_url/save_file）、チャートタイプ、ラベル、データセット、タイトル、追加オプション
+- **入力**: アクション（get_url/save_file）、出力パス、寸法（整数）、フォーマットオプション、エンコード方式、Chart.js設定オブジェクト
 - **出力**: チャートURLまたは保存されたファイルパスを含む確認メッセージ
 
 ## サポートされているチャートタイプ
@@ -69,9 +69,9 @@ Claude Desktop の設定に追加：
 
 ## 使用例
 
-### `create_chart` ツールの使用
+### `create-chart-using-chartjs` ツールの使用
 
-`create_chart` ツールは、`action` パラメータに応じてチャート URL を返すかファイルを保存するかを選択できます。
+`create-chart-using-chartjs` ツールは、`action` パラメータに応じてチャート URL を返すかファイルを保存するかを選択できます。
 
 #### チャート URL の取得（デフォルト）
 
@@ -80,17 +80,28 @@ Claude Desktop の設定に追加：
 ```json
 {
   "action": "get_url",
-  "type": "bar",
-  "labels": ["1月", "2月", "3月", "4月"],
-  "datasets": [
-    {
-      "label": "2024年売上",
-      "data": [65, 59, 80, 81],
-      "backgroundColor": "rgba(75, 192, 192, 0.2)",
-      "borderColor": "rgba(75, 192, 192, 1)"
+  "chart": {
+    "type": "bar",
+    "data": {
+      "labels": ["1月", "2月", "3月", "4月"],
+      "datasets": [
+        {
+          "label": "2024年売上",
+          "data": [65, 59, 80, 81],
+          "backgroundColor": "rgba(75, 192, 192, 0.2)",
+          "borderColor": "rgba(75, 192, 192, 1)"
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "月次売上レポート"
+        }
+      }
     }
-  ],
-  "title": "月次売上レポート"
+  }
 }
 ```
 
@@ -101,17 +112,28 @@ Claude Desktop の設定に追加：
 ```json
 {
   "action": "save_file",
-  "type": "pie",
-  "labels": ["デスクトップ", "モバイル", "タブレット"],
-  "datasets": [
-    {
-      "data": [65, 25, 10],
-      "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
-    }
-  ],
-  "title": "デバイス使用統計",
+  "outputPath": "reports/device-usage.svg",
   "format": "svg",
-  "outputPath": "reports/device-usage.svg"
+  "chart": {
+    "type": "pie",
+    "data": {
+      "labels": ["デスクトップ", "モバイル", "タブレット"],
+      "datasets": [
+        {
+          "data": [65, 25, 10],
+          "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "デバイス使用統計"
+        }
+      }
+    }
+  }
 }
 ```
 *保存先：`デスクトップ/reports/device-usage.svg`*
@@ -121,54 +143,87 @@ Claude Desktop の設定に追加：
 **複数データセットの折れ線グラフ：**
 ```json
 {
-  "type": "line",
-  "labels": ["Q1", "Q2", "Q3", "Q4"],
-  "datasets": [
-    {
-      "label": "製品A",
-      "data": [10, 25, 15, 30],
-      "borderColor": "blue"
+  "chart": {
+    "type": "line",
+    "data": {
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
+      "datasets": [
+        {
+          "label": "製品A",
+          "data": [10, 25, 15, 30],
+          "borderColor": "blue"
+        },
+        {
+          "label": "製品B",
+          "data": [20, 15, 25, 35],
+          "borderColor": "red"
+        }
+      ]
     },
-    {
-      "label": "製品B",
-      "data": [20, 15, 25, 35],
-      "borderColor": "red"
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "四半期製品比較"
+        }
+      }
     }
-  ],
-  "title": "四半期製品比較"
+  }
 }
 ```
 
 **散布図：**
 ```json
 {
-  "type": "scatter",
-  "datasets": [
-    {
-      "label": "データセット1",
-      "data": [
-        { "x": 10, "y": 20 },
-        { "x": 15, "y": 25 },
-        { "x": 20, "y": 30 }
-      ],
-      "backgroundColor": "rgba(255, 99, 132, 0.5)"
+  "chart": {
+    "type": "scatter",
+    "data": {
+      "datasets": [
+        {
+          "label": "データセット1",
+          "data": [
+            { "x": 10, "y": 20 },
+            { "x": 15, "y": 25 },
+            { "x": 20, "y": 30 }
+          ],
+          "backgroundColor": "rgba(255, 99, 132, 0.5)"
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "散布図の例"
+        }
+      }
     }
-  ],
-  "title": "散布図の例"
+  }
 }
 ```
 
 **放射状ゲージ：**
 ```json
 {
-  "type": "radialGauge",
-  "datasets": [
-    {
-      "data": [75],
-      "backgroundColor": "green"
+  "chart": {
+    "type": "radialGauge",
+    "data": {
+      "datasets": [
+        {
+          "data": [75],
+          "backgroundColor": "green"
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "パフォーマンススコア"
+        }
+      }
     }
-  ],
-  "title": "パフォーマンススコア"
+  }
 }
 ```
 
@@ -176,15 +231,63 @@ Claude Desktop の設定に追加：
 
 **サポートされる形式：**
 - **PNG**（デフォルト）：`"format": "png"`
-- **SVG**：`"format": "svg"`
-- **JPEG**：`"format": "jpg"`
 - **WebP**：`"format": "webp"`
+- **JPEG**：`"format": "jpg"`
+- **SVG**：`"format": "svg"`
 - **PDF**：`"format": "pdf"`
+- **Base64**：`"format": "base64"`
 
 **保存場所：**
 - **パス未指定**：デスクトップ（デスクトップが存在しない場合はホームディレクトリ）
 - **相対パス**：デスクトップ（またはホームディレクトリ）を基準とした相対パス
 - **絶対パス**：指定された正確なパス
+
+## 高度な設定例
+
+### カスタム寸法と高DPI
+
+```json
+{
+  "action": "save_file",
+  "width": 1200,
+  "height": 800,
+  "devicePixelRatio": 2,
+  "format": "png",
+  "outputPath": "high-res-chart.png",
+  "chart": {
+    "type": "line",
+    "data": {
+      "labels": ["1月", "2月", "3月"],
+      "datasets": [{
+        "data": [10, 20, 30],
+        "borderColor": "blue"
+      }]
+    }
+  }
+}
+```
+
+### 背景色を指定したPDF出力
+
+```json
+{
+  "action": "save_file",
+  "format": "pdf",
+  "backgroundColor": "#ffffff",
+  "version": "3",
+  "encoding": "url",
+  "chart": {
+    "type": "bar",
+    "data": {
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
+      "datasets": [{
+        "data": [100, 150, 120, 180],
+        "backgroundColor": "rgba(54, 162, 235, 0.8)"
+      }]
+    }
+  }
+}
+```
 
 ## 設定
 

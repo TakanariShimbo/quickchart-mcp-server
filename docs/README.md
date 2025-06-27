@@ -8,11 +8,11 @@ A Model Context Protocol (MCP) server that generates charts using QuickChart.io 
 
 ### Tools
 
-#### `create_chart`
+#### `create-chart-using-chartjs`
 
 Create a chart using QuickChart.io - get URL or save as file
 
-- **Input**: Action (get_url/save_file), chart type, labels, datasets, title, and additional options
+- **Input**: Action (get_url/save_file), outputPath, dimensions (integers), format options, encoding method, and Chart.js configuration object
 - **Output**: Chart URL or confirmation message with saved file path
 
 ## Supported Chart Types
@@ -69,9 +69,9 @@ Add to your Claude Desktop configuration:
 
 ## Usage Examples
 
-### Using `create_chart` Tool
+### Using `create-chart-using-chartjs` Tool
 
-The `create_chart` tool can either return a chart URL or save a chart file, depending on the `action` parameter.
+The `create-chart-using-chartjs` tool can either return a chart URL or save a chart file, depending on the `action` parameter.
 
 #### Get Chart URL (Default)
 
@@ -80,17 +80,28 @@ Set `action` to `"get_url"` (or omit it) to get a chart URL:
 ```json
 {
   "action": "get_url",
-  "type": "bar",
-  "labels": ["January", "February", "March", "April"],
-  "datasets": [
-    {
-      "label": "Sales 2024",
-      "data": [65, 59, 80, 81],
-      "backgroundColor": "rgba(75, 192, 192, 0.2)",
-      "borderColor": "rgba(75, 192, 192, 1)"
+  "chart": {
+    "type": "bar",
+    "data": {
+      "labels": ["January", "February", "March", "April"],
+      "datasets": [
+        {
+          "label": "Sales 2024",
+          "data": [65, 59, 80, 81],
+          "backgroundColor": "rgba(75, 192, 192, 0.2)",
+          "borderColor": "rgba(75, 192, 192, 1)"
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "Monthly Sales Report"
+        }
+      }
     }
-  ],
-  "title": "Monthly Sales Report"
+  }
 }
 ```
 
@@ -101,17 +112,28 @@ Set `action` to `"save_file"` to save the chart locally:
 ```json
 {
   "action": "save_file",
-  "type": "pie",
-  "labels": ["Desktop", "Mobile", "Tablet"],
-  "datasets": [
-    {
-      "data": [65, 25, 10],
-      "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
-    }
-  ],
-  "title": "Device Usage Statistics",
+  "outputPath": "reports/device-usage.svg",
   "format": "svg",
-  "outputPath": "reports/device-usage.svg"
+  "chart": {
+    "type": "pie",
+    "data": {
+      "labels": ["Desktop", "Mobile", "Tablet"],
+      "datasets": [
+        {
+          "data": [65, 25, 10],
+          "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "Device Usage Statistics"
+        }
+      }
+    }
+  }
 }
 ```
 *Saves to: `Desktop/reports/device-usage.svg`*
@@ -121,54 +143,87 @@ Set `action` to `"save_file"` to save the chart locally:
 **Line Chart with Multiple Datasets:**
 ```json
 {
-  "type": "line",
-  "labels": ["Q1", "Q2", "Q3", "Q4"],
-  "datasets": [
-    {
-      "label": "Product A",
-      "data": [10, 25, 15, 30],
-      "borderColor": "blue"
+  "chart": {
+    "type": "line",
+    "data": {
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
+      "datasets": [
+        {
+          "label": "Product A",
+          "data": [10, 25, 15, 30],
+          "borderColor": "blue"
+        },
+        {
+          "label": "Product B",
+          "data": [20, 15, 25, 35],
+          "borderColor": "red"
+        }
+      ]
     },
-    {
-      "label": "Product B",
-      "data": [20, 15, 25, 35],
-      "borderColor": "red"
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "Quarterly Product Comparison"
+        }
+      }
     }
-  ],
-  "title": "Quarterly Product Comparison"
+  }
 }
 ```
 
 **Scatter Plot:**
 ```json
 {
-  "type": "scatter",
-  "datasets": [
-    {
-      "label": "Dataset 1",
-      "data": [
-        { "x": 10, "y": 20 },
-        { "x": 15, "y": 25 },
-        { "x": 20, "y": 30 }
-      ],
-      "backgroundColor": "rgba(255, 99, 132, 0.5)"
+  "chart": {
+    "type": "scatter",
+    "data": {
+      "datasets": [
+        {
+          "label": "Dataset 1",
+          "data": [
+            { "x": 10, "y": 20 },
+            { "x": 15, "y": 25 },
+            { "x": 20, "y": 30 }
+          ],
+          "backgroundColor": "rgba(255, 99, 132, 0.5)"
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "Scatter Plot Example"
+        }
+      }
     }
-  ],
-  "title": "Scatter Plot Example"
+  }
 }
 ```
 
 **Radial Gauge:**
 ```json
 {
-  "type": "radialGauge",
-  "datasets": [
-    {
-      "data": [75],
-      "backgroundColor": "green"
+  "chart": {
+    "type": "radialGauge",
+    "data": {
+      "datasets": [
+        {
+          "data": [75],
+          "backgroundColor": "green"
+        }
+      ]
+    },
+    "options": {
+      "plugins": {
+        "title": {
+          "display": true,
+          "text": "Performance Score"
+        }
+      }
     }
-  ],
-  "title": "Performance Score"
+  }
 }
 ```
 
@@ -176,15 +231,63 @@ Set `action` to `"save_file"` to save the chart locally:
 
 **Supported Formats:**
 - **PNG** (default): `"format": "png"`
-- **SVG**: `"format": "svg"`
-- **JPEG**: `"format": "jpg"`
 - **WebP**: `"format": "webp"`
+- **JPEG**: `"format": "jpg"`
+- **SVG**: `"format": "svg"`
 - **PDF**: `"format": "pdf"`
+- **Base64**: `"format": "base64"`
 
 **Save Locations:**
 - **No path specified**: Desktop (or home directory if Desktop doesn't exist)
 - **Relative path**: Relative to Desktop (or home directory)
 - **Absolute path**: Exact path specified
+
+## Advanced Configuration Examples
+
+### Custom Dimensions and High DPI
+
+```json
+{
+  "action": "save_file",
+  "width": 1200,
+  "height": 800,
+  "devicePixelRatio": 2,
+  "format": "png",
+  "outputPath": "high-res-chart.png",
+  "chart": {
+    "type": "line",
+    "data": {
+      "labels": ["Jan", "Feb", "Mar"],
+      "datasets": [{
+        "data": [10, 20, 30],
+        "borderColor": "blue"
+      }]
+    }
+  }
+}
+```
+
+### PDF Output with Background Color
+
+```json
+{
+  "action": "save_file",
+  "format": "pdf",
+  "backgroundColor": "#ffffff",
+  "version": "3",
+  "encoding": "url",
+  "chart": {
+    "type": "bar",
+    "data": {
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
+      "datasets": [{
+        "data": [100, 150, 120, 180],
+        "backgroundColor": "rgba(54, 162, 235, 0.8)"
+      }]
+    }
+  }
+}
+```
 
 ## Configuration
 
