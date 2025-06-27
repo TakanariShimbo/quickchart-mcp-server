@@ -16,6 +16,7 @@ Create charts using Chart.js and QuickChart.io - get URL or save as file
 - **Output**: Chart URL or confirmation message with saved file path
 
 **Supported Chart Types:**
+
 - **bar**: Bar charts for comparing values across categories
 - **line**: Line charts for showing trends over time
 - **pie**: Pie charts for showing proportions
@@ -37,6 +38,7 @@ Create charts using ApexCharts library - get URL or save as file
 - **Output**: ApexCharts URL or confirmation message with saved file path
 
 **Supported Features:**
+
 - Line charts, area charts, datetime axis charts
 - Customizable axis settings and data labels
 - Line styles and stroke settings
@@ -53,6 +55,7 @@ Create charts using Google Charts library - get URL or save as file
 - **Output**: Google Charts URL or confirmation message with saved file path
 
 **Supported Chart Types:**
+
 - **Bar Charts**: Category data comparison
 - **Pie Charts**: Percentage and proportion display
 - **Gauge Charts**: Measurement and target value display
@@ -69,6 +72,7 @@ Generate charts from natural language descriptions - get URL or save as file
 - **Output**: AI-generated chart URL or confirmation message with saved file path
 
 **Main Features:**
+
 - **Natural Language Analysis**: Understands descriptions like "blue line chart showing monthly sales"
 - **Automatic Chart Selection**: Determines optimal chart type automatically
 - **Data Integration**: Automatic processing of CSV format data
@@ -84,6 +88,7 @@ Create compact sparkline charts - get URL or save as file
 - **Output**: Sparkline URL or confirmation message with saved file path
 
 **Features:**
+
 - **Compact Design**: Embeddable in text and dashboards
 - **Trend Visualization**: Show data trends and variations at a glance
 - **Single & Multiple Series**: Display one or multiple data lines
@@ -100,6 +105,7 @@ Create graph diagrams using GraphViz - get URL or save as file
 - **Output**: GraphViz diagram URL or confirmation message with saved file path
 
 **Supported Layout Algorithms:**
+
 - **dot**: Hierarchical graphs (flowcharts)
 - **neato**: Undirected graphs (network diagrams)
 - **fdp**: Force-directed model layouts
@@ -116,6 +122,7 @@ Create word cloud visualizations - get URL or save as file
 - **Output**: Word cloud URL or confirmation message with saved file path
 
 **Customization Options:**
+
 - **Text Processing**: Stopword removal, text cleaning, minimum word length settings
 - **Font Settings**: Google Fonts loading, font family and weight adjustment
 - **Size & Layout**: Maximum word count (default 200), rotation angle (default 20°)
@@ -132,6 +139,7 @@ Generate barcodes and QR codes - get URL or save as file
 - **Output**: Barcode URL or confirmation message with saved file path
 
 **Supported Barcode Types:**
+
 - **QR Code**: High-density 2D barcode
 - **Code 128**: Alphanumeric 1D barcode
 - **EAN-13/UPC-A**: Standard product barcode
@@ -149,6 +157,7 @@ Convert data to table images - get URL or save as file
 - **Output**: Table image URL or confirmation message with saved file path
 
 **Styling Features:**
+
 - **Cell Settings**: Cell width and height (default 100x40px), left/right offset adjustment
 - **Font Settings**: Font family (default "sans-serif")
 - **Background Color**: Table background color (default "#ffffff")
@@ -166,6 +175,7 @@ Create QR codes with extensive customization options - get URL or save as file
 - **Output**: QR code URL or confirmation message with saved file path
 
 **Customization Features:**
+
 - **Text Content**: URLs, plain text, contact info, WiFi credentials
 - **Format Options**: PNG, SVG, Base64 output formats
 - **Size & Colors**: Custom dimensions, foreground/background colors, transparent backgrounds
@@ -184,6 +194,7 @@ Add watermarks and logos to images - get URL or save as file
 - **Output**: Watermarked image URL or confirmation message with saved file path
 
 **Positioning Options:**
+
 - **Preset Positions**: Center, corners, top/bottom middle, left/right middle
 - **Custom Position**: Precise placement using X/Y coordinates
 - **Margin Settings**: Distance adjustment from edges
@@ -191,12 +202,6 @@ Add watermarks and logos to images - get URL or save as file
 - **Opacity Control**: Range from 0.0 (transparent) to 1.0 (opaque)
 
 ## Installation
-
-### Via npm
-
-```bash
-npm install -g @takanarishimbo/quickchart-mcp-server
-```
 
 ### Via Claude Desktop
 
