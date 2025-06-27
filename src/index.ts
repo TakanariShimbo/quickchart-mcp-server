@@ -64,12 +64,8 @@ const QUICKCHART_BASE_URL = getenv(
   "https://quickchart.io/chart"
 );
 
-// Note: Type definitions are no longer needed as we now accept
-// Chart.js configuration directly in the new schema
-
-
 /**
- * 3. Tool Definitions
+ * 2. Tool Definitions
  *
  * Define the chart generation tools with their schemas
  *
@@ -78,7 +74,7 @@ const QUICKCHART_BASE_URL = getenv(
  *   Chart types: bar, line, pie, doughnut, radar, polarArea, scatter, bubble, radialGauge, speedometer
  *   Returns: URL string or file path confirmation
  *
- * 3. ツール定義
+ * 2. ツール定義
  *
  * チャート生成ツールとそのスキーマを定義
  *
@@ -96,11 +92,13 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get chart URL or save chart as file (default: get_url)",
+        description:
+          "Whether to get chart URL or save chart as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       width: {
         type: "string",
@@ -133,6 +131,7 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
       },
       chart: {
         type: "object",
+        additionalProperties: true,
         description: "Chart.js configuration object",
         properties: {
           type: {
@@ -153,19 +152,22 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
           },
           data: {
             type: "object",
+            additionalProperties: true,
+            description: "Chart data",
             properties: {
               labels: {
                 type: "array",
-                items: { type: "string" },
+                items: {},
                 description: "Labels for the data points",
               },
               datasets: {
                 type: "array",
                 items: {
                   type: "object",
+                  additionalProperties: true,
                   properties: {
                     data: {
-                      description: "Data points - array of numbers or objects",
+                      description: "Data points",
                     },
                     label: {
                       type: "string",
@@ -187,6 +189,7 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
           },
           options: {
             type: "object",
+            additionalProperties: true,
             description: "Chart.js options",
           },
         },
@@ -198,7 +201,7 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
 };
 
 /**
- * 4. Server Initialization
+ * 3. Server Initialization
  *
  * Create MCP server instance with metadata and capabilities
  *
@@ -209,7 +212,7 @@ const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
  *   Transport: StdioServerTransport (communicates via stdin/stdout)
  *   Protocol: Model Context Protocol (MCP)
  *
- * 4. サーバー初期化
+ * 3. サーバー初期化
  *
  * メタデータと機能を持つMCPサーバーインスタンスを作成
  *
@@ -233,7 +236,7 @@ const server = new Server(
 );
 
 /**
- * 5. Input Validation Functions
+ * 4. Input Validation Functions
  *
  * Helper functions to validate chart inputs
  *
@@ -245,7 +248,7 @@ const server = new Server(
  *   validateScatterData([{ x: 1, y: 2 }]) → true
  *   validateBubbleData([{ x: 1, y: 2, r: 3 }]) → true
  *
- * 5. 入力検証関数
+ * 4. 入力検証関数
  *
  * チャート入力を検証するヘルパー関数
  *
@@ -296,11 +299,8 @@ function validateDatasets(datasets: any[]): void {
   });
 }
 
-// Note: buildChartConfig function is no longer needed as we now accept
-// Chart.js configuration directly in the new schema
-
 /**
- * 7. POST Request Configuration
+ * 5. POST Request Configuration
  *
  * Build POST request configuration for QuickChart API
  *
@@ -310,7 +310,7 @@ function validateDatasets(datasets: any[]): void {
  *   buildPostConfig({ type: "line", data: {...} }, { backgroundColor: "white" })
  *   → { chart: {...}, backgroundColor: "white", format: "png" }
  *
- * 7. POSTリクエスト設定
+ * 5. POSTリクエスト設定
  *
  * QuickChart API用のPOSTリクエスト設定を構築
  *
@@ -345,7 +345,7 @@ function buildPostConfig(
 }
 
 /**
- * 8. File Path Helper
+ * 6. File Path Helper
  *
  * Get appropriate download path for chart files
  *
@@ -356,7 +356,7 @@ function buildPostConfig(
  *   getDownloadPath(undefined, "svg") → "/Users/username/Desktop/chart_20240115_103045.svg"
  *   Falls back to home directory if Desktop doesn't exist
  *
- * 8. ファイルパスヘルパー
+ * 6. ファイルパスヘルパー
  *
  * チャートファイルの適切なダウンロードパスを取得
  *
@@ -406,7 +406,7 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
 }
 
 /**
- * 9. Tool List Handler
+ * 7. Tool List Handler
  *
  * Handle requests to list available tools
  *
@@ -416,7 +416,7 @@ function getDownloadPath(outputPath?: string, format: string = "png"): string {
  *   Tool count: 1
  *   This handler responds to MCP clients asking what tools are available
  *
- * 9. ツールリストハンドラー
+ * 7. ツールリストハンドラー
  *
  * 利用可能なツールをリストするリクエストを処理
  *
@@ -431,7 +431,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 }));
 
 /**
- * 10. Tool Call Handler
+ * 8. Tool Call Handler
  *
  * Set up the request handler for tool calls
  *
@@ -442,7 +442,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
  *   Invalid parameters → Error with specific validation message
  *   Network error → Error: "Failed to generate/download chart"
  *
- * 10. ツール呼び出しハンドラー
+ * 8. ツール呼び出しハンドラー
  *
  * ツール呼び出しのリクエストハンドラーを設定
  *
@@ -488,12 +488,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           version: args.version as string,
           key: args.key as string,
         });
-        
+
         return {
           content: [
             {
               type: "text",
-              text: `POST to ${QUICKCHART_BASE_URL}\nContent-Type: application/json\n\n${JSON.stringify(postConfig, null, 2)}`,
+              text: `POST to ${QUICKCHART_BASE_URL}\nContent-Type: application/json\n\n${JSON.stringify(
+                postConfig,
+                null,
+                2
+              )}`,
             },
           ],
         };
@@ -501,8 +505,11 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       if (action === "save_file") {
         const format = (args.format as string) || "png";
-        const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
-        
+        const outputPath = getDownloadPath(
+          args.outputPath as string | undefined,
+          format
+        );
+
         const postConfig = buildPostConfig(chartConfig, {
           format: args.format as string,
           width: args.width as string,
@@ -519,7 +526,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             responseType: responseType as any,
             timeout: 30000,
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           });
 
@@ -573,7 +580,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 });
 
 /**
- * 11. Server Startup Function
+ * 9. Server Startup Function
  *
  * Initialize and run the MCP server with stdio transport
  *
@@ -583,7 +590,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  *   Default URL → "QuickChart API URL: https://quickchart.io/chart"
  *   Connection error → Process exits with code 1
  *
- * 11. サーバー起動関数
+ * 9. サーバー起動関数
  *
  * stdioトランスポートでMCPサーバーを初期化して実行
  *
@@ -601,7 +608,7 @@ async function runServer() {
 }
 
 /**
- * 12. Server Execution
+ * 10. Server Execution
  *
  * Execute the server and handle fatal errors
  *
@@ -612,7 +619,7 @@ async function runServer() {
  *   Permission denied → "Fatal error running server: EACCES"
  *   Any fatal error → Logs error and exits with code 1
  *
- * 12. サーバー実行
+ * 10. サーバー実行
  *
  * サーバーを実行し、致命的なエラーを処理
  *
