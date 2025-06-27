@@ -236,233 +236,277 @@ Claude Desktop の設定に追加：
 
 ## 使用例
 
-### `create-chart-using-chartjs` ツールの使用
+### 人のための使用例
 
-`create-chart-using-chartjs` ツールは、`action` パラメータに応じてチャート URL を返すかファイルを保存するかを選択できます。
+#### チャート作成 (`create-chart-using-chartjs`)
 
-#### チャート URL の取得（デフォルト）
+- **売上レポート**: 「月別売上データの棒グラフを作成して」
+- **パフォーマンス指標**: 「85%のパフォーマンススコアを示すゲージチャートを生成して」
+- **トレンド分析**: 「四半期売上成長を折れ線グラフで表示して」
+- **データ比較**: 「地域別製品パフォーマンスを円グラフで比較して」
+- **統計分析**: 「価格と売上の関係を散布図で表示して」
 
-`action` を `"get_url"` に設定（または省略）してチャート URL を取得：
+#### 高度なチャート (`create-chart-using-apexcharts`)
+
+- **金融ダッシュボード**: 「株価のローソク足チャートを作成して」
+- **インタラクティブレポート**: 「ズーム機能付きの複数系列エリアチャートを生成して」
+- **時系列分析**: 「日時軸チャートでリアルタイムデータを表示して」
+
+#### Google Charts 連携 (`create-chart-using-googlecharts`)
+
+- **地理的データ**: 「国別売上を示す世界地図を作成して」
+- **組織図**: 「会社の階層図を生成して」
+- **タイムライン可視化**: 「プロジェクトマイルストーンをタイムラインチャートで表示して」
+
+#### AI チャート生成 (`create-chart-using-natural-language`)
+
+- **クイックプロトタイピング**: 「月別売上成長を青い線グラフで表示して」
+- **データ探索**: 「この売上データを最適に表現するチャートを作成して」
+- **自動レポート**: 「CSV データから適切な可視化を生成して」
+
+#### コンパクト可視化 (`create-sparkline-using-chartjs`)
+
+- **ダッシュボードウィジェット**: 「KPI ダッシュボード用の小さなトレンド指標を生成して」
+- **インライン指標**: 「メールレポート用のミニチャートを作成して」
+- **モバイル表示**: 「モバイルアプリ用のコンパクトなデータトレンドを表示して」
+
+#### プロセス図 (`create-diagram-using-graphviz`)
+
+- **ワークフロー文書化**: 「承認プロセスのフローチャートを生成して」
+- **システムアーキテクチャ**: 「インフラストラクチャのネットワーク図を作成して」
+- **決定木**: 「顧客オンボーディングの決定フローをマップして」
+
+#### テキスト可視化 (`create-wordcloud`)
+
+- **コンテンツ分析**: 「顧客フィードバックからワードクラウドを作成して」
+- **アンケート結果**: 「アンケートデータの最頻回答を可視化して」
+- **ソーシャルメディア分析**: 「ソーシャル投稿のトレンドキーワードを表示して」
+
+#### 製品識別 (`create-barcode`)
+
+- **在庫管理**: 「倉庫システム用の製品バーコードを生成して」
+- **小売業務**: 「新製品ライン用の UPC コードを作成して」
+- **資産追跡**: 「機器追跡用の Code128 バーコードを生成して」
+
+#### デジタル接続 (`create-qr-code`)
+
+- **マーケティングキャンペーン**: 「製品ページにリンクする QR コードを作成して」
+- **イベント管理**: 「チケット認証用の QR コードを生成して」
+- **連絡先共有**: 「名刺情報を含む QR コードを作成して」
+- **WiFi アクセス**: 「ゲストネットワークアクセス用の QR コードを生成して」
+
+#### データ表示 (`create-table`)
+
+- **財務レポート**: 「四半期収益データをプロフェッショナルなテーブルに変換して」
+- **比較表**: 「製品の機能比較表を作成して」
+- **サマリーレポート**: 「役員向けプレゼンテーション用の書式設定されたテーブルを生成して」
+
+#### ブランディング・帰属 (`create-watermark`)
+
+- **文書保護**: 「レポートに会社ロゴのウォーターマークを追加して」
+- **ブランド一貫性**: 「すべてのマーケティング資料にウォーターマークを適用して」
+- **著作権保護**: 「共有する可視化に帰属を追加して」
+
+### AI アシスタントとの連携
+
+この MCP サーバーの魅力は、技術的な詳細を知る必要がないことです。AI アシスタントに欲しいものを伝えるだけです：
+
+**自然言語の例:**
+
+- 「Q4 の地域別売上のチャートが必要です」
+- 「連絡先情報の QR コードを作成して」
+- 「この CSV データからプロフェッショナルなテーブルを生成して」
+- 「この顧客レビューからワードクラウドを作って」
+- 「デプロイメントプロセスのフローチャートを描いて」
+
+**AI が行うこと:**
+
+1. リクエストに適したツールを選択
+2. データを適切に構造化
+3. 適切なスタイリングと書式設定を適用
+4. 必要に応じて結果を保存または表示
+
+### 出力オプション
+
+**URL 取得:** 共有、ウェブページへの埋め込み、クイックプレビューに最適
+**ファイル保存:** レポート、プレゼンテーション、アーカイブ目的に理想的
+
+**サポートされる形式:**
+
+- **画像**: PNG、JPEG、WebP、SVG
+- **ドキュメント**: PDF
+- **データ**: Base64 エンコーディング
+
+**ファイル管理:**
+
+- ファイルはデフォルトでデスクトップに保存
+- 整理のためのカスタムパスサポート
+- 必要に応じて自動ディレクトリ作成
+
+### AI のための使用例
+
+#### `create-chart-using-chartjs`
 
 ```json
 {
-  "action": "get_url",
+  "action": "save_file",
   "chart": {
     "type": "bar",
     "data": {
-      "labels": ["1月", "2月", "3月", "4月"],
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
       "datasets": [
         {
           "label": "2024年売上",
           "data": [65, 59, 80, 81],
-          "backgroundColor": "rgba(75, 192, 192, 0.2)",
-          "borderColor": "rgba(75, 192, 192, 1)"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "月次売上レポート"
-        }
-      }
-    }
-  }
-}
-```
-
-#### チャートをファイルとして保存
-
-`action` を `"save_file"` に設定してチャートをローカルに保存：
-
-```json
-{
-  "action": "save_file",
-  "outputPath": "reports/device-usage.svg",
-  "format": "svg",
-  "chart": {
-    "type": "pie",
-    "data": {
-      "labels": ["デスクトップ", "モバイル", "タブレット"],
-      "datasets": [
-        {
-          "data": [65, 25, 10],
-          "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "デバイス使用統計"
-        }
-      }
-    }
-  }
-}
-```
-
-_保存先：`デスクトップ/reports/device-usage.svg`_
-
-#### その他のチャート例
-
-**複数データセットの折れ線グラフ：**
-
-```json
-{
-  "chart": {
-    "type": "line",
-    "data": {
-      "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [
-        {
-          "label": "製品A",
-          "data": [10, 25, 15, 30],
-          "borderColor": "blue"
-        },
-        {
-          "label": "製品B",
-          "data": [20, 15, 25, 35],
-          "borderColor": "red"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "四半期製品比較"
-        }
-      }
-    }
-  }
-}
-```
-
-**散布図：**
-
-```json
-{
-  "chart": {
-    "type": "scatter",
-    "data": {
-      "datasets": [
-        {
-          "label": "データセット1",
-          "data": [
-            { "x": 10, "y": 20 },
-            { "x": 15, "y": 25 },
-            { "x": 20, "y": 30 }
-          ],
-          "backgroundColor": "rgba(255, 99, 132, 0.5)"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "散布図の例"
-        }
-      }
-    }
-  }
-}
-```
-
-**放射状ゲージ：**
-
-```json
-{
-  "chart": {
-    "type": "radialGauge",
-    "data": {
-      "datasets": [
-        {
-          "data": [75],
-          "backgroundColor": "green"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "パフォーマンススコア"
-        }
-      }
-    }
-  }
-}
-```
-
-#### ファイル保存オプション
-
-**サポートされる形式：**
-
-- **PNG**（デフォルト）：`"format": "png"`
-- **WebP**：`"format": "webp"`
-- **JPEG**：`"format": "jpg"`
-- **SVG**：`"format": "svg"`
-- **PDF**：`"format": "pdf"`
-- **Base64**：`"format": "base64"`
-
-**保存場所：**
-
-- **パス未指定**：デスクトップ（デスクトップが存在しない場合はホームディレクトリ）
-- **相対パス**：デスクトップ（またはホームディレクトリ）を基準とした相対パス
-- **絶対パス**：指定された正確なパス
-
-## 高度な設定例
-
-### カスタム寸法と高 DPI
-
-```json
-{
-  "action": "save_file",
-  "width": 1200,
-  "height": 800,
-  "devicePixelRatio": 2,
-  "format": "png",
-  "outputPath": "high-res-chart.png",
-  "chart": {
-    "type": "line",
-    "data": {
-      "labels": ["1月", "2月", "3月"],
-      "datasets": [
-        {
-          "data": [10, 20, 30],
-          "borderColor": "blue"
-        }
-      ]
-    }
-  }
-}
-```
-
-### 背景色を指定した PDF 出力
-
-```json
-{
-  "action": "save_file",
-  "format": "pdf",
-  "backgroundColor": "#ffffff",
-  "version": "3",
-  "encoding": "url",
-  "chart": {
-    "type": "bar",
-    "data": {
-      "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [
-        {
-          "data": [100, 150, 120, 180],
           "backgroundColor": "rgba(54, 162, 235, 0.8)"
         }
       ]
     }
   }
+}
+```
+
+#### `create-qr-code`
+
+```json
+{
+  "action": "save_file",
+  "text": "https://example.com",
+  "size": 300,
+  "centerImageUrl": "https://example.com/logo.png",
+  "centerImageSizeRatio": 0.2,
+  "caption": "当社ウェブサイトにアクセス"
+}
+```
+
+#### `create-wordcloud`
+
+```json
+{
+  "action": "get_url",
+  "text": "イノベーション テクノロジー 人工知能 機械学習 データサイエンス",
+  "width": 800,
+  "height": 400,
+  "backgroundColor": "#f0f0f0"
+}
+```
+
+#### `create-table`
+
+```json
+{
+  "action": "save_file",
+  "data": {
+    "title": "Q4売上レポート",
+    "columns": [
+      { "title": "製品", "dataIndex": "product" },
+      { "title": "売上", "dataIndex": "revenue" }
+    ],
+    "dataSource": [
+      { "product": "製品A", "revenue": "¥5,000,000" },
+      { "product": "製品B", "revenue": "¥7,500,000" }
+    ]
+  }
+}
+```
+
+#### `create-diagram-using-graphviz`
+
+```json
+{
+  "action": "get_url",
+  "graph": "digraph G { 開始 -> 処理 -> 判定; 判定 -> 終了 [label=\"はい\"]; 判定 -> 処理 [label=\"いいえ\"]; }",
+  "layout": "dot"
+}
+```
+
+#### `create-chart-using-natural-language`
+
+```json
+{
+  "action": "save_file",
+  "description": "月別売上成長を青い線グラフで表示",
+  "data1": "100,120,150,180,200",
+  "labels": "1月,2月,3月,4月,5月",
+  "title": "売上成長"
+}
+```
+
+#### `create-barcode`
+
+```json
+{
+  "action": "get_url",
+  "type": "code128",
+  "text": "ABC123456789",
+  "width": 300,
+  "height": 100
+}
+```
+
+#### `create-chart-using-apexcharts`
+
+```json
+{
+  "action": "save_file",
+  "config": {
+    "series": [
+      {
+        "name": "売上",
+        "data": [30, 40, 45, 50, 49, 60, 70, 91]
+      }
+    ],
+    "chart": {
+      "type": "line"
+    },
+    "xaxis": {
+      "categories": ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月"]
+    }
+  }
+}
+```
+
+#### `create-chart-using-googlecharts`
+
+```json
+{
+  "action": "get_url",
+  "code": "const data = google.visualization.arrayToDataTable([['タスク', '時間'], ['仕事', 8], ['睡眠', 8], ['食事', 2], ['通勤', 2], ['テレビ', 4]]); const chart = new google.visualization.PieChart(document.getElementById('chart')); chart.draw(data);",
+  "packages": ["corechart"]
+}
+```
+
+#### `create-sparkline-using-chartjs`
+
+```json
+{
+  "action": "save_file",
+  "config": {
+    "type": "line",
+    "data": {
+      "datasets": [
+        {
+          "data": [10, 15, 12, 18, 22, 20, 25],
+          "borderColor": "blue",
+          "pointRadius": 0
+        }
+      ]
+    }
+  },
+  "width": 200,
+  "height": 50
+}
+```
+
+#### `create-watermark`
+
+```json
+{
+  "action": "save_file",
+  "mainImageUrl": "https://example.com/chart.png",
+  "watermarkImageUrl": "https://example.com/logo.png",
+  "position": "bottom-right",
+  "opacity": 0.7
 }
 ```
 

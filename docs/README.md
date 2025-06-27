@@ -236,228 +236,128 @@ Add to your Claude Desktop configuration:
 
 ## Usage Examples
 
-### Using `create-chart-using-chartjs` Tool
+### Use Cases for human
 
-The `create-chart-using-chartjs` tool can either return a chart URL or save a chart file, depending on the `action` parameter.
+#### Chart Creation (`create-chart-using-chartjs`)
 
-#### Get Chart URL (Default)
+- **Sales Reports**: "Create a bar chart showing monthly sales data"
+- **Performance Metrics**: "Generate a gauge chart showing our 85% performance score"
+- **Trend Analysis**: "Show quarterly revenue growth as a line chart"
+- **Data Comparison**: "Compare product performance across regions using a pie chart"
+- **Statistical Analysis**: "Create a scatter plot to show the relationship between price and sales"
 
-Set `action` to `"get_url"` (or omit it) to get a chart URL:
+#### Advanced Charts (`create-chart-using-apexcharts`)
+
+- **Financial Dashboards**: "Create a candlestick chart for stock prices"
+- **Interactive Reports**: "Generate a multi-series area chart with zoom functionality"
+- **Time Series Analysis**: "Show real-time data with datetime axis charts"
+
+#### Google Charts Integration (`create-chart-using-googlecharts`)
+
+- **Geographic Data**: "Create a world map showing sales by country"
+- **Organizational Charts**: "Generate a company hierarchy diagram"
+- **Timeline Visualizations**: "Show project milestones on a timeline chart"
+
+#### AI-Powered Charts (`create-chart-using-natural-language`)
+
+- **Quick Prototyping**: "Show monthly revenue growth as a blue line chart"
+- **Data Exploration**: "Create a chart that best represents this sales data"
+- **Automated Reporting**: "Generate appropriate visualization from CSV data"
+
+#### Compact Visualizations (`create-sparkline-using-chartjs`)
+
+- **Dashboard Widgets**: "Generate small trend indicators for KPI dashboard"
+- **Inline Metrics**: "Create mini charts for email reports"
+- **Mobile Displays**: "Show compact data trends for mobile apps"
+
+#### Process Diagrams (`create-diagram-using-graphviz`)
+
+- **Workflow Documentation**: "Generate a flowchart showing our approval process"
+- **System Architecture**: "Create a network diagram of our infrastructure"
+- **Decision Trees**: "Map out the customer onboarding decision flow"
+
+#### Text Visualization (`create-wordcloud`)
+
+- **Content Analysis**: "Create a word cloud from customer feedback"
+- **Survey Results**: "Visualize most common responses in survey data"
+- **Social Media Analytics**: "Show trending keywords from social posts"
+
+#### Product Identification (`create-barcode`)
+
+- **Inventory Management**: "Generate product barcodes for warehouse system"
+- **Retail Operations**: "Create UPC codes for new product lines"
+- **Asset Tracking**: "Generate Code128 barcodes for equipment tracking"
+
+#### Digital Connectivity (`create-qr-code`)
+
+- **Marketing Campaigns**: "Create QR codes linking to product pages"
+- **Event Management**: "Generate QR codes for ticket verification"
+- **Contact Sharing**: "Create QR codes containing business card information"
+- **WiFi Access**: "Generate QR codes for guest network access"
+
+#### Data Presentation (`create-table`)
+
+- **Financial Reports**: "Convert quarterly earnings data into professional table"
+- **Comparison Charts**: "Create feature comparison table for products"
+- **Summary Reports**: "Generate formatted tables for executive presentations"
+
+#### Branding & Attribution (`create-watermark`)
+
+- **Document Protection**: "Add company logo watermark to reports"
+- **Brand Consistency**: "Apply watermarks to all marketing materials"
+- **Copyright Protection**: "Add attribution to shared visualizations"
+
+### Working with AI Assistants
+
+The beauty of this MCP server is that you don't need to know the technical details. Just tell your AI assistant what you want:
+
+**Natural Language Examples:**
+
+- "I need a chart showing our Q4 sales by region"
+- "Create a QR code for our contact information"
+- "Generate a professional table from this CSV data"
+- "Make a word cloud from these customer reviews"
+- "Draw a flowchart of our deployment process"
+
+**The AI will:**
+
+1. Choose the right tool for your request
+2. Structure the data appropriately
+3. Apply suitable styling and formatting
+4. Save or display the result as needed
+
+### Output Options
+
+**Get URLs:** Perfect for sharing, embedding in web pages, or quick previews
+**Save Files:** Ideal for reports, presentations, or archival purposes
+
+**Supported Formats:**
+
+- **Images**: PNG, JPEG, WebP, SVG
+- **Documents**: PDF
+- **Data**: Base64 encoding
+
+**File Management:**
+
+- Files are saved to your Desktop by default
+- Custom paths supported for organization
+- Automatic directory creation when needed
+
+### Use Cases for AI
+
+#### `create-chart-using-chartjs`
 
 ```json
 {
-  "action": "get_url",
+  "action": "save_file",
   "chart": {
     "type": "bar",
     "data": {
-      "labels": ["January", "February", "March", "April"],
+      "labels": ["Q1", "Q2", "Q3", "Q4"],
       "datasets": [
         {
           "label": "Sales 2024",
           "data": [65, 59, 80, 81],
-          "backgroundColor": "rgba(75, 192, 192, 0.2)",
-          "borderColor": "rgba(75, 192, 192, 1)"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "Monthly Sales Report"
-        }
-      }
-    }
-  }
-}
-```
-
-#### Save Chart as File
-
-Set `action` to `"save_file"` to save the chart locally:
-
-```json
-{
-  "action": "save_file",
-  "outputPath": "reports/device-usage.svg",
-  "format": "svg",
-  "chart": {
-    "type": "pie",
-    "data": {
-      "labels": ["Desktop", "Mobile", "Tablet"],
-      "datasets": [
-        {
-          "data": [65, 25, 10],
-          "backgroundColor": ["#FF6384", "#36A2EB", "#FFCE56"]
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "Device Usage Statistics"
-        }
-      }
-    }
-  }
-}
-```
-
-_Saves to: `Desktop/reports/device-usage.svg`_
-
-#### More Chart Examples
-
-**Line Chart with Multiple Datasets:**
-
-```json
-{
-  "chart": {
-    "type": "line",
-    "data": {
-      "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [
-        {
-          "label": "Product A",
-          "data": [10, 25, 15, 30],
-          "borderColor": "blue"
-        },
-        {
-          "label": "Product B",
-          "data": [20, 15, 25, 35],
-          "borderColor": "red"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "Quarterly Product Comparison"
-        }
-      }
-    }
-  }
-}
-```
-
-**Scatter Plot:**
-
-```json
-{
-  "chart": {
-    "type": "scatter",
-    "data": {
-      "datasets": [
-        {
-          "label": "Dataset 1",
-          "data": [
-            { "x": 10, "y": 20 },
-            { "x": 15, "y": 25 },
-            { "x": 20, "y": 30 }
-          ],
-          "backgroundColor": "rgba(255, 99, 132, 0.5)"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "Scatter Plot Example"
-        }
-      }
-    }
-  }
-}
-```
-
-**Radial Gauge:**
-
-```json
-{
-  "chart": {
-    "type": "radialGauge",
-    "data": {
-      "datasets": [
-        {
-          "data": [75],
-          "backgroundColor": "green"
-        }
-      ]
-    },
-    "options": {
-      "plugins": {
-        "title": {
-          "display": true,
-          "text": "Performance Score"
-        }
-      }
-    }
-  }
-}
-```
-
-#### File Save Options
-
-**Supported Formats:**
-
-- **PNG** (default): `"format": "png"`
-- **WebP**: `"format": "webp"`
-- **JPEG**: `"format": "jpg"`
-- **SVG**: `"format": "svg"`
-- **PDF**: `"format": "pdf"`
-- **Base64**: `"format": "base64"`
-
-**Save Locations:**
-
-- **No path specified**: Desktop (or home directory if Desktop doesn't exist)
-- **Relative path**: Relative to Desktop (or home directory)
-- **Absolute path**: Exact path specified
-
-## Advanced Configuration Examples
-
-### Custom Dimensions and High DPI
-
-```json
-{
-  "action": "save_file",
-  "width": 1200,
-  "height": 800,
-  "devicePixelRatio": 2,
-  "format": "png",
-  "outputPath": "high-res-chart.png",
-  "chart": {
-    "type": "line",
-    "data": {
-      "labels": ["Jan", "Feb", "Mar"],
-      "datasets": [
-        {
-          "data": [10, 20, 30],
-          "borderColor": "blue"
-        }
-      ]
-    }
-  }
-}
-```
-
-### PDF Output with Background Color
-
-```json
-{
-  "action": "save_file",
-  "format": "pdf",
-  "backgroundColor": "#ffffff",
-  "version": "3",
-  "encoding": "url",
-  "chart": {
-    "type": "bar",
-    "data": {
-      "labels": ["Q1", "Q2", "Q3", "Q4"],
-      "datasets": [
-        {
-          "data": [100, 150, 120, 180],
           "backgroundColor": "rgba(54, 162, 235, 0.8)"
         }
       ]
@@ -466,80 +366,61 @@ _Saves to: `Desktop/reports/device-usage.svg`_
 }
 ```
 
-### Using Other Tools
-
-#### Word Cloud Example
+#### `create-qr-code`
 
 ```json
 {
   "action": "save_file",
-  "outputPath": "wordcloud.png",
-  "text": "artificial intelligence machine learning data science technology innovation",
-  "width": 800,
-  "height": 600,
-  "backgroundColor": "#ffffff"
-}
-```
-
-#### QR Code Generation Example
-
-```json
-{
-  "action": "save_file",
-  "outputPath": "qrcode.png",
   "text": "https://example.com",
-  "size": 200,
-  "dark": "000000",
-  "light": "ffffff",
-  "ecLevel": "M"
+  "size": 300,
+  "centerImageUrl": "https://example.com/logo.png",
+  "centerImageSizeRatio": 0.2,
+  "caption": "Visit our website"
 }
 ```
 
-#### Barcode Generation Example
+#### `create-wordcloud`
 
 ```json
 {
   "action": "get_url",
-  "type": "qr",
-  "text": "https://example.com",
-  "width": 200,
-  "height": 200
+  "text": "innovation technology artificial intelligence machine learning data science",
+  "width": 800,
+  "height": 400,
+  "backgroundColor": "#f0f0f0"
 }
 ```
 
-#### Table Image Example
+#### `create-table`
 
 ```json
 {
   "action": "save_file",
-  "outputPath": "sales-table.png",
   "data": {
     "title": "Q4 Sales Report",
     "columns": [
       { "title": "Product", "dataIndex": "product" },
-      { "title": "Sales", "dataIndex": "sales" },
-      { "title": "Growth", "dataIndex": "growth" }
+      { "title": "Revenue", "dataIndex": "revenue" }
     ],
     "dataSource": [
-      { "product": "Product A", "sales": "$10,000", "growth": "+15%" },
-      { "product": "Product B", "sales": "$8,500", "growth": "+8%" }
+      { "product": "Product A", "revenue": "$50,000" },
+      { "product": "Product B", "revenue": "$75,000" }
     ]
   }
 }
 ```
 
-#### GraphViz Diagram Example
+#### `create-diagram-using-graphviz`
 
 ```json
 {
   "action": "get_url",
-  "graph": "digraph G { A -> B; B -> C; A -> C; }",
-  "layout": "dot",
-  "format": "svg"
+  "graph": "digraph G { Start -> Process -> Decision; Decision -> End [label=\"Yes\"]; Decision -> Process [label=\"No\"]; }",
+  "layout": "dot"
 }
 ```
 
-#### Text-to-Chart Example
+#### `create-chart-using-natural-language`
 
 ```json
 {
@@ -547,9 +428,85 @@ _Saves to: `Desktop/reports/device-usage.svg`_
   "description": "Show monthly revenue growth as a blue line chart",
   "data1": "100,120,150,180,200",
   "labels": "Jan,Feb,Mar,Apr,May",
-  "title": "Revenue Growth",
-  "width": 600,
-  "height": 400
+  "title": "Revenue Growth"
+}
+```
+
+#### `create-barcode`
+
+```json
+{
+  "action": "get_url",
+  "type": "code128",
+  "text": "ABC123456789",
+  "width": 300,
+  "height": 100
+}
+```
+
+#### `create-chart-using-apexcharts`
+
+```json
+{
+  "action": "save_file",
+  "config": {
+    "series": [
+      {
+        "name": "Sales",
+        "data": [30, 40, 45, 50, 49, 60, 70, 91]
+      }
+    ],
+    "chart": {
+      "type": "line"
+    },
+    "xaxis": {
+      "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"]
+    }
+  }
+}
+```
+
+#### `create-chart-using-googlecharts`
+
+```json
+{
+  "action": "get_url",
+  "code": "const data = google.visualization.arrayToDataTable([['Task', 'Hours'], ['Work', 8], ['Sleep', 8], ['Eat', 2], ['Commute', 2], ['Watch TV', 4]]); const chart = new google.visualization.PieChart(document.getElementById('chart')); chart.draw(data);",
+  "packages": ["corechart"]
+}
+```
+
+#### `create-sparkline-using-chartjs`
+
+```json
+{
+  "action": "save_file",
+  "config": {
+    "type": "line",
+    "data": {
+      "datasets": [
+        {
+          "data": [10, 15, 12, 18, 22, 20, 25],
+          "borderColor": "blue",
+          "pointRadius": 0
+        }
+      ]
+    }
+  },
+  "width": 200,
+  "height": 50
+}
+```
+
+#### `create-watermark`
+
+```json
+{
+  "action": "save_file",
+  "mainImageUrl": "https://example.com/chart.png",
+  "watermarkImageUrl": "https://example.com/logo.png",
+  "position": "bottom-right",
+  "opacity": 0.7
 }
 ```
 
