@@ -2,7 +2,7 @@
 
 # QuickChart MCP サーバー
 
-QuickChart.io API を使用した 10 種類の強力な可視化ツールを提供する包括的な Model Context Protocol (MCP)サーバーです。AI アシスタントから簡単なコマンドで、チャート、図表、バーコード、ワードクラウド、テーブルなどを直接作成できます。
+QuickChart.io API を使用した 11 種類の強力な可視化ツールを提供する包括的な Model Context Protocol (MCP)サーバーです。AI アシスタントから簡単なコマンドで、チャート、図表、バーコード、QR コード、ワードクラウド、テーブルなどを直接作成できます。
 
 ## ツール
 
@@ -155,6 +155,24 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **スペーシング**: テーブル間隔（20px）、タイトル間隔（10px）
 - **パディング**: 垂直・水平パディング、テキスト配置（右寄せ等）
 - **区切り線**: "-"文字による水平線挿入対応
+
+### `create-qr-code`
+
+豊富なカスタマイズオプションを持つ QR コードを作成 - URL 取得またはファイル保存
+
+**ドキュメント**: [QR Code API](https://quickchart.io/documentation/qr-codes/)
+
+- **入力**: アクション（get_url/save_file）、出力パス、テキストコンテンツ、フォーマットオプション、サイズ、色、エラー訂正レベル、高度なカスタマイズ
+- **出力**: QR コード URL または保存されたファイルパスを含む確認メッセージ
+
+**カスタマイズ機能:**
+- **テキストコンテンツ**: URL、プレーンテキスト、連絡先情報、Wi-Fi 認証情報
+- **フォーマットオプション**: PNG、SVG、Base64 出力形式
+- **サイズと色**: カスタム寸法、前景色・背景色、透明背景
+- **エラー訂正**: L（低）、M（中）、Q（高）、H（最高）レベル
+- **中央画像**: ロゴや画像の埋め込み、サイズ比制御
+- **キャプション**: QR コード下のテキスト、フォントカスタマイズ
+- **高度なスタイリング**: マージン制御、カスタムフォントファミリーと色
 
 ### `create-watermark`
 
@@ -447,8 +465,21 @@ _保存先：`デスクトップ/reports/device-usage.svg`_
 
 ### 環境変数
 
-- **QUICKCHART_BASE_URL**: QuickChart API のベース URL（デフォルト: `https://quickchart.io/chart`）
-  - セルフホストの QuickChart インスタンスを指定する際に使用
+これらの環境変数を設定して API エンドポイントをカスタマイズできます：
+
+- **QUICKCHART_BASE_URL**: Chart.js チャート API（デフォルト: `https://quickchart.io/chart`）
+- **QUICKCHART_WORDCLOUD_URL**: ワードクラウド API（デフォルト: `https://quickchart.io/wordcloud`）
+- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API（デフォルト: `https://quickchart.io/apex-charts/render`）
+- **QUICKCHART_BARCODE_URL**: バーコード API（デフォルト: `https://quickchart.io/barcode`）
+- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API（デフォルト: `https://quickchart.io/google-charts/render`）
+- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API（デフォルト: `https://quickchart.io/graphviz`）
+- **QUICKCHART_SPARKLINE_URL**: スパークライン API（デフォルト: `https://quickchart.io/chart`）
+- **QUICKCHART_TABLE_URL**: テーブル API（デフォルト: `https://api.quickchart.io/v1/table`）
+- **QUICKCHART_TEXTCHART_URL**: テキストからチャート API（デフォルト: `https://quickchart.io/natural`）
+- **QUICKCHART_WATERMARK_URL**: ウォーターマーク API（デフォルト: `https://quickchart.io/watermark`）
+- **QUICKCHART_QRCODE_URL**: QR コード API（デフォルト: `https://quickchart.io/qr`）
+
+これらを使用してセルフホストの QuickChart インスタンスや代替エンドポイントを指定できます。
 
 ## NPM への公開
 
@@ -579,7 +610,22 @@ npm run release 1.2.3
 ```
 quickchart-mcp-server/
 ├── src/
-│   └── index.ts          # メインサーバー実装
+│   ├── index.ts          # メインサーバー実装
+│   ├── tools/
+│   │   ├── index.ts      # ツール登録とエクスポート
+│   │   ├── chart.ts      # Chart.js ツール
+│   │   ├── wordcloud.ts  # ワードクラウドツール
+│   │   ├── apexcharts.ts # ApexCharts ツール
+│   │   ├── barcode.ts    # バーコード/QR ツール
+│   │   ├── googlecharts.ts # Google Charts ツール
+│   │   ├── graphviz.ts   # GraphViz ツール
+│   │   ├── sparkline.ts  # スパークラインツール
+│   │   ├── table.ts      # テーブル画像ツール
+│   │   ├── textchart.ts  # テキストからチャートツール
+│   │   ├── watermark.ts  # ウォーターマークツール
+│   │   └── qrcode.ts     # QR コードツール
+│   └── utils/
+│       └── file.ts       # ファイルユーティリティ
 ├── package.json          # パッケージ設定
 ├── package-lock.json
 ├── tsconfig.json         # TypeScript設定

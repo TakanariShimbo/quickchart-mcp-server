@@ -9,6 +9,7 @@ import { CREATE_SPARKLINE_USING_CHARTJS_TOOL, handleSparklineTool } from "./spar
 import { CREATE_TABLE_TOOL, handleTableTool } from "./table.js";
 import { CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL, handleTextChartTool } from "./textchart.js";
 import { CREATE_WATERMARK_TOOL, handleWatermarkTool } from "./watermark.js";
+import { CREATE_QR_CODE_TOOL, handleQRCodeTool } from "./qrcode.js";
 
 // Export all tools
 export const TOOLS: Tool[] = [
@@ -20,6 +21,7 @@ export const TOOLS: Tool[] = [
   CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL,
   CREATE_WORDCLOUD_TOOL,
   CREATE_BARCODE_TOOL,
+  CREATE_QR_CODE_TOOL,
   CREATE_TABLE_TOOL,
   CREATE_WATERMARK_TOOL,
 ];
@@ -34,6 +36,7 @@ export const TOOL_HANDLERS: Record<string, (args: any) => Promise<any>> = {
   "create-diagram-using-graphviz": handleGraphvizTool,
   "create-wordcloud": handleWordCloudTool,
   "create-barcode": handleBarcodeTool,
+  "create-qr-code": handleQRCodeTool,
   "create-table": handleTableTool,
   "create-watermark": handleWatermarkTool,
 };
@@ -48,6 +51,7 @@ export {
   CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL,
   CREATE_WORDCLOUD_TOOL,
   CREATE_BARCODE_TOOL,
+  CREATE_QR_CODE_TOOL,
   CREATE_TABLE_TOOL,
   CREATE_WATERMARK_TOOL,
 };
