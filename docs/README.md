@@ -530,6 +530,33 @@ You can customize API endpoints by setting these environment variables:
 
 Use these to point to self-hosted QuickChart instances or alternative endpoints.
 
+## Development
+
+1. **Clone this repository**
+
+   ```bash
+   git clone https://github.com/TakanariShimbo/quickchart-mcp-server.git
+   cd quickchart-mcp-server
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm ci
+   ```
+
+3. **Build the project**
+
+   ```bash
+   npm run build
+   ```
+
+4. **Test with MCP Inspector (optional)**
+
+   ```bash
+   npx @modelcontextprotocol/inspector node dist/index.js
+   ```
+
 ## Publishing to NPM
 
 This project includes automated NPM publishing via GitHub Actions. To set up publishing:
@@ -626,33 +653,6 @@ npm run release 1.2.3
 4. GitHub Actions workflow triggers on new tag
 5. Workflow builds project and publishes to NPM
 6. Package becomes available globally via `npm install`
-
-## Development
-
-1. **Clone this repository**
-
-   ```bash
-   git clone https://github.com/TakanariShimbo/quickchart-mcp-server.git
-   cd quickchart-mcp-server
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm ci
-   ```
-
-3. **Build the project**
-
-   ```bash
-   npm run build
-   ```
-
-4. **Test with MCP Inspector (optional)**
-
-   ```bash
-   npx @modelcontextprotocol/inspector node dist/index.js
-   ```
 
 ## Project Structure
 

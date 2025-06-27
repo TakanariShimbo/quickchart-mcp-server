@@ -530,6 +530,33 @@ Claude Desktop の設定に追加：
 
 これらを使用してセルフホストの QuickChart インスタンスや代替エンドポイントを指定できます。
 
+## 開発
+
+1. **このリポジトリをクローン**
+
+   ```bash
+   git clone https://github.com/TakanariShimbo/quickchart-mcp-server.git
+   cd quickchart-mcp-server
+   ```
+
+2. **依存関係をインストール**
+
+   ```bash
+   npm ci
+   ```
+
+3. **プロジェクトをビルド**
+
+   ```bash
+   npm run build
+   ```
+
+4. **MCP Inspector でのテスト（オプション）**
+
+   ```bash
+   npx @modelcontextprotocol/inspector node dist/index.js
+   ```
+
 ## NPM への公開
 
 このプロジェクトは GitHub Actions を通じた自動 NPM 公開機能を含んでいます。公開の設定方法：
@@ -626,33 +653,6 @@ npm run release 1.2.3
 4. 新しいタグで GitHub Actions ワークフローが発動
 5. ワークフローがプロジェクトをビルドして NPM に公開
 6. `npm install`でパッケージがグローバルに利用可能になる
-
-## 開発
-
-1. **このリポジトリをクローン**
-
-   ```bash
-   git clone https://github.com/TakanariShimbo/quickchart-mcp-server.git
-   cd quickchart-mcp-server
-   ```
-
-2. **依存関係をインストール**
-
-   ```bash
-   npm ci
-   ```
-
-3. **プロジェクトをビルド**
-
-   ```bash
-   npm run build
-   ```
-
-4. **MCP Inspector でのテスト（オプション）**
-
-   ```bash
-   npx @modelcontextprotocol/inspector node dist/index.js
-   ```
 
 ## プロジェクト構造
 
