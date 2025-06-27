@@ -31,14 +31,36 @@ export const CREATE_TABLE_TOOL: Tool = {
           },
           columns: {
             type: "array",
-            items: { type: "string" },
-            description: "Column headers",
+            items: {
+              type: "object",
+              properties: {
+                title: {
+                  type: "string",
+                  description: "Column header title",
+                },
+                dataIndex: {
+                  type: "string", 
+                  description: "Data property key",
+                },
+                width: {
+                  type: "integer",
+                  description: "Column width",
+                },
+                align: {
+                  type: "string",
+                  enum: ["left", "center", "right"],
+                  description: "Text alignment",
+                },
+              },
+              required: ["title", "dataIndex"],
+            },
+            description: "Column definitions",
           },
           dataSource: {
             type: "array",
             items: {
-              type: "array",
-              items: {},
+              type: "object",
+              description: "Row data object with keys matching column dataIndex values",
             },
             description: "Table data rows",
           },
@@ -60,6 +82,10 @@ export const CREATE_TABLE_TOOL: Tool = {
           offsetLeft: {
             type: "integer",
             description: "Left offset in pixels",
+          },
+          offsetRight: {
+            type: "integer",
+            description: "Right offset in pixels",
           },
           fontFamily: {
             type: "string",

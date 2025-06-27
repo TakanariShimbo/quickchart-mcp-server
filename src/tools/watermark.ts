@@ -57,7 +57,7 @@ export const CREATE_WATERMARK_TOOL: Tool = {
       },
       position: {
         type: "string",
-        enum: ["center", "top-left", "top-right", "bottom-left", "bottom-right"],
+        enum: ["center", "topLeft", "topMiddle", "topRight", "middleLeft", "middleRight", "bottomLeft", "bottomMiddle", "bottomRight"],
         description: "Watermark position",
       },
       positionX: {
