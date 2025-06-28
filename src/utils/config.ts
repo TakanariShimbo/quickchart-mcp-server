@@ -1,5 +1,5 @@
 /**
- * Central configuration for QuickChart API endpoints
+ * Central configuration for QuickChart API endpoints and tool enablement
  */
 
 // Default base URLs for different QuickChart instances
@@ -62,4 +62,39 @@ export const QuickChartUrls = {
   graphviz: () => getQuickChartUrl(QuickChartEndpoints.GRAPHVIZ),
   textChart: () => getQuickChartUrl(QuickChartEndpoints.TEXT_CHART),
   watermark: () => getQuickChartUrl(QuickChartEndpoints.WATERMARK),
+} as const;
+
+/**
+ * Check if a tool is enabled via environment variables
+ * Format: QUICKCHART_ENABLE_<TOOL_NAME>=true/false
+ * Default: all tools are enabled
+ */
+export function isToolEnabled(toolName: string): boolean {
+  const envVar = `QUICKCHART_ENABLE_${toolName.toUpperCase()}`;
+  const value = process.env[envVar];
+  
+  // If not specified, default to enabled
+  if (value === undefined) {
+    return true;
+  }
+  
+  // Parse boolean value
+  return value.toLowerCase() === 'true' || value === '1';
+}
+
+/**
+ * Tool name mappings for environment variables
+ */
+export const ToolNames = {
+  CHART: 'chart',
+  APEXCHARTS: 'apexcharts', 
+  GOOGLECHARTS: 'googlecharts',
+  TEXTCHART: 'textchart',
+  SPARKLINE: 'sparkline',
+  GRAPHVIZ: 'graphviz',
+  WORDCLOUD: 'wordcloud',
+  BARCODE: 'barcode',
+  QRCODE: 'qrcode',
+  TABLE: 'table',
+  WATERMARK: 'watermark',
 } as const;

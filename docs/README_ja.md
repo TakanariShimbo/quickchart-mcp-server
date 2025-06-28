@@ -65,7 +65,8 @@ Claude Desktop の設定に追加：
       "command": "npx",
       "args": ["-y", "@takanarishimbo/quickchart-mcp-server"],
       "env": {
-        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com"
+        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com",
+        "QUICKCHART_ENABLE_QRCODE": "false"
       }
     }
   }
@@ -75,6 +76,8 @@ Claude Desktop の設定に追加：
 #### 環境変数
 
 **環境変数設定:**
+
+**URL 設定:**
 
 - **QUICKCHART_BASE_URL**: メインの QuickChart API ベース URL（デフォルト: `https://quickchart.io`）
 - **QUICKCHART_API_BASE_URL**: QuickChart API サーバーのベース URL（デフォルト: `https://api.quickchart.io`）
@@ -94,6 +97,21 @@ Claude Desktop の設定に追加：
 `QUICKCHART_API_BASE_URL` を設定すると、以下のエンドポイントが設定されます：
 
 - テーブル: `{API_BASE_URL}/v1/table`
+
+**ツール無効化設定:**
+特定のツールを無効化する場合は、以下の環境変数を `false` に設定してください：
+
+- **QUICKCHART_ENABLE_CHART**: Chart.js チャートツール
+- **QUICKCHART_ENABLE_APEXCHARTS**: ApexCharts ツール
+- **QUICKCHART_ENABLE_GOOGLECHARTS**: Google Charts ツール
+- **QUICKCHART_ENABLE_TEXTCHART**: テキストからチャートツール
+- **QUICKCHART_ENABLE_SPARKLINE**: スパークラインツール
+- **QUICKCHART_ENABLE_GRAPHVIZ**: GraphViz ツール
+- **QUICKCHART_ENABLE_WORDCLOUD**: ワードクラウドツール
+- **QUICKCHART_ENABLE_BARCODE**: バーコードツール
+- **QUICKCHART_ENABLE_QRCODE**: QR コードツール
+- **QUICKCHART_ENABLE_TABLE**: テーブルツール
+- **QUICKCHART_ENABLE_WATERMARK**: ウォーターマークツール
 
 ## ツール
 

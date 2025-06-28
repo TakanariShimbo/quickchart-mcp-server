@@ -65,7 +65,8 @@ Add to your Claude Desktop configuration:
       "command": "npx",
       "args": ["-y", "@takanarishimbo/quickchart-mcp-server"],
       "env": {
-        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com"
+        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com",
+        "QUICKCHART_ENABLE_QRCODE": "false"
       }
     }
   }
@@ -75,6 +76,8 @@ Add to your Claude Desktop configuration:
 #### Environment Variables
 
 **Environment Variables:**
+
+**URL Configuration:**
 
 - **QUICKCHART_BASE_URL**: Main QuickChart API base URL (default: `https://quickchart.io`)
 - **QUICKCHART_API_BASE_URL**: QuickChart API server base URL (default: `https://api.quickchart.io`)
@@ -94,6 +97,21 @@ Setting `QUICKCHART_BASE_URL` will configure these endpoints:
 Setting `QUICKCHART_API_BASE_URL` will configure these endpoints:
 
 - Tables: `{API_BASE_URL}/v1/table`
+
+**Tool Disable Settings:**
+To disable specific tools, set these environment variables to `false`:
+
+- **QUICKCHART_ENABLE_CHART**: Chart.js chart tool
+- **QUICKCHART_ENABLE_APEXCHARTS**: ApexCharts tool
+- **QUICKCHART_ENABLE_GOOGLECHARTS**: Google Charts tool
+- **QUICKCHART_ENABLE_TEXTCHART**: Text-to-chart tool
+- **QUICKCHART_ENABLE_SPARKLINE**: Sparkline tool
+- **QUICKCHART_ENABLE_GRAPHVIZ**: GraphViz tool
+- **QUICKCHART_ENABLE_WORDCLOUD**: Word cloud tool
+- **QUICKCHART_ENABLE_BARCODE**: Barcode tool
+- **QUICKCHART_ENABLE_QRCODE**: QR code tool
+- **QUICKCHART_ENABLE_TABLE**: Table tool
+- **QUICKCHART_ENABLE_WATERMARK**: Watermark tool
 
 ## Tools
 
