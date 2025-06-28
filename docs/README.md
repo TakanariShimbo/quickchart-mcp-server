@@ -112,6 +112,7 @@ To disable specific tools, set these environment variables to `false`:
 - **QUICKCHART_ENABLE_QRCODE**: QR code tool
 - **QUICKCHART_ENABLE_TABLE**: Table tool
 - **QUICKCHART_ENABLE_WATERMARK**: Watermark tool
+- **QUICKCHART_ENABLE_HELP**: Visualization tool help
 
 ## Tools
 
@@ -624,6 +625,26 @@ Add watermarks and logos to images - get URL or save as file
   "opacity": 0.7
 }
 ```
+
+### `get-visualization-tool-help`
+
+Get detailed usage information and examples for all available chart, diagram, and QR code tools
+
+- **Input**: No parameters required
+- **Output**: Complete documentation for all visualization tools in JSON format
+
+**Usage Examples for AI:**
+
+```json
+{}
+```
+
+This tool provides comprehensive information about all available tools including:
+- Supported chart types and features
+- Prompt examples for each tool
+- Detailed usage examples with JSON configuration
+- Official documentation links
+- What you can create with each tool
 
 ## Development
 
