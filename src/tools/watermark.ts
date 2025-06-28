@@ -85,7 +85,7 @@ export const CREATE_WATERMARK_TOOL: Tool = {
         description: "Margin from edges in pixels",
       },
     },
-    required: ["mainImageUrl", "markImageUrl"],
+    required: ["action", "mainImageUrl", "markImageUrl"],
   },
 };
 
@@ -158,7 +158,7 @@ export async function handleWatermarkTool(args: any): Promise<any> {
     args.markImageUrl as string
   );
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const config = buildWatermarkConfig(
     args.mainImageUrl as string,

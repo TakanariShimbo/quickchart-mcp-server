@@ -80,7 +80,7 @@ export const CREATE_QR_CODE_TOOL: Tool = {
         description: "Caption text color (default: black)",
       },
     },
-    required: ["text"],
+    required: ["action", "text"],
   },
 };
 
@@ -138,7 +138,7 @@ export function buildQRCodeParams(
 export async function handleQRCodeTool(args: any): Promise<any> {
   validateQRCodeText(args.text as string);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
   const format = (args.format as string) || "png";
 
   const params = buildQRCodeParams(args.text as string, {

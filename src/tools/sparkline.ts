@@ -45,7 +45,7 @@ export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
         description: "Background color (default: transparent)",
       },
     },
-    required: ["chart"],
+    required: ["action", "chart"],
   },
 };
 
@@ -86,7 +86,7 @@ export function buildSparklineParams(
 export async function handleSparklineTool(args: any): Promise<any> {
   validateSparklineChart(args.chart);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const params = buildSparklineParams(args.chart, {
     width: args.width as number,

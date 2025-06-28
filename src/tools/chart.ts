@@ -126,7 +126,7 @@ export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
         required: ["type", "data"],
       },
     },
-    required: ["chart"],
+    required: ["action", "chart"],
   },
 };
 
@@ -205,7 +205,7 @@ export async function handleChartTool(args: any): Promise<any> {
   validateChartType(chartConfig.type as string);
   validateDatasets(chartConfig.data?.datasets as any[]);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   if (action === "get_url") {
     const postConfig = buildPostConfig(chartConfig, {

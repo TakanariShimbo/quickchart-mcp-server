@@ -56,7 +56,7 @@ export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
         description: "Chart title",
       },
     },
-    required: ["description"],
+    required: ["action", "description"],
   },
 };
 
@@ -103,7 +103,7 @@ export function buildTextChartConfig(
 export async function handleTextChartTool(args: any): Promise<any> {
   validateTextChartDescription(args.description as string);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const config = buildTextChartConfig(args.description as string, {
     width: args.width as number,

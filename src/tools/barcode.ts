@@ -54,7 +54,7 @@ export const CREATE_BARCODE_TOOL: Tool = {
           "Rotation: N=Normal, R=Right 90°, L=Left 90°, I=Inverted 180°",
       },
     },
-    required: ["type", "text"],
+    required: ["action", "type", "text"],
   },
 };
 
@@ -103,7 +103,7 @@ export function buildBarcodeParams(
 export async function handleBarcodeTool(args: any): Promise<any> {
   validateBarcodeParams(args.type as string, args.text as string);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const params = buildBarcodeParams(args.type as string, args.text as string, {
     width: args.width as number,

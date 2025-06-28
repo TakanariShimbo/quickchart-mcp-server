@@ -108,7 +108,7 @@ export const CREATE_WORDCLOUD_TOOL: Tool = {
           "Treat input text as a list of words rather than sentences",
       },
     },
-    required: ["text"],
+    required: ["action", "text"],
   },
 };
 
@@ -181,7 +181,7 @@ export function buildWordCloudConfig(
 export async function handleWordCloudTool(args: any): Promise<any> {
   validateWordCloudText(args.text as string);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const wordCloudConfig = buildWordCloudConfig(args.text as string, {
     format: args.format as string,

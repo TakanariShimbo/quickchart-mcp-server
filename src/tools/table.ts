@@ -112,7 +112,7 @@ export const CREATE_TABLE_TOOL: Tool = {
         },
       },
     },
-    required: ["data"],
+    required: ["action", "data"],
   },
 };
 
@@ -158,7 +158,7 @@ export function buildTableConfig(data: any, options: any = {}): any {
 export async function handleTableTool(args: any): Promise<any> {
   validateTableData(args.data);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const config = buildTableConfig(args.data, args.options);
 

@@ -39,7 +39,7 @@ export const CREATE_CHART_USING_APEXCHARTS_TOOL: Tool = {
         description: "Apex Charts version to use",
       },
     },
-    required: ["config"],
+    required: ["action", "config"],
   },
 };
 
@@ -75,7 +75,7 @@ export function buildApexChartsConfig(
 export async function handleApexChartsTool(args: any): Promise<any> {
   validateApexChartsConfig(args.config);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const apexConfig = buildApexChartsConfig(args.config, {
     width: args.width as number,

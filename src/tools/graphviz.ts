@@ -45,7 +45,7 @@ export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
         description: "Image height in pixels",
       },
     },
-    required: ["graph"],
+    required: ["action", "graph"],
   },
 };
 
@@ -82,7 +82,7 @@ export function buildGraphvizConfig(
 export async function handleGraphvizTool(args: any): Promise<any> {
   validateGraphvizGraph(args.graph as string);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
   const format = (args.format as string) || "svg";
 
   const config = buildGraphvizConfig(args.graph as string, {

@@ -43,7 +43,7 @@ export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
         description: "Google Maps API key (for geo charts)",
       },
     },
-    required: ["code"],
+    required: ["action", "code"],
   },
 };
 
@@ -80,7 +80,7 @@ export function buildGoogleChartsConfig(
 export async function handleGoogleChartsTool(args: any): Promise<any> {
   validateGoogleChartsCode(args.code as string);
 
-  const action = (args.action as string) || "get_url";
+  const action = args.action as string;
 
   const config = buildGoogleChartsConfig(args.code as string, {
     packages: args.packages as string,
