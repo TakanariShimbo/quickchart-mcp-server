@@ -853,4 +853,4 @@ quickchart-mcp-server/
 
 ## License
 
-MIT
+MIT - See [LICENSE](LICENSE) file for details

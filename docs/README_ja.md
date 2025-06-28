@@ -800,4 +800,4 @@ quickchart-mcp-server/
 
 ## ライセンス
 
-MIT
+MIT - 詳細は [LICENSE](LICENSE) ファイルを参照してください
