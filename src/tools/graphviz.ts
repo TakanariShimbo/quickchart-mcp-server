@@ -3,8 +3,7 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const GRAPHVIZ_URL = process.env.QUICKCHART_GRAPHVIZ_URL || "https://quickchart.io/graphviz";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
   name: "create-diagram-using-graphviz",
@@ -15,11 +14,13 @@ export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get graph URL or save as file (default: get_url)",
+        description:
+          "Whether to get graph URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       graph: {
         type: "string",
@@ -80,10 +81,10 @@ export function buildGraphvizConfig(
 
 export async function handleGraphvizTool(args: any): Promise<any> {
   validateGraphvizGraph(args.graph as string);
-  
+
   const action = (args.action as string) || "get_url";
   const format = (args.format as string) || "svg";
-  
+
   const config = buildGraphvizConfig(args.graph as string, {
     layout: args.layout as string,
     format: format,
@@ -96,22 +97,29 @@ export async function handleGraphvizTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${GRAPHVIZ_URL}\nContent-Type: application/json\n\n${JSON.stringify(config, null, 2)}`,
+          text: `POST to ${QuickChartUrls.graphviz()}\nContent-Type: application/json\n\n${JSON.stringify(
+            config,
+            null,
+            2
+          )}`,
         },
       ],
     };
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      format
+    );
 
     try {
       const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.post(GRAPHVIZ_URL, config, {
+      const response = await axios.post(QuickChartUrls.graphviz(), config, {
         responseType: responseType as any,
         timeout: 30000,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 

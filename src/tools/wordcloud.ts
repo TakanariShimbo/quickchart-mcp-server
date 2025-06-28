@@ -3,24 +3,25 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-// Configuration
-const QUICKCHART_WORDCLOUD_URL = process.env.QUICKCHART_WORDCLOUD_URL || "https://quickchart.io/wordcloud";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_WORDCLOUD_TOOL: Tool = {
   name: "create-wordcloud",
-  description: "Create a word cloud using QuickChart.io - get URL or save as file",
+  description:
+    "Create a word cloud using QuickChart.io - get URL or save as file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get word cloud URL or save as file (default: get_url)",
+        description:
+          "Whether to get word cloud URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       text: {
         type: "string",
@@ -94,7 +95,7 @@ export const CREATE_WORDCLOUD_TOOL: Tool = {
         description: "Remove common stopwords",
       },
       cleanWords: {
-        type: "boolean", 
+        type: "boolean",
         description: "Remove symbols and extra characters from words",
       },
       language: {
@@ -103,7 +104,8 @@ export const CREATE_WORDCLOUD_TOOL: Tool = {
       },
       useWordList: {
         type: "boolean",
-        description: "Treat input text as a list of words rather than sentences",
+        description:
+          "Treat input text as a list of words rather than sentences",
       },
     },
     required: ["text"],
@@ -159,23 +161,28 @@ export function buildWordCloudConfig(
   if (options.scale) config.scale = options.scale;
   if (options.padding !== undefined) config.padding = options.padding;
   if (options.rotation !== undefined) config.rotation = options.rotation;
-  if (options.maxNumWords !== undefined) config.maxNumWords = options.maxNumWords;
-  if (options.minWordLength !== undefined) config.minWordLength = options.minWordLength;
+  if (options.maxNumWords !== undefined)
+    config.maxNumWords = options.maxNumWords;
+  if (options.minWordLength !== undefined)
+    config.minWordLength = options.minWordLength;
   if (options.case) config.case = options.case;
-  if (options.colors && options.colors.length > 0) config.colors = options.colors;
-  if (options.removeStopwords !== undefined) config.removeStopwords = options.removeStopwords;
+  if (options.colors && options.colors.length > 0)
+    config.colors = options.colors;
+  if (options.removeStopwords !== undefined)
+    config.removeStopwords = options.removeStopwords;
   if (options.cleanWords !== undefined) config.cleanWords = options.cleanWords;
   if (options.language) config.language = options.language;
-  if (options.useWordList !== undefined) config.useWordList = options.useWordList;
+  if (options.useWordList !== undefined)
+    config.useWordList = options.useWordList;
 
   return config;
 }
 
 export async function handleWordCloudTool(args: any): Promise<any> {
   validateWordCloudText(args.text as string);
-  
+
   const action = (args.action as string) || "get_url";
-  
+
   const wordCloudConfig = buildWordCloudConfig(args.text as string, {
     format: args.format as string,
     width: args.width as number,
@@ -203,7 +210,11 @@ export async function handleWordCloudTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${QUICKCHART_WORDCLOUD_URL}\nContent-Type: application/json\n\n${JSON.stringify(wordCloudConfig, null, 2)}`,
+          text: `POST to ${QuickChartUrls.wordcloud()}\nContent-Type: application/json\n\n${JSON.stringify(
+            wordCloudConfig,
+            null,
+            2
+          )}`,
         },
       ],
     };
@@ -211,17 +222,24 @@ export async function handleWordCloudTool(args: any): Promise<any> {
 
   if (action === "save_file") {
     const format = (args.format as string) || "svg";
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      format
+    );
 
     try {
       const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.post(QUICKCHART_WORDCLOUD_URL, wordCloudConfig, {
-        responseType: responseType as any,
-        timeout: 30000,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(
+        QuickChartUrls.wordcloud(),
+        wordCloudConfig,
+        {
+          responseType: responseType as any,
+          timeout: 30000,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const dir = path.dirname(outputPath);
       if (!fs.existsSync(dir)) {

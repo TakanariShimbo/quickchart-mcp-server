@@ -3,8 +3,7 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const TABLE_URL = process.env.QUICKCHART_TABLE_URL || "https://api.quickchart.io/v1/table";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_TABLE_TOOL: Tool = {
   name: "create-table",
@@ -15,11 +14,13 @@ export const CREATE_TABLE_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get table URL or save as file (default: get_url)",
+        description:
+          "Whether to get table URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       data: {
         type: "object",
@@ -39,7 +40,7 @@ export const CREATE_TABLE_TOOL: Tool = {
                   description: "Column header title",
                 },
                 dataIndex: {
-                  type: "string", 
+                  type: "string",
                   description: "Data property key",
                 },
                 width: {
@@ -60,7 +61,8 @@ export const CREATE_TABLE_TOOL: Tool = {
             type: "array",
             items: {
               type: "object",
-              description: "Row data object with keys matching column dataIndex values",
+              description:
+                "Row data object with keys matching column dataIndex values",
             },
             description: "Table data rows",
           },
@@ -121,14 +123,18 @@ export function validateTableData(data: any): void {
       "Data is required and must be an object"
     );
   }
-  
-  if (!data.columns || !Array.isArray(data.columns) || data.columns.length === 0) {
+
+  if (
+    !data.columns ||
+    !Array.isArray(data.columns) ||
+    data.columns.length === 0
+  ) {
     throw new McpError(
       ErrorCode.InvalidParams,
       "Columns are required and must be a non-empty array"
     );
   }
-  
+
   if (!data.dataSource || !Array.isArray(data.dataSource)) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -137,10 +143,7 @@ export function validateTableData(data: any): void {
   }
 }
 
-export function buildTableConfig(
-  data: any,
-  options: any = {}
-): any {
+export function buildTableConfig(data: any, options: any = {}): any {
   const config: any = {
     data,
   };
@@ -154,9 +157,9 @@ export function buildTableConfig(
 
 export async function handleTableTool(args: any): Promise<any> {
   validateTableData(args.data);
-  
+
   const action = (args.action as string) || "get_url";
-  
+
   const config = buildTableConfig(args.data, args.options);
 
   if (action === "get_url") {
@@ -164,21 +167,28 @@ export async function handleTableTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${TABLE_URL}\nContent-Type: application/json\n\n${JSON.stringify(config, null, 2)}`,
+          text: `POST to ${QuickChartUrls.table()}\nContent-Type: application/json\n\n${JSON.stringify(
+            config,
+            null,
+            2
+          )}`,
         },
       ],
     };
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, "png");
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      "png"
+    );
 
     try {
-      const response = await axios.post(TABLE_URL, config, {
+      const response = await axios.post(QuickChartUrls.table(), config, {
         responseType: "arraybuffer",
         timeout: 30000,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 

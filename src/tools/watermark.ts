@@ -3,23 +3,25 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const WATERMARK_URL = process.env.QUICKCHART_WATERMARK_URL || "https://quickchart.io/watermark";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_WATERMARK_TOOL: Tool = {
   name: "create-watermark",
-  description: "Add watermarks/logos to images using QuickChart - get URL or save as file",
+  description:
+    "Add watermarks/logos to images using QuickChart - get URL or save as file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get watermarked image URL or save as file (default: get_url)",
+        description:
+          "Whether to get watermarked image URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       mainImageUrl: {
         type: "string",
@@ -57,7 +59,17 @@ export const CREATE_WATERMARK_TOOL: Tool = {
       },
       position: {
         type: "string",
-        enum: ["center", "topLeft", "topMiddle", "topRight", "middleLeft", "middleRight", "bottomLeft", "bottomMiddle", "bottomRight"],
+        enum: [
+          "center",
+          "topLeft",
+          "topMiddle",
+          "topRight",
+          "middleLeft",
+          "middleRight",
+          "bottomLeft",
+          "bottomMiddle",
+          "bottomRight",
+        ],
         description: "Watermark position",
       },
       positionX: {
@@ -77,15 +89,26 @@ export const CREATE_WATERMARK_TOOL: Tool = {
   },
 };
 
-export function validateWatermarkUrls(mainImageUrl: string, markImageUrl: string): void {
-  if (!mainImageUrl || typeof mainImageUrl !== "string" || mainImageUrl.trim().length === 0) {
+export function validateWatermarkUrls(
+  mainImageUrl: string,
+  markImageUrl: string
+): void {
+  if (
+    !mainImageUrl ||
+    typeof mainImageUrl !== "string" ||
+    mainImageUrl.trim().length === 0
+  ) {
     throw new McpError(
       ErrorCode.InvalidParams,
       "MainImageUrl is required and must be a non-empty string"
     );
   }
-  
-  if (!markImageUrl || typeof markImageUrl !== "string" || markImageUrl.trim().length === 0) {
+
+  if (
+    !markImageUrl ||
+    typeof markImageUrl !== "string" ||
+    markImageUrl.trim().length === 0
+  ) {
     throw new McpError(
       ErrorCode.InvalidParams,
       "MarkImageUrl is required and must be a non-empty string"
@@ -116,7 +139,8 @@ export function buildWatermarkConfig(
 
   if (options.opacity !== undefined) config.opacity = options.opacity;
   if (options.imageWidth !== undefined) config.imageWidth = options.imageWidth;
-  if (options.imageHeight !== undefined) config.imageHeight = options.imageHeight;
+  if (options.imageHeight !== undefined)
+    config.imageHeight = options.imageHeight;
   if (options.markWidth !== undefined) config.markWidth = options.markWidth;
   if (options.markHeight !== undefined) config.markHeight = options.markHeight;
   if (options.markRatio !== undefined) config.markRatio = options.markRatio;
@@ -129,10 +153,13 @@ export function buildWatermarkConfig(
 }
 
 export async function handleWatermarkTool(args: any): Promise<any> {
-  validateWatermarkUrls(args.mainImageUrl as string, args.markImageUrl as string);
-  
+  validateWatermarkUrls(
+    args.mainImageUrl as string,
+    args.markImageUrl as string
+  );
+
   const action = (args.action as string) || "get_url";
-  
+
   const config = buildWatermarkConfig(
     args.mainImageUrl as string,
     args.markImageUrl as string,
@@ -155,21 +182,28 @@ export async function handleWatermarkTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${WATERMARK_URL}\nContent-Type: application/json\n\n${JSON.stringify(config, null, 2)}`,
+          text: `POST to ${QuickChartUrls.watermark()}\nContent-Type: application/json\n\n${JSON.stringify(
+            config,
+            null,
+            2
+          )}`,
         },
       ],
     };
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, "png");
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      "png"
+    );
 
     try {
-      const response = await axios.post(WATERMARK_URL, config, {
+      const response = await axios.post(QuickChartUrls.watermark(), config, {
         responseType: "arraybuffer",
         timeout: 30000,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 

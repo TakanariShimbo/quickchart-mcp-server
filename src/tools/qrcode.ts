@@ -3,8 +3,7 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const QR_CODE_URL = process.env.QUICKCHART_QRCODE_URL || "https://quickchart.io/qr";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_QR_CODE_TOOL: Tool = {
   name: "create-qr-code",
@@ -15,11 +14,13 @@ export const CREATE_QR_CODE_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get QR code URL or save as file (default: get_url)",
+        description:
+          "Whether to get QR code URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       text: {
         type: "string",
@@ -44,7 +45,8 @@ export const CREATE_QR_CODE_TOOL: Tool = {
       },
       light: {
         type: "string",
-        description: "Hex color for background (default: white, use '0000' for transparent)",
+        description:
+          "Hex color for background (default: white, use '0000' for transparent)",
       },
       ecLevel: {
         type: "string",
@@ -118,22 +120,27 @@ export function buildQRCodeParams(
   if (options.dark) params.dark = options.dark;
   if (options.light) params.light = options.light;
   if (options.ecLevel) params.ecLevel = options.ecLevel;
-  if (options.centerImageUrl) params.centerImageUrl = encodeURIComponent(options.centerImageUrl);
-  if (options.centerImageSizeRatio !== undefined) params.centerImageSizeRatio = options.centerImageSizeRatio.toString();
+  if (options.centerImageUrl)
+    params.centerImageUrl = encodeURIComponent(options.centerImageUrl);
+  if (options.centerImageSizeRatio !== undefined)
+    params.centerImageSizeRatio = options.centerImageSizeRatio.toString();
   if (options.caption) params.caption = encodeURIComponent(options.caption);
-  if (options.captionFontFamily) params.captionFontFamily = options.captionFontFamily;
-  if (options.captionFontSize !== undefined) params.captionFontSize = options.captionFontSize.toString();
-  if (options.captionFontColor) params.captionFontColor = options.captionFontColor;
+  if (options.captionFontFamily)
+    params.captionFontFamily = options.captionFontFamily;
+  if (options.captionFontSize !== undefined)
+    params.captionFontSize = options.captionFontSize.toString();
+  if (options.captionFontColor)
+    params.captionFontColor = options.captionFontColor;
 
   return params;
 }
 
 export async function handleQRCodeTool(args: any): Promise<any> {
   validateQRCodeText(args.text as string);
-  
+
   const action = (args.action as string) || "get_url";
   const format = (args.format as string) || "png";
-  
+
   const params = buildQRCodeParams(args.text as string, {
     format: format,
     size: args.size as number,
@@ -150,7 +157,7 @@ export async function handleQRCodeTool(args: any): Promise<any> {
   });
 
   const queryString = new URLSearchParams(params).toString();
-  const fullUrl = `${QR_CODE_URL}?${queryString}`;
+  const fullUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
 
   if (action === "get_url") {
     return {
@@ -164,7 +171,10 @@ export async function handleQRCodeTool(args: any): Promise<any> {
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, format);
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      format
+    );
 
     try {
       const responseType = format === "svg" ? "text" : "arraybuffer";

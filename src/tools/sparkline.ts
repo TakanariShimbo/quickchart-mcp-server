@@ -3,23 +3,25 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const SPARKLINE_URL = process.env.QUICKCHART_SPARKLINE_URL || "https://quickchart.io/chart";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
   name: "create-sparkline-using-chartjs",
-  description: "Create sparkline charts using Chart.js - get URL or save as file",
+  description:
+    "Create sparkline charts using Chart.js - get URL or save as file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get sparkline URL or save as file (default: get_url)",
+        description:
+          "Whether to get sparkline URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       chart: {
         type: "object",
@@ -83,9 +85,9 @@ export function buildSparklineParams(
 
 export async function handleSparklineTool(args: any): Promise<any> {
   validateSparklineChart(args.chart);
-  
+
   const action = (args.action as string) || "get_url";
-  
+
   const params = buildSparklineParams(args.chart, {
     width: args.width as number,
     height: args.height as number,
@@ -94,7 +96,7 @@ export async function handleSparklineTool(args: any): Promise<any> {
   });
 
   const queryString = new URLSearchParams(params).toString();
-  const fullUrl = `${SPARKLINE_URL}?${queryString}`;
+  const fullUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
 
   if (action === "get_url") {
     return {
@@ -108,7 +110,10 @@ export async function handleSparklineTool(args: any): Promise<any> {
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, "png");
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      "png"
+    );
 
     try {
       const response = await axios.get(fullUrl, {

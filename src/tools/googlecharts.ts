@@ -3,8 +3,7 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const GOOGLE_CHARTS_URL = process.env.QUICKCHART_GOOGLECHARTS_URL || "https://quickchart.io/google-charts/render";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
   name: "create-chart-using-googlecharts",
@@ -15,11 +14,13 @@ export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get chart URL or save as file (default: get_url)",
+        description:
+          "Whether to get chart URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       code: {
         type: "string",
@@ -78,9 +79,9 @@ export function buildGoogleChartsConfig(
 
 export async function handleGoogleChartsTool(args: any): Promise<any> {
   validateGoogleChartsCode(args.code as string);
-  
+
   const action = (args.action as string) || "get_url";
-  
+
   const config = buildGoogleChartsConfig(args.code as string, {
     packages: args.packages as string,
     width: args.width as number,
@@ -93,21 +94,28 @@ export async function handleGoogleChartsTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${GOOGLE_CHARTS_URL}\nContent-Type: application/json\n\n${JSON.stringify(config, null, 2)}`,
+          text: `POST to ${QuickChartUrls.googleCharts()}\nContent-Type: application/json\n\n${JSON.stringify(
+            config,
+            null,
+            2
+          )}`,
         },
       ],
     };
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, "png");
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      "png"
+    );
 
     try {
-      const response = await axios.post(GOOGLE_CHARTS_URL, config, {
+      const response = await axios.post(QuickChartUrls.googleCharts(), config, {
         responseType: "arraybuffer",
         timeout: 30000,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 

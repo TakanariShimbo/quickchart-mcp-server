@@ -65,28 +65,49 @@ Add to your Claude Desktop configuration:
       "command": "npx",
       "args": ["-y", "@takanarishimbo/quickchart-mcp-server"],
       "env": {
-        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com/chart"
+        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com"
       }
     }
   }
 }
 ```
 
-You can customize API endpoints by setting these environment variables:
+#### Environment Variables
 
-- **QUICKCHART_BASE_URL**: Chart.js charts API (default: `https://quickchart.io/chart`)
-- **QUICKCHART_WORDCLOUD_URL**: Word cloud API (default: `https://quickchart.io/wordcloud`)
-- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API (default: `https://quickchart.io/apex-charts/render`)
-- **QUICKCHART_BARCODE_URL**: Barcode API (default: `https://quickchart.io/barcode`)
-- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API (default: `https://quickchart.io/google-charts/render`)
-- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API (default: `https://quickchart.io/graphviz`)
-- **QUICKCHART_SPARKLINE_URL**: Sparkline API (default: `https://quickchart.io/chart`)
-- **QUICKCHART_TABLE_URL**: Table API (default: `https://api.quickchart.io/v1/table`)
-- **QUICKCHART_TEXTCHART_URL**: Text-to-Chart API (default: `https://quickchart.io/natural`)
-- **QUICKCHART_WATERMARK_URL**: Watermark API (default: `https://quickchart.io/watermark`)
-- **QUICKCHART_QRCODE_URL**: QR Code API (default: `https://quickchart.io/qr`)
+**Simple Configuration (Recommended):**
 
-Use these to point to self-hosted QuickChart instances or alternative endpoints.
+- **QUICKCHART_BASE_URL**: Base URL for all QuickChart APIs (default: `https://quickchart.io`)
+- **QUICKCHART_HOST**: Alternative name for base URL (legacy support)
+
+Setting `QUICKCHART_BASE_URL` will automatically configure all endpoints:
+
+- Charts: `{BASE_URL}/chart`
+- QR Codes: `{BASE_URL}/qr`
+- Word Clouds: `{BASE_URL}/wordcloud`
+- ApexCharts: `{BASE_URL}/apex-charts/render`
+- Google Charts: `{BASE_URL}/google-charts/render`
+- Barcodes: `{BASE_URL}/barcode`
+- GraphViz: `{BASE_URL}/graphviz`
+- Text-to-Chart: `{BASE_URL}/natural`
+- Watermarks: `{BASE_URL}/watermark`
+- Tables: `{BASE_URL}/v1/table` (or `https://api.quickchart.io/v1/table` if using default)
+
+**Advanced Configuration (Individual Endpoints):**
+For fine-grained control, you can still set individual endpoint URLs:
+
+- **QUICKCHART_BASE_URL**: Chart.js charts API
+- **QUICKCHART_QRCODE_URL**: QR Code API
+- **QUICKCHART_WORDCLOUD_URL**: Word cloud API
+- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API
+- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API
+- **QUICKCHART_BARCODE_URL**: Barcode API
+- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API
+- **QUICKCHART_SPARKLINE_URL**: Sparkline API
+- **QUICKCHART_TABLE_URL**: Table API
+- **QUICKCHART_TEXTCHART_URL**: Text-to-Chart API
+- **QUICKCHART_WATERMARK_URL**: Watermark API
+
+Individual endpoint variables take precedence over the base URL setting.
 
 ## Tools
 
@@ -518,7 +539,6 @@ Add watermarks and logos to images - get URL or save as file
   "opacity": 0.7
 }
 ```
-
 
 ## Development
 

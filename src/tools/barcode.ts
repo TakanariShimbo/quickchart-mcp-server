@@ -3,8 +3,7 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const BARCODE_URL = process.env.QUICKCHART_BARCODE_URL || "https://quickchart.io/barcode";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_BARCODE_TOOL: Tool = {
   name: "create-barcode",
@@ -15,15 +14,18 @@ export const CREATE_BARCODE_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get barcode URL or save as file (default: get_url)",
+        description:
+          "Whether to get barcode URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       type: {
         type: "string",
-        description: "Barcode type (e.g., qr, code128, ean13, datamatrix, upca, etc.)",
+        description:
+          "Barcode type (e.g., qr, code128, ean13, datamatrix, upca, etc.)",
       },
       text: {
         type: "string",
@@ -48,7 +50,8 @@ export const CREATE_BARCODE_TOOL: Tool = {
       rotate: {
         type: "string",
         enum: ["N", "R", "L", "I"],
-        description: "Rotation: N=Normal, R=Right 90°, L=Left 90°, I=Inverted 180°",
+        description:
+          "Rotation: N=Normal, R=Right 90°, L=Left 90°, I=Inverted 180°",
       },
     },
     required: ["type", "text"],
@@ -62,7 +65,7 @@ export function validateBarcodeParams(type: string, text: string): void {
       "Type is required and must be a non-empty string"
     );
   }
-  
+
   if (!text || typeof text !== "string" || text.trim().length === 0) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -90,7 +93,8 @@ export function buildBarcodeParams(
   if (options.width !== undefined) params.width = options.width.toString();
   if (options.height !== undefined) params.height = options.height.toString();
   if (options.scale !== undefined) params.scale = options.scale.toString();
-  if (options.includeText !== undefined) params.includeText = options.includeText.toString();
+  if (options.includeText !== undefined)
+    params.includeText = options.includeText.toString();
   if (options.rotate) params.rotate = options.rotate;
 
   return params;
@@ -98,9 +102,9 @@ export function buildBarcodeParams(
 
 export async function handleBarcodeTool(args: any): Promise<any> {
   validateBarcodeParams(args.type as string, args.text as string);
-  
+
   const action = (args.action as string) || "get_url";
-  
+
   const params = buildBarcodeParams(args.type as string, args.text as string, {
     width: args.width as number,
     height: args.height as number,
@@ -110,7 +114,7 @@ export async function handleBarcodeTool(args: any): Promise<any> {
   });
 
   const queryString = new URLSearchParams(params).toString();
-  const fullUrl = `${BARCODE_URL}?${queryString}`;
+  const fullUrl = `${QuickChartUrls.barcode()}?${queryString}`;
 
   if (action === "get_url") {
     return {
@@ -124,7 +128,10 @@ export async function handleBarcodeTool(args: any): Promise<any> {
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, "png");
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      "png"
+    );
 
     try {
       const response = await axios.get(fullUrl, {

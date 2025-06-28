@@ -3,9 +3,7 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-// Configuration
-const QUICKCHART_BASE_URL = process.env.QUICKCHART_BASE_URL || "https://quickchart.io/chart";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
   name: "create-chart-using-chartjs",
@@ -29,7 +27,7 @@ export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
         description: "Pixel width (default: 500)",
       },
       height: {
-        type: "integer", 
+        type: "integer",
         description: "Pixel height (default: 300)",
       },
       devicePixelRatio: {
@@ -44,11 +42,13 @@ export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
       },
       backgroundColor: {
         type: "string",
-        description: "Canvas background color - rgb, hex, hsl, or color names (default: transparent)",
+        description:
+          "Canvas background color - rgb, hex, hsl, or color names (default: transparent)",
       },
       version: {
         type: "string",
-        description: "Chart.js version - '2', '3', '4', or specific version (default: '2.9.4')",
+        description:
+          "Chart.js version - '2', '3', '4', or specific version (default: '2.9.4')",
       },
       encoding: {
         type: "string",
@@ -199,10 +199,7 @@ export async function handleChartTool(args: any): Promise<any> {
   // Extract chart configuration from args
   const chartConfig = args.chart as any;
   if (!chartConfig) {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      "Missing chart configuration"
-    );
+    throw new McpError(ErrorCode.InvalidParams, "Missing chart configuration");
   }
 
   validateChartType(chartConfig.type as string);
@@ -226,7 +223,7 @@ export async function handleChartTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${QUICKCHART_BASE_URL}\nContent-Type: application/json\n\n${JSON.stringify(
+          text: `POST to ${QuickChartUrls.chart()}\nContent-Type: application/json\n\n${JSON.stringify(
             postConfig,
             null,
             2
@@ -256,7 +253,7 @@ export async function handleChartTool(args: any): Promise<any> {
 
     try {
       const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.post(QUICKCHART_BASE_URL, postConfig, {
+      const response = await axios.post(QuickChartUrls.chart(), postConfig, {
         responseType: responseType as any,
         timeout: 30000,
         headers: {

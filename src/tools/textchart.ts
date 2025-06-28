@@ -3,23 +3,25 @@ import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
-
-const TEXT_TO_CHART_URL = process.env.QUICKCHART_TEXTCHART_URL || "https://quickchart.io/natural";
+import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
   name: "create-chart-using-natural-language",
-  description: "Create charts from natural language descriptions - get URL or save as file",
+  description:
+    "Create charts from natural language descriptions - get URL or save as file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description: "Whether to get chart URL or save as file (default: get_url)",
+        description:
+          "Whether to get chart URL or save as file (default: get_url)",
       },
       outputPath: {
         type: "string",
-        description: "Path where to save the file (only used with action=save_file)",
+        description:
+          "Path where to save the file (only used with action=save_file)",
       },
       description: {
         type: "string",
@@ -59,7 +61,11 @@ export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
 };
 
 export function validateTextChartDescription(description: string): void {
-  if (!description || typeof description !== "string" || description.trim().length === 0) {
+  if (
+    !description ||
+    typeof description !== "string" ||
+    description.trim().length === 0
+  ) {
     throw new McpError(
       ErrorCode.InvalidParams,
       "Description is required and must be a non-empty string"
@@ -96,9 +102,9 @@ export function buildTextChartConfig(
 
 export async function handleTextChartTool(args: any): Promise<any> {
   validateTextChartDescription(args.description as string);
-  
+
   const action = (args.action as string) || "get_url";
-  
+
   const config = buildTextChartConfig(args.description as string, {
     width: args.width as number,
     height: args.height as number,
@@ -114,21 +120,28 @@ export async function handleTextChartTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: `POST to ${TEXT_TO_CHART_URL}\nContent-Type: application/json\n\n${JSON.stringify(config, null, 2)}`,
+          text: `POST to ${QuickChartUrls.textChart()}\nContent-Type: application/json\n\n${JSON.stringify(
+            config,
+            null,
+            2
+          )}`,
         },
       ],
     };
   }
 
   if (action === "save_file") {
-    const outputPath = getDownloadPath(args.outputPath as string | undefined, "png");
+    const outputPath = getDownloadPath(
+      args.outputPath as string | undefined,
+      "png"
+    );
 
     try {
-      const response = await axios.post(TEXT_TO_CHART_URL, config, {
+      const response = await axios.post(QuickChartUrls.textChart(), config, {
         responseType: "arraybuffer",
         timeout: 30000,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 

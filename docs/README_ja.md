@@ -65,28 +65,49 @@ Claude Desktop の設定に追加：
       "command": "npx",
       "args": ["-y", "@takanarishimbo/quickchart-mcp-server"],
       "env": {
-        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com/chart"
+        "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com"
       }
     }
   }
 }
 ```
 
-これらの環境変数を設定して API エンドポイントをカスタマイズできます：
+#### 環境変数
 
-- **QUICKCHART_BASE_URL**: Chart.js チャート API（デフォルト: `https://quickchart.io/chart`）
-- **QUICKCHART_WORDCLOUD_URL**: ワードクラウド API（デフォルト: `https://quickchart.io/wordcloud`）
-- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API（デフォルト: `https://quickchart.io/apex-charts/render`）
-- **QUICKCHART_BARCODE_URL**: バーコード API（デフォルト: `https://quickchart.io/barcode`）
-- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API（デフォルト: `https://quickchart.io/google-charts/render`）
-- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API（デフォルト: `https://quickchart.io/graphviz`）
-- **QUICKCHART_SPARKLINE_URL**: スパークライン API（デフォルト: `https://quickchart.io/chart`）
-- **QUICKCHART_TABLE_URL**: テーブル API（デフォルト: `https://api.quickchart.io/v1/table`）
-- **QUICKCHART_TEXTCHART_URL**: テキストからチャート API（デフォルト: `https://quickchart.io/natural`）
-- **QUICKCHART_WATERMARK_URL**: ウォーターマーク API（デフォルト: `https://quickchart.io/watermark`）
-- **QUICKCHART_QRCODE_URL**: QR コード API（デフォルト: `https://quickchart.io/qr`）
+**シンプル設定（推奨）:**
 
-これらを使用してセルフホストの QuickChart インスタンスや代替エンドポイントを指定できます。
+- **QUICKCHART_BASE_URL**: すべての QuickChart API のベース URL（デフォルト: `https://quickchart.io`）
+- **QUICKCHART_HOST**: ベース URL の代替名（レガシーサポート）
+
+`QUICKCHART_BASE_URL` を設定すると、すべてのエンドポイントが自動的に設定されます：
+
+- チャート: `{BASE_URL}/chart`
+- QR コード: `{BASE_URL}/qr`
+- ワードクラウド: `{BASE_URL}/wordcloud`
+- ApexCharts: `{BASE_URL}/apex-charts/render`
+- Google Charts: `{BASE_URL}/google-charts/render`
+- バーコード: `{BASE_URL}/barcode`
+- GraphViz: `{BASE_URL}/graphviz`
+- テキストからチャート: `{BASE_URL}/natural`
+- ウォーターマーク: `{BASE_URL}/watermark`
+- テーブル: `{BASE_URL}/v1/table`（デフォルト使用時は `https://api.quickchart.io/v1/table`）
+
+**高度な設定（個別エンドポイント）:**
+より細かい制御が必要な場合は、個別のエンドポイント URL を設定できます：
+
+- **QUICKCHART_BASE_URL**: Chart.js チャート API
+- **QUICKCHART_QRCODE_URL**: QR コード API
+- **QUICKCHART_WORDCLOUD_URL**: ワードクラウド API
+- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API
+- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API
+- **QUICKCHART_BARCODE_URL**: バーコード API
+- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API
+- **QUICKCHART_SPARKLINE_URL**: スパークライン API
+- **QUICKCHART_TABLE_URL**: テーブル API
+- **QUICKCHART_TEXTCHART_URL**: テキストからチャート API
+- **QUICKCHART_WATERMARK_URL**: ウォーターマーク API
+
+個別のエンドポイント変数はベース URL 設定よりも優先されます。
 
 ## ツール
 
@@ -120,7 +141,7 @@ Chart.js と QuickChart.io を使用してチャートを作成 - URL 取得ま�
 - **データ比較**: 「地域別製品パフォーマンスを円グラフで比較して」
 - **統計分析**: 「価格と売上の関係を散布図で表示して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -164,7 +185,7 @@ ApexCharts ライブラリを使用してチャートを作成 - URL 取得ま�
 - **インタラクティブレポート**: 「ズーム機能付きの複数系列エリアチャートを生成して」
 - **時系列分析**: 「日時軸チャートでリアルタイムデータを表示して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -209,7 +230,7 @@ Google Charts ライブラリを使用してチャートを作成 - URL 取得�
 - **組織図**: 「会社の階層図を生成して」
 - **タイムライン可視化**: 「プロジェクトマイルストーンをタイムラインチャートで表示して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -241,7 +262,7 @@ Google Charts ライブラリを使用してチャートを作成 - URL 取得�
 - **データ探索**: 「この売上データを最適に表現するチャートを作成して」
 - **自動レポート**: 「CSV データから適切な可視化を生成して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -276,7 +297,7 @@ Google Charts ライブラリを使用してチャートを作成 - URL 取得�
 - **インライン指標**: 「メールレポート用のミニチャートを作成して」
 - **モバイル表示**: 「モバイルアプリ用のコンパクトなデータトレンドを表示して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -321,7 +342,7 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **システムアーキテクチャ**: 「インフラストラクチャのネットワーク図を作成して」
 - **決定木**: 「顧客オンボーディングの決定フローをマップして」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -354,7 +375,7 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **アンケート結果**: 「アンケートデータの最頻回答を可視化して」
 - **ソーシャルメディア分析**: 「ソーシャル投稿のトレンドキーワードを表示して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -390,7 +411,7 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **小売業務**: 「新製品ライン用の UPC コードを作成して」
 - **資産追跡**: 「機器追跡用の Code128 バーコードを生成して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -426,7 +447,7 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **比較表**: 「製品の機能比較表を作成して」
 - **サマリーレポート**: 「役員向けプレゼンテーション用の書式設定されたテーブルを生成して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -471,7 +492,7 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **連絡先共有**: 「名刺情報を含む QR コードを作成して」
 - **WiFi アクセス**: 「ゲストネットワークアクセス用の QR コードを生成して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
@@ -507,7 +528,7 @@ GraphViz を使用してグラフ図を作成 - URL 取得またはファイル�
 - **ブランド一貫性**: 「すべてのマーケティング資料にウォーターマークを適用して」
 - **著作権保護**: 「共有する可視化に帰属を追加して」
 
-**AIのための使用例:**
+**AI のための使用例:**
 
 ```json
 {
