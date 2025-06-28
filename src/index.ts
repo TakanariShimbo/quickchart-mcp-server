@@ -20,7 +20,7 @@ import { TOOLS, TOOL_HANDLERS } from "./tools/index.js";
 const server = new Server(
   {
     name: "quickchart-server",
-    version: "0.6.1",
+    version: "0.6.2",
   },
   {
     capabilities: {
