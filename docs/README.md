@@ -127,15 +127,15 @@ Create charts using Chart.js and QuickChart.io - get URL or save as file
 **Supported Chart Types:**
 
 - **bar**: Bar charts for comparing values across categories
-- **line**: Line charts for showing trends over time
-- **pie**: Pie charts for showing proportions
+- **line**: Line charts for showing trends over time  
+- **pie**: Pie charts for showing proportions and percentages
 - **doughnut**: Doughnut charts (pie chart with hollow center)
 - **radar**: Radar charts for comparing multiple variables
-- **polarArea**: Polar area charts for cyclical data
+- **polarArea**: Polar area charts for cyclical data visualization
 - **scatter**: Scatter plots for correlation analysis
-- **bubble**: Bubble charts for three-dimensional data
-- **radialGauge**: Radial gauges for showing single values
-- **speedometer**: Speedometer-style gauges
+- **bubble**: Bubble charts for three-dimensional data relationships
+- **area**: Area charts for showing cumulative values over time
+- **mixed**: Mixed charts combining multiple chart types
 
 **Prompt Examples:**
 
@@ -175,13 +175,25 @@ Create charts using ApexCharts library - get URL or save as file
 - **Input**: Action (get_url/save_file), outputPath, ApexCharts configuration, dimensions, and version options
 - **Output**: ApexCharts URL or confirmation message with saved file path
 
-**Supported Features:**
+**Supported Chart Types:**
 
-- Line charts, area charts, datetime axis charts
-- Customizable axis settings and data labels
-- Line styles and stroke settings
-- Tooltips and interactive elements
-- Ideal for PDF reports and email embedding
+- **line**: Line charts for depicting trends and behaviors over time
+- **area**: Area charts for showing cumulative data trends
+- **bar**: Bar charts for categorical data comparison
+- **column**: Column charts for vertical data comparison
+- **pie**: Pie charts for proportion visualization
+- **donut**: Donut charts for enhanced proportion display
+- **scatter**: Scatter plots for correlation analysis
+- **bubble**: Bubble charts for multi-dimensional data
+- **candlestick**: Candlestick charts for financial data
+- **boxplot**: Box plots for statistical data distribution
+- **heatmap**: Heat maps for matrix data visualization
+- **treemap**: Tree maps for hierarchical data
+- **radar**: Radar charts for multi-variable comparison
+- **radialbar**: Radial bar charts and circular gauges
+- **rangearea**: Range area charts for data ranges
+- **rangebar**: Range bar charts for time periods
+- **funnel**: Funnel charts for process visualization
 
 **Prompt Examples:**
 
@@ -222,11 +234,28 @@ Create charts using Google Charts library - get URL or save as file
 
 **Supported Chart Types:**
 
-- **Bar Charts**: Category data comparison
-- **Pie Charts**: Percentage and proportion display
-- **Gauge Charts**: Measurement and target value display
-- **Timeline Charts**: Time-series event display
-- **Geographic Charts**: World maps and regional maps (Maps API key support)
+- **bar**: Bar charts for category data comparison
+- **column**: Column charts for vertical data comparison
+- **line**: Line charts for trend visualization
+- **area**: Area charts and stepped area charts
+- **pie**: Pie charts for proportion display
+- **donut**: Donut charts for enhanced proportion visualization
+- **scatter**: Scatter charts for correlation analysis
+- **bubble**: Bubble charts for multi-dimensional data
+- **combo**: Combo charts combining multiple chart types
+- **gauge**: Gauge charts for measurement and target values
+- **timeline**: Timeline charts for time-series events
+- **gantt**: Gantt charts for project management
+- **geochart**: Geographic charts and world maps
+- **treemap**: Tree map charts for hierarchical data
+- **sankey**: Sankey diagrams for flow visualization
+- **candlestick**: Candlestick charts for financial data
+- **histogram**: Histograms for data distribution
+- **calendar**: Calendar charts for date-based data
+- **org**: Organizational charts for hierarchy display
+- **table**: Table charts for structured data display
+- **waterfall**: Waterfall charts for cumulative effects
+- **annotation**: Annotation charts for detailed analysis
 
 **Prompt Examples:**
 
@@ -287,13 +316,18 @@ Create compact sparkline charts - get URL or save as file
 - **Input**: Action (get_url/save_file), outputPath, Chart.js configuration, dimensions, and display options
 - **Output**: Sparkline URL or confirmation message with saved file path
 
-**Features:**
+**Supported Chart Types:**
 
-- **Compact Design**: Embeddable in text and dashboards
-- **Trend Visualization**: Show data trends and variations at a glance
-- **Single & Multiple Series**: Display one or multiple data lines
-- **Customizable**: Adjustable colors, line styles, and point display
-- **Smooth Lines**: Line tension adjustment for straight or curved display
+- **line**: Single line sparklines for trend visualization
+- **multiline**: Multiple line sparklines for comparison
+
+**Key Features:**
+
+- **Compact Design**: Small charts embeddable in dashboards and reports
+- **Customizable Styling**: Adjustable colors, line thickness, and point styles
+- **Fill Options**: Optional area fill under lines
+- **Line Properties**: Configurable tension, dash patterns, and point radius
+- **Multiple Series**: Support for multiple data series in one sparkline
 
 **Prompt Examples:**
 
