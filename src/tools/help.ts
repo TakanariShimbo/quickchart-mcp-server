@@ -7,6 +7,12 @@ const TOOL_DOCUMENTATION = {
     description:
       "Create charts using Chart.js and QuickChart.io - get URL or save as file",
     documentation: "https://quickchart.io/documentation/",
+    additionalResources: {
+      chartjsDocumentation: "https://www.chartjs.org/docs/latest/",
+      chartjsExamples: "https://www.chartjs.org/docs/latest/samples/",
+      quickChartGallery: "https://quickchart.io/gallery/",
+      apiReference: "https://quickchart.io/documentation/#chart"
+    },
     supportedChartTypes: [
       "bar - Bar charts for comparing values across categories",
       "line - Line charts for showing trends over time",
@@ -49,6 +55,11 @@ const TOOL_DOCUMENTATION = {
       "Create charts using ApexCharts library - get URL or save as file",
     documentation:
       "https://quickchart.io/documentation/apex-charts-image-rendering/",
+    additionalResources: {
+      apexchartsDocumentation: "https://apexcharts.com/docs/",
+      apexchartsDemos: "https://apexcharts.com/javascript-chart-demos/",
+      quickChartGallery: "https://quickchart.io/gallery/"
+    },
     supportedChartTypes: [
       "line - Line charts for depicting trends and behaviors over time",
       "area - Area charts for showing cumulative data trends",
@@ -97,6 +108,11 @@ const TOOL_DOCUMENTATION = {
       "Create charts using Google Charts library - get URL or save as file",
     documentation:
       "https://quickchart.io/documentation/google-charts-image-server/",
+    additionalResources: {
+      googleChartsDocumentation: "https://developers.google.com/chart",
+      googleChartsGallery: "https://developers.google.com/chart/interactive/docs/gallery",
+      quickChartGallery: "https://quickchart.io/gallery/"
+    },
     supportedChartTypes: [
       "bar - Bar charts for category data comparison",
       "column - Column charts for vertical data comparison",
@@ -137,6 +153,10 @@ const TOOL_DOCUMENTATION = {
     description:
       "Generate charts from natural language descriptions - get URL or save as file",
     documentation: "https://quickchart.io/documentation/apis/text-to-chart/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/apis/text-to-chart/",
+      quickChartGallery: "https://quickchart.io/gallery/"
+    },
     mainFeatures: [
       'Natural Language Analysis: Understands descriptions like "blue line chart showing monthly sales"',
       "Automatic Chart Selection: Determines optimal chart type automatically",
@@ -160,6 +180,10 @@ const TOOL_DOCUMENTATION = {
     name: "create-sparkline-using-chartjs",
     description: "Create compact sparkline charts - get URL or save as file",
     documentation: "https://quickchart.io/documentation/sparkline-api/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/sparkline-api/",
+      chartjsDocumentation: "https://www.chartjs.org/docs/latest/"
+    },
     supportedChartTypes: [
       "line - Single line sparklines for trend visualization",
       "multiline - Multiple line sparklines for comparison",
@@ -199,6 +223,12 @@ const TOOL_DOCUMENTATION = {
     description:
       "Create graph diagrams using GraphViz - get URL or save as file",
     documentation: "https://quickchart.io/documentation/graphviz-api/",
+    additionalResources: {
+      graphvizDocumentation: "https://graphviz.org/documentation/",
+      graphvizGallery: "https://graphviz.org/gallery/",
+      dotLanguageGuide: "https://graphviz.org/doc/info/lang.html",
+      apiReference: "https://quickchart.io/documentation/graphviz-api/"
+    },
     whatYouCanCreate: [
       "Flowcharts: Step-by-step process diagrams with decision points",
       "Organizational Charts: Company hierarchy and reporting structures",
@@ -234,6 +264,9 @@ const TOOL_DOCUMENTATION = {
     name: "create-wordcloud",
     description: "Create word cloud visualizations - get URL or save as file",
     documentation: "https://quickchart.io/documentation/word-cloud-api/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/word-cloud-api/"
+    },
     promptExamples: [
       'Content Analysis: "Create a word cloud from customer feedback"',
       'Survey Results: "Visualize most common responses in survey data"',
@@ -251,6 +284,10 @@ const TOOL_DOCUMENTATION = {
     name: "create-barcode",
     description: "Generate barcodes and QR codes - get URL or save as file",
     documentation: "https://quickchart.io/documentation/barcode-api/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/barcode-api/",
+      supportedFormats: "https://github.com/bwipp/postscriptbarcode/wiki"
+    },
     supportedBarcodeTypes: [
       "QR Code: High-density 2D barcode for URLs, text, and data",
       "Code 128: Versatile 1D barcode for alphanumeric content",
@@ -290,6 +327,9 @@ const TOOL_DOCUMENTATION = {
     name: "create-table",
     description: "Convert data to table images - get URL or save as file",
     documentation: "https://quickchart.io/documentation/apis/table-image-api/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/apis/table-image-api/"
+    },
     promptExamples: [
       'Financial Reports: "Convert quarterly earnings data into professional table"',
       'Comparison Charts: "Create feature comparison table for products"',
@@ -315,6 +355,10 @@ const TOOL_DOCUMENTATION = {
     description:
       "Create QR codes with extensive customization options - get URL or save as file",
     documentation: "https://quickchart.io/documentation/qr-codes/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/qr-codes/",
+      qrCodeBestPractices: "https://blog.qr4.nl/post/qr-code-best-practices/"
+    },
     whatYouCanCreate: [
       "Website Links: Direct links to websites, landing pages, and online content",
       "Contact Information: vCard data for easy contact sharing",
@@ -350,6 +394,9 @@ const TOOL_DOCUMENTATION = {
     name: "create-watermark",
     description: "Add watermarks and logos to images - get URL or save as file",
     documentation: "https://quickchart.io/documentation/watermark-api/",
+    additionalResources: {
+      apiReference: "https://quickchart.io/documentation/watermark-api/"
+    },
     promptExamples: [
       'Document Protection: "Add company logo watermark to reports"',
       'Brand Consistency: "Apply watermarks to all marketing materials"',

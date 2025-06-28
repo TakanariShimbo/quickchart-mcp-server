@@ -128,7 +128,7 @@ Create charts using Chart.js and QuickChart.io - get URL or save as file
 **Supported Chart Types:**
 
 - **bar**: Bar charts for comparing values across categories
-- **line**: Line charts for showing trends over time  
+- **line**: Line charts for showing trends over time
 - **pie**: Pie charts for showing proportions and percentages
 - **doughnut**: Doughnut charts (pie chart with hollow center)
 - **radar**: Radar charts for comparing multiple variables
@@ -640,11 +640,13 @@ Get detailed usage information and examples for all available chart, diagram, an
 ```
 
 This tool provides comprehensive information about all available tools including:
+
 - Supported chart types and features
 - Prompt examples for each tool
 - Detailed usage examples with JSON configuration
 - Official documentation links
 - What you can create with each tool
+- Additional web resources for AI to search
 
 ## Development
 
