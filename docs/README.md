@@ -112,13 +112,15 @@ Create charts using Chart.js and QuickChart.io - get URL or save as file
 - **radialGauge**: Radial gauges for showing single values
 - **speedometer**: Speedometer-style gauges
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Sales Reports**: "Create a bar chart showing monthly sales data"
 - **Performance Metrics**: "Generate a gauge chart showing our 85% performance score"
 - **Trend Analysis**: "Show quarterly revenue growth as a line chart"
 - **Data Comparison**: "Compare product performance across regions using a pie chart"
 - **Statistical Analysis**: "Create a scatter plot to show the relationship between price and sales"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -156,11 +158,13 @@ Create charts using ApexCharts library - get URL or save as file
 - Tooltips and interactive elements
 - Ideal for PDF reports and email embedding
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Financial Dashboards**: "Create a candlestick chart for stock prices"
 - **Interactive Reports**: "Generate a multi-series area chart with zoom functionality"
 - **Time Series Analysis**: "Show real-time data with datetime axis charts"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -199,11 +203,13 @@ Create charts using Google Charts library - get URL or save as file
 - **Timeline Charts**: Time-series event display
 - **Geographic Charts**: World maps and regional maps (Maps API key support)
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Geographic Data**: "Create a world map showing sales by country"
 - **Organizational Charts**: "Generate a company hierarchy diagram"
 - **Timeline Visualizations**: "Show project milestones on a timeline chart"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -229,11 +235,13 @@ Generate charts from natural language descriptions - get URL or save as file
 - **Data Integration**: Automatic processing of CSV format data
 - **Style Application**: Automatic optimization of colors, fonts, and layout
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Quick Prototyping**: "Show monthly revenue growth as a blue line chart"
 - **Data Exploration**: "Create a chart that best represents this sales data"
 - **Automated Reporting**: "Generate appropriate visualization from CSV data"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -262,11 +270,13 @@ Create compact sparkline charts - get URL or save as file
 - **Customizable**: Adjustable colors, line styles, and point display
 - **Smooth Lines**: Line tension adjustment for straight or curved display
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Dashboard Widgets**: "Generate small trend indicators for KPI dashboard"
 - **Inline Metrics**: "Create mini charts for email reports"
 - **Mobile Displays**: "Show compact data trends for mobile apps"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -305,11 +315,13 @@ Create graph diagrams using GraphViz - get URL or save as file
 - **circo**: Circular layouts
 - **twopi**: Radial layouts
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Workflow Documentation**: "Generate a flowchart showing our approval process"
 - **System Architecture**: "Create a network diagram of our infrastructure"
 - **Decision Trees**: "Map out the customer onboarding decision flow"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -336,11 +348,13 @@ Create word cloud visualizations - get URL or save as file
 - **Colors & Style**: Custom color palette, case conversion
 - **Scaling**: Frequency scaling (linear, sqrt, log), font size adjustment
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Content Analysis**: "Create a word cloud from customer feedback"
 - **Survey Results**: "Visualize most common responses in survey data"
 - **Social Media Analytics**: "Show trending keywords from social posts"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -370,11 +384,13 @@ Generate barcodes and QR codes - get URL or save as file
 - **PDF417**: High-capacity 2D barcode
 - **Aztec**: Compact 2D barcode
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Inventory Management**: "Generate product barcodes for warehouse system"
 - **Retail Operations**: "Create UPC codes for new product lines"
 - **Asset Tracking**: "Generate Code128 barcodes for equipment tracking"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -404,11 +420,13 @@ Convert data to table images - get URL or save as file
 - **Padding**: Vertical/horizontal padding, text alignment (right align, etc.)
 - **Separator Lines**: Horizontal line insertion with "-" character support
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Financial Reports**: "Convert quarterly earnings data into professional table"
 - **Comparison Charts**: "Create feature comparison table for products"
 - **Summary Reports**: "Generate formatted tables for executive presentations"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -446,12 +464,14 @@ Create QR codes with extensive customization options - get URL or save as file
 - **Captions**: Text below QR code with font customization
 - **Advanced Styling**: Margin control, custom font families and colors
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Marketing Campaigns**: "Create QR codes linking to product pages"
 - **Event Management**: "Generate QR codes for ticket verification"
 - **Contact Sharing**: "Create QR codes containing business card information"
 - **WiFi Access**: "Generate QR codes for guest network access"
+
+**Usage Examples for AI:**
 
 ```json
 {
@@ -481,11 +501,13 @@ Add watermarks and logos to images - get URL or save as file
 - **Size Adjustment**: Ratio specification, absolute size specification
 - **Opacity Control**: Range from 0.0 (transparent) to 1.0 (opaque)
 
-**Usage Examples:**
+**Prompt Examples:**
 
 - **Document Protection**: "Add company logo watermark to reports"
 - **Brand Consistency**: "Apply watermarks to all marketing materials"
 - **Copyright Protection**: "Add attribution to shared visualizations"
+
+**Usage Examples for AI:**
 
 ```json
 {
