@@ -74,12 +74,12 @@ Claude Desktop の設定に追加：
 
 #### 環境変数
 
-**シンプル設定（推奨）:**
+**環境変数設定:**
 
-- **QUICKCHART_BASE_URL**: すべての QuickChart API のベース URL（デフォルト: `https://quickchart.io`）
-- **QUICKCHART_HOST**: ベース URL の代替名（レガシーサポート）
+- **QUICKCHART_BASE_URL**: メインの QuickChart API ベース URL（デフォルト: `https://quickchart.io`）
+- **QUICKCHART_API_BASE_URL**: QuickChart API サーバーのベース URL（デフォルト: `https://api.quickchart.io`）
 
-`QUICKCHART_BASE_URL` を設定すると、すべてのエンドポイントが自動的に設定されます：
+`QUICKCHART_BASE_URL` を設定すると、以下のエンドポイントが設定されます：
 
 - チャート: `{BASE_URL}/chart`
 - QR コード: `{BASE_URL}/qr`
@@ -90,24 +90,10 @@ Claude Desktop の設定に追加：
 - GraphViz: `{BASE_URL}/graphviz`
 - テキストからチャート: `{BASE_URL}/natural`
 - ウォーターマーク: `{BASE_URL}/watermark`
-- テーブル: `{BASE_URL}/v1/table`（デフォルト使用時は `https://api.quickchart.io/v1/table`）
 
-**高度な設定（個別エンドポイント）:**
-より細かい制御が必要な場合は、個別のエンドポイント URL を設定できます：
+`QUICKCHART_API_BASE_URL` を設定すると、以下のエンドポイントが設定されます：
 
-- **QUICKCHART_BASE_URL**: Chart.js チャート API
-- **QUICKCHART_QRCODE_URL**: QR コード API
-- **QUICKCHART_WORDCLOUD_URL**: ワードクラウド API
-- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API
-- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API
-- **QUICKCHART_BARCODE_URL**: バーコード API
-- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API
-- **QUICKCHART_SPARKLINE_URL**: スパークライン API
-- **QUICKCHART_TABLE_URL**: テーブル API
-- **QUICKCHART_TEXTCHART_URL**: テキストからチャート API
-- **QUICKCHART_WATERMARK_URL**: ウォーターマーク API
-
-個別のエンドポイント変数はベース URL 設定よりも優先されます。
+- テーブル: `{API_BASE_URL}/v1/table`
 
 ## ツール
 

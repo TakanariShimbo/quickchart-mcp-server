@@ -74,12 +74,12 @@ Add to your Claude Desktop configuration:
 
 #### Environment Variables
 
-**Simple Configuration (Recommended):**
+**Environment Variables:**
 
-- **QUICKCHART_BASE_URL**: Base URL for all QuickChart APIs (default: `https://quickchart.io`)
-- **QUICKCHART_HOST**: Alternative name for base URL (legacy support)
+- **QUICKCHART_BASE_URL**: Main QuickChart API base URL (default: `https://quickchart.io`)
+- **QUICKCHART_API_BASE_URL**: QuickChart API server base URL (default: `https://api.quickchart.io`)
 
-Setting `QUICKCHART_BASE_URL` will automatically configure all endpoints:
+Setting `QUICKCHART_BASE_URL` will configure these endpoints:
 
 - Charts: `{BASE_URL}/chart`
 - QR Codes: `{BASE_URL}/qr`
@@ -90,24 +90,10 @@ Setting `QUICKCHART_BASE_URL` will automatically configure all endpoints:
 - GraphViz: `{BASE_URL}/graphviz`
 - Text-to-Chart: `{BASE_URL}/natural`
 - Watermarks: `{BASE_URL}/watermark`
-- Tables: `{BASE_URL}/v1/table` (or `https://api.quickchart.io/v1/table` if using default)
 
-**Advanced Configuration (Individual Endpoints):**
-For fine-grained control, you can still set individual endpoint URLs:
+Setting `QUICKCHART_API_BASE_URL` will configure these endpoints:
 
-- **QUICKCHART_BASE_URL**: Chart.js charts API
-- **QUICKCHART_QRCODE_URL**: QR Code API
-- **QUICKCHART_WORDCLOUD_URL**: Word cloud API
-- **QUICKCHART_APEXCHARTS_URL**: ApexCharts API
-- **QUICKCHART_GOOGLECHARTS_URL**: Google Charts API
-- **QUICKCHART_BARCODE_URL**: Barcode API
-- **QUICKCHART_GRAPHVIZ_URL**: GraphViz API
-- **QUICKCHART_SPARKLINE_URL**: Sparkline API
-- **QUICKCHART_TABLE_URL**: Table API
-- **QUICKCHART_TEXTCHART_URL**: Text-to-Chart API
-- **QUICKCHART_WATERMARK_URL**: Watermark API
-
-Individual endpoint variables take precedence over the base URL setting.
+- Tables: `{API_BASE_URL}/v1/table`
 
 ## Tools
 
