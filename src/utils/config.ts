@@ -72,29 +72,30 @@ export const QuickChartUrls = {
 export function isToolEnabled(toolName: string): boolean {
   const envVar = `QUICKCHART_ENABLE_${toolName.toUpperCase()}`;
   const value = process.env[envVar];
-  
+
   // If not specified, default to enabled
   if (value === undefined) {
     return true;
   }
-  
+
   // Parse boolean value
-  return value.toLowerCase() === 'true' || value === '1';
+  return value.toLowerCase() === "true" || value === "1";
 }
 
 /**
  * Tool name mappings for environment variables
  */
 export const ToolNames = {
-  CHART: 'chart',
-  APEXCHARTS: 'apexcharts', 
-  GOOGLECHARTS: 'googlecharts',
-  TEXTCHART: 'textchart',
-  SPARKLINE: 'sparkline',
-  GRAPHVIZ: 'graphviz',
-  WORDCLOUD: 'wordcloud',
-  BARCODE: 'barcode',
-  QRCODE: 'qrcode',
-  TABLE: 'table',
-  WATERMARK: 'watermark',
+  CHART: "chart",
+  APEXCHARTS: "apexcharts",
+  GOOGLECHARTS: "googlecharts",
+  TEXTCHART: "textchart",
+  SPARKLINE: "sparkline",
+  GRAPHVIZ: "graphviz",
+  WORDCLOUD: "wordcloud",
+  BARCODE: "barcode",
+  QRCODE: "qrcode",
+  TABLE: "table",
+  WATERMARK: "watermark",
+  HELP: "help",
 } as const;
