@@ -73,7 +73,7 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-#### Environment Variables
+### Environment Variables
 
 **Environment Variables:**
 
