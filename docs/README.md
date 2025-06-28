@@ -372,12 +372,18 @@ Create graph diagrams using GraphViz - get URL or save as file
 - **Organizational Charts**: Company hierarchy and reporting structures
 - **Network Diagrams**: System architecture and infrastructure maps
 - **Decision Trees**: Logic flow and decision-making processes
-- **Entity Relationship Diagrams**: Database schema and relationships
+- **ER Diagrams**: Database schema and relationships
 - **State Machines**: System state transitions and workflows
 - **Mind Maps**: Concept mapping and brainstorming diagrams
 - **Dependency Graphs**: Project dependencies and task relationships
 - **System Architecture**: Software component interactions
 - **Data Flow Diagrams**: Information flow through systems
+
+**Prompt Examples:**
+
+- **Workflow Documentation**: "Generate a flowchart showing our approval process"
+- **System Architecture**: "Create a network diagram of our infrastructure"
+- **Decision Trees**: "Map out the customer onboarding decision flow"
 
 **Supported Layout Algorithms:**
 
@@ -412,25 +418,11 @@ Create word cloud visualizations - get URL or save as file
 - **Input**: Action (get_url/save_file), outputPath, text content, fonts, colors, and layout options
 - **Output**: Word cloud URL or confirmation message with saved file path
 
-**What You Can Create:**
+**Prompt Examples:**
 
-- **Content Analysis**: Visualize key themes from speeches, articles, or documents
-- **Survey Response Analysis**: Highlight most frequent answers from feedback
-- **Website Content Summary**: Extract and display main topics from web content
-- **Social Media Analytics**: Show trending keywords from posts and comments
-- **Research Data Visualization**: Display frequency of terms in academic papers
-- **Meeting Notes Summary**: Identify key discussion points and topics
-- **Product Review Analysis**: Visualize common themes in customer feedback
-- **Presentation Graphics**: Create engaging visual summaries for reports
-- **Marketing Copy Analysis**: Analyze word frequency in advertising content
-- **Brand Mention Tracking**: Display frequency of brand-related terms
-
-**Customization Features:**
-
-- **Text Processing**: Stopword removal, minimum word length, case conversion
-- **Visual Styling**: Google Fonts support, custom color palettes, word rotation
-- **Layout Control**: Maximum word count, frequency scaling (linear/sqrt/log)
-- **Output Options**: Multiple formats (PNG, SVG), adjustable dimensions
+- **Content Analysis**: "Create a word cloud from customer feedback"
+- **Survey Results**: "Visualize most common responses in survey data"
+- **Social Media Analytics**: "Show trending keywords from social posts"
 
 **Prompt Examples:**
 
@@ -459,9 +451,18 @@ Generate barcodes and QR codes - get URL or save as file
 - **Input**: Action (get_url/save_file), outputPath, barcode type, text data, dimensions, and formatting options
 - **Output**: Barcode URL or confirmation message with saved file path
 
+**Supported Barcode Types (100+ formats):**
+
+- **QR Code**: High-density 2D barcode for URLs, text, and data
+- **Code 128**: Versatile 1D barcode for alphanumeric content
+- **EAN-13/UPC-A**: Standard retail product identification
+- **Data Matrix**: Compact 2D barcode for small items
+- **PDF417**: High-capacity 2D barcode for documents
+- **Aztec**: Compact 2D barcode with built-in error correction
+
 **What You Can Create:**
 
-- **Product Identification**: UPC-A and EAN-13 codes for retail products
+- **Product Management**: UPC-A and EAN-13 codes for retail products
 - **Inventory Management**: Code 128 barcodes for warehouse tracking
 - **Shipping Labels**: Generate tracking codes for logistics
 - **Document Encoding**: PDF417 codes for storing large amounts of data
@@ -474,14 +475,11 @@ Generate barcodes and QR codes - get URL or save as file
 - **WiFi Access**: QR codes for network credentials
 - **Promotional Campaigns**: QR codes linking to special offers
 
-**Supported Barcode Types (100+ formats):**
+**Prompt Examples:**
 
-- **QR Code**: High-density 2D barcode for URLs, text, and data
-- **Code 128**: Versatile 1D barcode for alphanumeric content
-- **EAN-13/UPC-A**: Standard retail product identification
-- **Data Matrix**: Compact 2D barcode for small items
-- **PDF417**: High-capacity 2D barcode for documents
-- **Aztec**: Compact 2D barcode with built-in error correction
+- **Inventory Management**: "Generate product barcodes for warehouse system"
+- **Retail Operations**: "Create UPC codes for new product lines"
+- **Asset Tracking**: "Generate Code128 barcodes for equipment tracking"
 
 **Prompt Examples:**
 
@@ -510,28 +508,11 @@ Convert data to table images - get URL or save as file
 - **Input**: Action (get_url/save_file), outputPath, table data structure, column definitions, and styling options
 - **Output**: Table image URL or confirmation message with saved file path
 
-**What You Can Create:**
+**Prompt Examples:**
 
-- **Financial Reports**: Quarterly earnings, budget summaries, and expense reports
-- **Marketing Dashboards**: Campaign performance metrics and KPI tables
-- **Product Comparisons**: Feature comparison charts for products or services
-- **Sales Reports**: Territory performance, team rankings, and revenue data
-- **Project Status**: Task progress, milestone tracking, and resource allocation
-- **Data Summaries**: Statistical analysis results and survey data
-- **Leaderboards**: Competition rankings and performance metrics
-- **Inventory Reports**: Stock levels, product catalogs, and pricing tables
-- **Meeting Agendas**: Structured agenda items with time allocations
-- **Contact Lists**: Employee directories and client information
-- **Pricing Tables**: Service packages and feature tier comparisons
-- **Educational Content**: Grade reports, curriculum tables, and schedules
-
-**Styling Features:**
-
-- **Layout Control**: Customizable cell dimensions, spacing, and alignment
-- **Typography**: Font family selection and text formatting options
-- **Visual Design**: Background colors, padding, and border styling
-- **Data Organization**: Column definitions, headers, and separator lines
-- **Professional Output**: High-quality PNG images suitable for presentations
+- **Financial Reports**: "Convert quarterly earnings data into professional table"
+- **Comparison Charts**: "Create feature comparison table for products"
+- **Summary Reports**: "Generate formatted tables for executive presentations"
 
 **Prompt Examples:**
 
@@ -584,13 +565,12 @@ Create QR codes with extensive customization options - get URL or save as file
 - **Document Sharing**: Links to PDFs, forms, and downloads
 - **Survey Links**: Research questionnaires and feedback forms
 
-**Customization Features:**
+**Prompt Examples:**
 
-- **Visual Design**: Custom colors, sizes, and transparent backgrounds
-- **Branding**: Logo embedding with adjustable size ratios
-- **Error Correction**: Multiple levels for different use cases
-- **Output Formats**: PNG, SVG, and Base64 encoding options
-- **Enhanced Features**: Captions, custom fonts, and margin control
+- **Marketing Campaigns**: "Create QR codes linking to product pages"
+- **Event Management**: "Generate QR codes for ticket verification"
+- **Contact Sharing**: "Create QR codes containing business card information"
+- **WiFi Access**: "Generate QR codes for guest network access"
 
 **Prompt Examples:**
 
@@ -621,28 +601,11 @@ Add watermarks and logos to images - get URL or save as file
 - **Input**: Action (get_url/save_file), outputPath, main image URL, watermark image URL, positioning, and opacity options
 - **Output**: Watermarked image URL or confirmation message with saved file path
 
-**What You Can Create:**
+**Prompt Examples:**
 
-- **Brand Protection**: Add company logos to marketing materials and documents
-- **Copyright Protection**: Apply attribution marks to shared images and content
-- **Professional Reports**: Overlay company branding on charts and graphs
-- **Marketing Materials**: Brand consistency across promotional images
-- **Social Media Content**: Watermarked images for brand recognition
-- **Document Security**: Add identification marks to sensitive documents
-- **Photo Attribution**: Credit marks on photography and artwork
-- **Presentation Graphics**: Branded visuals for corporate presentations
-- **Web Content**: Watermarked images for websites and blogs
-- **Digital Certificates**: Official seals and stamps on digital documents
-- **Product Images**: Brand logos on product photography
-- **Event Materials**: Organization branding on event graphics
-
-**Positioning & Styling Options:**
-
-- **Flexible Placement**: Preset positions or custom X/Y coordinates
-- **Size Control**: Ratio-based or absolute sizing options
-- **Transparency**: Adjustable opacity from subtle to prominent
-- **Margin Control**: Precise spacing from image edges
-- **Professional Output**: High-quality image overlay processing
+- **Document Protection**: "Add company logo watermark to reports"
+- **Brand Consistency**: "Apply watermarks to all marketing materials"
+- **Copyright Protection**: "Add attribution to shared visualizations"
 
 **Prompt Examples:**
 
