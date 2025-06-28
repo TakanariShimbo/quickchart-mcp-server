@@ -16,7 +16,7 @@ export const CREATE_WATERMARK_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get watermarked image URL or save as file (default: get_url)",
+          "Whether to get watermarked image URL or save as file",
       },
       outputPath: {
         type: "string",

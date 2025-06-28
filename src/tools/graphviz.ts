@@ -15,7 +15,7 @@ export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get graph URL or save as file (default: get_url)",
+          "Whether to get graph URL or save as file",
       },
       outputPath: {
         type: "string",

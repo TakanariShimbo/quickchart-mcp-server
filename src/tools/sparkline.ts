@@ -16,7 +16,7 @@ export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get sparkline URL or save as file (default: get_url)",
+          "Whether to get sparkline URL or save as file",
       },
       outputPath: {
         type: "string",

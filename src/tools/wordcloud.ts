@@ -16,7 +16,7 @@ export const CREATE_WORDCLOUD_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get word cloud URL or save as file (default: get_url)",
+          "Whether to get word cloud URL or save as file",
       },
       outputPath: {
         type: "string",

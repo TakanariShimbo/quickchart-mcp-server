@@ -15,7 +15,7 @@ export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get chart URL or save as file (default: get_url)",
+          "Whether to get chart URL or save as file",
       },
       outputPath: {
         type: "string",

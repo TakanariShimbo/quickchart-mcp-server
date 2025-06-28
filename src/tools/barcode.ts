@@ -15,7 +15,7 @@ export const CREATE_BARCODE_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get barcode URL or save as file (default: get_url)",
+          "Whether to get barcode URL or save as file",
       },
       outputPath: {
         type: "string",

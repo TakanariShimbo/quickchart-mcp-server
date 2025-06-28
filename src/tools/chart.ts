@@ -15,7 +15,7 @@ export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
         type: "string",
         enum: ["get_url", "save_file"],
         description:
-          "Whether to get chart URL or save chart as file (default: get_url)",
+          "Whether to get chart URL or save chart as file",
       },
       outputPath: {
         type: "string",
