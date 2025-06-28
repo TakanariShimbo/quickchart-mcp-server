@@ -2,204 +2,42 @@
 
 # QuickChart MCP Server
 
-A comprehensive Model Context Protocol (MCP) server that provides 11 powerful visualization tools using QuickChart.io APIs. Create charts, diagrams, barcodes, QR codes, word clouds, tables, and more directly from your AI assistant with simple commands.
+## Overview
 
-## Tools
+This Model Context Protocol (MCP) server provides powerful visualization tools using QuickChart.io APIs.  
+With this MCP, AI assistants can create charts, diagrams, barcodes, QR codes, word clouds, tables, and more.
 
-### `create-chart-using-chartjs`
+**Example prompts:**
 
-Create charts using Chart.js and QuickChart.io - get URL or save as file
+- "I need a chart showing our Q4 sales by region"
+- "Create a QR code for our contact information"
+- "Generate a professional table from this CSV data"
+- "Make a word cloud from these customer reviews"
+- "Draw a flowchart of our deployment process"
 
-**Documentation**: [QuickChart.io Chart API](https://quickchart.io/documentation/)
+**The AI will:**
 
-- **Input**: Action (get_url/save_file), outputPath, dimensions (integers), format options, encoding method, and Chart.js configuration object
-- **Output**: Chart URL or confirmation message with saved file path
+1. Choose the right tool for your request
+2. Structure the data appropriately
+3. Apply suitable styling and formatting
+4. Save or display the result as needed
 
-**Supported Chart Types:**
+### Output Options
 
-- **bar**: Bar charts for comparing values across categories
-- **line**: Line charts for showing trends over time
-- **pie**: Pie charts for showing proportions
-- **doughnut**: Doughnut charts (pie chart with hollow center)
-- **radar**: Radar charts for comparing multiple variables
-- **polarArea**: Polar area charts for cyclical data
-- **scatter**: Scatter plots for correlation analysis
-- **bubble**: Bubble charts for three-dimensional data
-- **radialGauge**: Radial gauges for showing single values
-- **speedometer**: Speedometer-style gauges
+**Get URLs:** Perfect for sharing, embedding in web pages, or quick previews  
+**Save Files:** Ideal for reports, presentations, or archival purposes
 
-### `create-chart-using-apexcharts`
+**Supported Formats:**
 
-Create charts using ApexCharts library - get URL or save as file
+- **Images**: PNG, JPEG, WebP, SVG
+- **Documents**: PDF
+- **Data**: Base64 encoding
 
-**Documentation**: [ApexCharts Image Rendering](https://quickchart.io/documentation/apex-charts-image-rendering/)
+**File Management:**
 
-- **Input**: Action (get_url/save_file), outputPath, ApexCharts configuration, dimensions, and version options
-- **Output**: ApexCharts URL or confirmation message with saved file path
-
-**Supported Features:**
-
-- Line charts, area charts, datetime axis charts
-- Customizable axis settings and data labels
-- Line styles and stroke settings
-- Tooltips and interactive elements
-- Ideal for PDF reports and email embedding
-
-### `create-chart-using-googlecharts`
-
-Create charts using Google Charts library - get URL or save as file
-
-**Documentation**: [Google Charts Image Server](https://quickchart.io/documentation/google-charts-image-server/)
-
-- **Input**: Action (get_url/save_file), outputPath, JavaScript drawing code, packages, dimensions, and API keys
-- **Output**: Google Charts URL or confirmation message with saved file path
-
-**Supported Chart Types:**
-
-- **Bar Charts**: Category data comparison
-- **Pie Charts**: Percentage and proportion display
-- **Gauge Charts**: Measurement and target value display
-- **Timeline Charts**: Time-series event display
-- **Geographic Charts**: World maps and regional maps (Maps API key support)
-
-### `create-chart-using-natural-language`
-
-Generate charts from natural language descriptions - get URL or save as file
-
-**Documentation**: [Text to Chart API](https://quickchart.io/documentation/apis/text-to-chart/)
-
-- **Input**: Action (get_url/save_file), outputPath, natural language description, data values, and chart options
-- **Output**: AI-generated chart URL or confirmation message with saved file path
-
-**Main Features:**
-
-- **Natural Language Analysis**: Understands descriptions like "blue line chart showing monthly sales"
-- **Automatic Chart Selection**: Determines optimal chart type automatically
-- **Data Integration**: Automatic processing of CSV format data
-- **Style Application**: Automatic optimization of colors, fonts, and layout
-
-### `create-sparkline-using-chartjs`
-
-Create compact sparkline charts - get URL or save as file
-
-**Documentation**: [Sparkline API](https://quickchart.io/documentation/sparkline-api/)
-
-- **Input**: Action (get_url/save_file), outputPath, Chart.js configuration, dimensions, and display options
-- **Output**: Sparkline URL or confirmation message with saved file path
-
-**Features:**
-
-- **Compact Design**: Embeddable in text and dashboards
-- **Trend Visualization**: Show data trends and variations at a glance
-- **Single & Multiple Series**: Display one or multiple data lines
-- **Customizable**: Adjustable colors, line styles, and point display
-- **Smooth Lines**: Line tension adjustment for straight or curved display
-
-### `create-diagram-using-graphviz`
-
-Create graph diagrams using GraphViz - get URL or save as file
-
-**Documentation**: [GraphViz API](https://quickchart.io/documentation/graphviz-api/)
-
-- **Input**: Action (get_url/save_file), outputPath, DOT graph description, layout algorithm, format, and dimensions
-- **Output**: GraphViz diagram URL or confirmation message with saved file path
-
-**Supported Layout Algorithms:**
-
-- **dot**: Hierarchical graphs (flowcharts)
-- **neato**: Undirected graphs (network diagrams)
-- **fdp**: Force-directed model layouts
-- **circo**: Circular layouts
-- **twopi**: Radial layouts
-
-### `create-wordcloud`
-
-Create word cloud visualizations - get URL or save as file
-
-**Documentation**: [Word Cloud API](https://quickchart.io/documentation/word-cloud-api/)
-
-- **Input**: Action (get_url/save_file), outputPath, text content, fonts, colors, and layout options
-- **Output**: Word cloud URL or confirmation message with saved file path
-
-**Customization Options:**
-
-- **Text Processing**: Stopword removal, text cleaning, minimum word length settings
-- **Font Settings**: Google Fonts loading, font family and weight adjustment
-- **Size & Layout**: Maximum word count (default 200), rotation angle (default 20°)
-- **Colors & Style**: Custom color palette, case conversion
-- **Scaling**: Frequency scaling (linear, sqrt, log), font size adjustment
-
-### `create-barcode`
-
-Generate barcodes and QR codes - get URL or save as file
-
-**Documentation**: [Barcode API](https://quickchart.io/documentation/barcode-api/)
-
-- **Input**: Action (get_url/save_file), outputPath, barcode type, text data, dimensions, and formatting options
-- **Output**: Barcode URL or confirmation message with saved file path
-
-**Supported Barcode Types:**
-
-- **QR Code**: High-density 2D barcode
-- **Code 128**: Alphanumeric 1D barcode
-- **EAN-13/UPC-A**: Standard product barcode
-- **Data Matrix**: Small 2D barcode
-- **PDF417**: High-capacity 2D barcode
-- **Aztec**: Compact 2D barcode
-
-### `create-table`
-
-Convert data to table images - get URL or save as file
-
-**Documentation**: [Table Image API](https://quickchart.io/documentation/apis/table-image-api/)
-
-- **Input**: Action (get_url/save_file), outputPath, table data structure, column definitions, and styling options
-- **Output**: Table image URL or confirmation message with saved file path
-
-**Styling Features:**
-
-- **Cell Settings**: Cell width and height (default 100x40px), left/right offset adjustment
-- **Font Settings**: Font family (default "sans-serif")
-- **Background Color**: Table background color (default "#ffffff")
-- **Spacing**: Table spacing (20px), title spacing (10px)
-- **Padding**: Vertical/horizontal padding, text alignment (right align, etc.)
-- **Separator Lines**: Horizontal line insertion with "-" character support
-
-### `create-qr-code`
-
-Create QR codes with extensive customization options - get URL or save as file
-
-**Documentation**: [QR Code API](https://quickchart.io/documentation/qr-codes/)
-
-- **Input**: Action (get_url/save_file), outputPath, text content, format options, size, colors, error correction level, and advanced customization
-- **Output**: QR code URL or confirmation message with saved file path
-
-**Customization Features:**
-
-- **Text Content**: URLs, plain text, contact info, WiFi credentials
-- **Format Options**: PNG, SVG, Base64 output formats
-- **Size & Colors**: Custom dimensions, foreground/background colors, transparent backgrounds
-- **Error Correction**: L (Low), M (Medium), Q (Quartile), H (High) levels
-- **Center Images**: Logo or image embedding with size ratio control
-- **Captions**: Text below QR code with font customization
-- **Advanced Styling**: Margin control, custom font families and colors
-
-### `create-watermark`
-
-Add watermarks and logos to images - get URL or save as file
-
-**Documentation**: [Watermark API](https://quickchart.io/documentation/watermark-api/)
-
-- **Input**: Action (get_url/save_file), outputPath, main image URL, watermark image URL, positioning, and opacity options
-- **Output**: Watermarked image URL or confirmation message with saved file path
-
-**Positioning Options:**
-
-- **Preset Positions**: Center, corners, top/bottom middle, left/right middle
-- **Custom Position**: Precise placement using X/Y coordinates
-- **Margin Settings**: Distance adjustment from edges
-- **Size Adjustment**: Ratio specification, absolute size specification
-- **Opacity Control**: Range from 0.0 (transparent) to 1.0 (opaque)
+- Files are saved to your Desktop by default
+- Custom paths supported for organization
+- Automatic directory creation when needed
 
 ## Installation
 
@@ -250,118 +88,37 @@ You can customize API endpoints by setting these environment variables:
 
 Use these to point to self-hosted QuickChart instances or alternative endpoints.
 
-## Usage Examples
+## Tools
 
-### Use Cases for human
+### `create-chart-using-chartjs`
 
-#### Chart Creation (`create-chart-using-chartjs`)
+Create charts using Chart.js and QuickChart.io - get URL or save as file
+
+**Documentation**: [QuickChart.io Chart API](https://quickchart.io/documentation/)
+
+- **Input**: Action (get_url/save_file), outputPath, dimensions (integers), format options, encoding method, and Chart.js configuration object
+- **Output**: Chart URL or confirmation message with saved file path
+
+**Supported Chart Types:**
+
+- **bar**: Bar charts for comparing values across categories
+- **line**: Line charts for showing trends over time
+- **pie**: Pie charts for showing proportions
+- **doughnut**: Doughnut charts (pie chart with hollow center)
+- **radar**: Radar charts for comparing multiple variables
+- **polarArea**: Polar area charts for cyclical data
+- **scatter**: Scatter plots for correlation analysis
+- **bubble**: Bubble charts for three-dimensional data
+- **radialGauge**: Radial gauges for showing single values
+- **speedometer**: Speedometer-style gauges
+
+**Usage Examples:**
 
 - **Sales Reports**: "Create a bar chart showing monthly sales data"
 - **Performance Metrics**: "Generate a gauge chart showing our 85% performance score"
 - **Trend Analysis**: "Show quarterly revenue growth as a line chart"
 - **Data Comparison**: "Compare product performance across regions using a pie chart"
 - **Statistical Analysis**: "Create a scatter plot to show the relationship between price and sales"
-
-#### Advanced Charts (`create-chart-using-apexcharts`)
-
-- **Financial Dashboards**: "Create a candlestick chart for stock prices"
-- **Interactive Reports**: "Generate a multi-series area chart with zoom functionality"
-- **Time Series Analysis**: "Show real-time data with datetime axis charts"
-
-#### Google Charts Integration (`create-chart-using-googlecharts`)
-
-- **Geographic Data**: "Create a world map showing sales by country"
-- **Organizational Charts**: "Generate a company hierarchy diagram"
-- **Timeline Visualizations**: "Show project milestones on a timeline chart"
-
-#### AI-Powered Charts (`create-chart-using-natural-language`)
-
-- **Quick Prototyping**: "Show monthly revenue growth as a blue line chart"
-- **Data Exploration**: "Create a chart that best represents this sales data"
-- **Automated Reporting**: "Generate appropriate visualization from CSV data"
-
-#### Compact Visualizations (`create-sparkline-using-chartjs`)
-
-- **Dashboard Widgets**: "Generate small trend indicators for KPI dashboard"
-- **Inline Metrics**: "Create mini charts for email reports"
-- **Mobile Displays**: "Show compact data trends for mobile apps"
-
-#### Process Diagrams (`create-diagram-using-graphviz`)
-
-- **Workflow Documentation**: "Generate a flowchart showing our approval process"
-- **System Architecture**: "Create a network diagram of our infrastructure"
-- **Decision Trees**: "Map out the customer onboarding decision flow"
-
-#### Text Visualization (`create-wordcloud`)
-
-- **Content Analysis**: "Create a word cloud from customer feedback"
-- **Survey Results**: "Visualize most common responses in survey data"
-- **Social Media Analytics**: "Show trending keywords from social posts"
-
-#### Product Identification (`create-barcode`)
-
-- **Inventory Management**: "Generate product barcodes for warehouse system"
-- **Retail Operations**: "Create UPC codes for new product lines"
-- **Asset Tracking**: "Generate Code128 barcodes for equipment tracking"
-
-#### Digital Connectivity (`create-qr-code`)
-
-- **Marketing Campaigns**: "Create QR codes linking to product pages"
-- **Event Management**: "Generate QR codes for ticket verification"
-- **Contact Sharing**: "Create QR codes containing business card information"
-- **WiFi Access**: "Generate QR codes for guest network access"
-
-#### Data Presentation (`create-table`)
-
-- **Financial Reports**: "Convert quarterly earnings data into professional table"
-- **Comparison Charts**: "Create feature comparison table for products"
-- **Summary Reports**: "Generate formatted tables for executive presentations"
-
-#### Branding & Attribution (`create-watermark`)
-
-- **Document Protection**: "Add company logo watermark to reports"
-- **Brand Consistency**: "Apply watermarks to all marketing materials"
-- **Copyright Protection**: "Add attribution to shared visualizations"
-
-### Working with AI Assistants
-
-The beauty of this MCP server is that you don't need to know the technical details. Just tell your AI assistant what you want:
-
-**Natural Language Examples:**
-
-- "I need a chart showing our Q4 sales by region"
-- "Create a QR code for our contact information"
-- "Generate a professional table from this CSV data"
-- "Make a word cloud from these customer reviews"
-- "Draw a flowchart of our deployment process"
-
-**The AI will:**
-
-1. Choose the right tool for your request
-2. Structure the data appropriately
-3. Apply suitable styling and formatting
-4. Save or display the result as needed
-
-### Output Options
-
-**Get URLs:** Perfect for sharing, embedding in web pages, or quick previews
-**Save Files:** Ideal for reports, presentations, or archival purposes
-
-**Supported Formats:**
-
-- **Images**: PNG, JPEG, WebP, SVG
-- **Documents**: PDF
-- **Data**: Base64 encoding
-
-**File Management:**
-
-- Files are saved to your Desktop by default
-- Custom paths supported for organization
-- Automatic directory creation when needed
-
-### Use Cases for AI
-
-#### `create-chart-using-chartjs`
 
 ```json
 {
@@ -382,85 +139,28 @@ The beauty of this MCP server is that you don't need to know the technical detai
 }
 ```
 
-#### `create-qr-code`
+### `create-chart-using-apexcharts`
 
-```json
-{
-  "action": "save_file",
-  "text": "https://example.com",
-  "size": 300,
-  "centerImageUrl": "https://example.com/logo.png",
-  "centerImageSizeRatio": 0.2,
-  "caption": "Visit our website"
-}
-```
+Create charts using ApexCharts library - get URL or save as file
 
-#### `create-wordcloud`
+**Documentation**: [ApexCharts Image Rendering](https://quickchart.io/documentation/apex-charts-image-rendering/)
 
-```json
-{
-  "action": "get_url",
-  "text": "innovation technology artificial intelligence machine learning data science",
-  "width": 800,
-  "height": 400,
-  "backgroundColor": "#f0f0f0"
-}
-```
+- **Input**: Action (get_url/save_file), outputPath, ApexCharts configuration, dimensions, and version options
+- **Output**: ApexCharts URL or confirmation message with saved file path
 
-#### `create-table`
+**Supported Features:**
 
-```json
-{
-  "action": "save_file",
-  "data": {
-    "title": "Q4 Sales Report",
-    "columns": [
-      { "title": "Product", "dataIndex": "product" },
-      { "title": "Revenue", "dataIndex": "revenue" }
-    ],
-    "dataSource": [
-      { "product": "Product A", "revenue": "$50,000" },
-      { "product": "Product B", "revenue": "$75,000" }
-    ]
-  }
-}
-```
+- Line charts, area charts, datetime axis charts
+- Customizable axis settings and data labels
+- Line styles and stroke settings
+- Tooltips and interactive elements
+- Ideal for PDF reports and email embedding
 
-#### `create-diagram-using-graphviz`
+**Usage Examples:**
 
-```json
-{
-  "action": "get_url",
-  "graph": "digraph G { Start -> Process -> Decision; Decision -> End [label=\"Yes\"]; Decision -> Process [label=\"No\"]; }",
-  "layout": "dot"
-}
-```
-
-#### `create-chart-using-natural-language`
-
-```json
-{
-  "action": "save_file",
-  "description": "Show monthly revenue growth as a blue line chart",
-  "data1": "100,120,150,180,200",
-  "labels": "Jan,Feb,Mar,Apr,May",
-  "title": "Revenue Growth"
-}
-```
-
-#### `create-barcode`
-
-```json
-{
-  "action": "get_url",
-  "type": "code128",
-  "text": "ABC123456789",
-  "width": 300,
-  "height": 100
-}
-```
-
-#### `create-chart-using-apexcharts`
+- **Financial Dashboards**: "Create a candlestick chart for stock prices"
+- **Interactive Reports**: "Generate a multi-series area chart with zoom functionality"
+- **Time Series Analysis**: "Show real-time data with datetime axis charts"
 
 ```json
 {
@@ -482,7 +182,28 @@ The beauty of this MCP server is that you don't need to know the technical detai
 }
 ```
 
-#### `create-chart-using-googlecharts`
+### `create-chart-using-googlecharts`
+
+Create charts using Google Charts library - get URL or save as file
+
+**Documentation**: [Google Charts Image Server](https://quickchart.io/documentation/google-charts-image-server/)
+
+- **Input**: Action (get_url/save_file), outputPath, JavaScript drawing code, packages, dimensions, and API keys
+- **Output**: Google Charts URL or confirmation message with saved file path
+
+**Supported Chart Types:**
+
+- **Bar Charts**: Category data comparison
+- **Pie Charts**: Percentage and proportion display
+- **Gauge Charts**: Measurement and target value display
+- **Timeline Charts**: Time-series event display
+- **Geographic Charts**: World maps and regional maps (Maps API key support)
+
+**Usage Examples:**
+
+- **Geographic Data**: "Create a world map showing sales by country"
+- **Organizational Charts**: "Generate a company hierarchy diagram"
+- **Timeline Visualizations**: "Show project milestones on a timeline chart"
 
 ```json
 {
@@ -492,7 +213,60 @@ The beauty of this MCP server is that you don't need to know the technical detai
 }
 ```
 
-#### `create-sparkline-using-chartjs`
+### `create-chart-using-natural-language`
+
+Generate charts from natural language descriptions - get URL or save as file
+
+**Documentation**: [Text to Chart API](https://quickchart.io/documentation/apis/text-to-chart/)
+
+- **Input**: Action (get_url/save_file), outputPath, natural language description, data values, and chart options
+- **Output**: AI-generated chart URL or confirmation message with saved file path
+
+**Main Features:**
+
+- **Natural Language Analysis**: Understands descriptions like "blue line chart showing monthly sales"
+- **Automatic Chart Selection**: Determines optimal chart type automatically
+- **Data Integration**: Automatic processing of CSV format data
+- **Style Application**: Automatic optimization of colors, fonts, and layout
+
+**Usage Examples:**
+
+- **Quick Prototyping**: "Show monthly revenue growth as a blue line chart"
+- **Data Exploration**: "Create a chart that best represents this sales data"
+- **Automated Reporting**: "Generate appropriate visualization from CSV data"
+
+```json
+{
+  "action": "save_file",
+  "description": "Show monthly revenue growth as a blue line chart",
+  "data1": "100,120,150,180,200",
+  "labels": "Jan,Feb,Mar,Apr,May",
+  "title": "Revenue Growth"
+}
+```
+
+### `create-sparkline-using-chartjs`
+
+Create compact sparkline charts - get URL or save as file
+
+**Documentation**: [Sparkline API](https://quickchart.io/documentation/sparkline-api/)
+
+- **Input**: Action (get_url/save_file), outputPath, Chart.js configuration, dimensions, and display options
+- **Output**: Sparkline URL or confirmation message with saved file path
+
+**Features:**
+
+- **Compact Design**: Embeddable in text and dashboards
+- **Trend Visualization**: Show data trends and variations at a glance
+- **Single & Multiple Series**: Display one or multiple data lines
+- **Customizable**: Adjustable colors, line styles, and point display
+- **Smooth Lines**: Line tension adjustment for straight or curved display
+
+**Usage Examples:**
+
+- **Dashboard Widgets**: "Generate small trend indicators for KPI dashboard"
+- **Inline Metrics**: "Create mini charts for email reports"
+- **Mobile Displays**: "Show compact data trends for mobile apps"
 
 ```json
 {
@@ -514,7 +288,204 @@ The beauty of this MCP server is that you don't need to know the technical detai
 }
 ```
 
-#### `create-watermark`
+### `create-diagram-using-graphviz`
+
+Create graph diagrams using GraphViz - get URL or save as file
+
+**Documentation**: [GraphViz API](https://quickchart.io/documentation/graphviz-api/)
+
+- **Input**: Action (get_url/save_file), outputPath, DOT graph description, layout algorithm, format, and dimensions
+- **Output**: GraphViz diagram URL or confirmation message with saved file path
+
+**Supported Layout Algorithms:**
+
+- **dot**: Hierarchical graphs (flowcharts)
+- **neato**: Undirected graphs (network diagrams)
+- **fdp**: Force-directed model layouts
+- **circo**: Circular layouts
+- **twopi**: Radial layouts
+
+**Usage Examples:**
+
+- **Workflow Documentation**: "Generate a flowchart showing our approval process"
+- **System Architecture**: "Create a network diagram of our infrastructure"
+- **Decision Trees**: "Map out the customer onboarding decision flow"
+
+```json
+{
+  "action": "get_url",
+  "graph": "digraph G { Start -> Process -> Decision; Decision -> End [label=\"Yes\"]; Decision -> Process [label=\"No\"]; }",
+  "layout": "dot"
+}
+```
+
+### `create-wordcloud`
+
+Create word cloud visualizations - get URL or save as file
+
+**Documentation**: [Word Cloud API](https://quickchart.io/documentation/word-cloud-api/)
+
+- **Input**: Action (get_url/save_file), outputPath, text content, fonts, colors, and layout options
+- **Output**: Word cloud URL or confirmation message with saved file path
+
+**Customization Options:**
+
+- **Text Processing**: Stopword removal, text cleaning, minimum word length settings
+- **Font Settings**: Google Fonts loading, font family and weight adjustment
+- **Size & Layout**: Maximum word count (default 200), rotation angle (default 20°)
+- **Colors & Style**: Custom color palette, case conversion
+- **Scaling**: Frequency scaling (linear, sqrt, log), font size adjustment
+
+**Usage Examples:**
+
+- **Content Analysis**: "Create a word cloud from customer feedback"
+- **Survey Results**: "Visualize most common responses in survey data"
+- **Social Media Analytics**: "Show trending keywords from social posts"
+
+```json
+{
+  "action": "get_url",
+  "text": "innovation technology artificial intelligence machine learning data science",
+  "width": 800,
+  "height": 400,
+  "backgroundColor": "#f0f0f0"
+}
+```
+
+### `create-barcode`
+
+Generate barcodes and QR codes - get URL or save as file
+
+**Documentation**: [Barcode API](https://quickchart.io/documentation/barcode-api/)
+
+- **Input**: Action (get_url/save_file), outputPath, barcode type, text data, dimensions, and formatting options
+- **Output**: Barcode URL or confirmation message with saved file path
+
+**Supported Barcode Types:**
+
+- **QR Code**: High-density 2D barcode
+- **Code 128**: Alphanumeric 1D barcode
+- **EAN-13/UPC-A**: Standard product barcode
+- **Data Matrix**: Small 2D barcode
+- **PDF417**: High-capacity 2D barcode
+- **Aztec**: Compact 2D barcode
+
+**Usage Examples:**
+
+- **Inventory Management**: "Generate product barcodes for warehouse system"
+- **Retail Operations**: "Create UPC codes for new product lines"
+- **Asset Tracking**: "Generate Code128 barcodes for equipment tracking"
+
+```json
+{
+  "action": "get_url",
+  "type": "code128",
+  "text": "ABC123456789",
+  "width": 300,
+  "height": 100
+}
+```
+
+### `create-table`
+
+Convert data to table images - get URL or save as file
+
+**Documentation**: [Table Image API](https://quickchart.io/documentation/apis/table-image-api/)
+
+- **Input**: Action (get_url/save_file), outputPath, table data structure, column definitions, and styling options
+- **Output**: Table image URL or confirmation message with saved file path
+
+**Styling Features:**
+
+- **Cell Settings**: Cell width and height (default 100x40px), left/right offset adjustment
+- **Font Settings**: Font family (default "sans-serif")
+- **Background Color**: Table background color (default "#ffffff")
+- **Spacing**: Table spacing (20px), title spacing (10px)
+- **Padding**: Vertical/horizontal padding, text alignment (right align, etc.)
+- **Separator Lines**: Horizontal line insertion with "-" character support
+
+**Usage Examples:**
+
+- **Financial Reports**: "Convert quarterly earnings data into professional table"
+- **Comparison Charts**: "Create feature comparison table for products"
+- **Summary Reports**: "Generate formatted tables for executive presentations"
+
+```json
+{
+  "action": "save_file",
+  "data": {
+    "title": "Q4 Sales Report",
+    "columns": [
+      { "title": "Product", "dataIndex": "product" },
+      { "title": "Revenue", "dataIndex": "revenue" }
+    ],
+    "dataSource": [
+      { "product": "Product A", "revenue": "$50,000" },
+      { "product": "Product B", "revenue": "$75,000" }
+    ]
+  }
+}
+```
+
+### `create-qr-code`
+
+Create QR codes with extensive customization options - get URL or save as file
+
+**Documentation**: [QR Code API](https://quickchart.io/documentation/qr-codes/)
+
+- **Input**: Action (get_url/save_file), outputPath, text content, format options, size, colors, error correction level, and advanced customization
+- **Output**: QR code URL or confirmation message with saved file path
+
+**Customization Features:**
+
+- **Text Content**: URLs, plain text, contact info, WiFi credentials
+- **Format Options**: PNG, SVG, Base64 output formats
+- **Size & Colors**: Custom dimensions, foreground/background colors, transparent backgrounds
+- **Error Correction**: L (Low), M (Medium), Q (Quartile), H (High) levels
+- **Center Images**: Logo or image embedding with size ratio control
+- **Captions**: Text below QR code with font customization
+- **Advanced Styling**: Margin control, custom font families and colors
+
+**Usage Examples:**
+
+- **Marketing Campaigns**: "Create QR codes linking to product pages"
+- **Event Management**: "Generate QR codes for ticket verification"
+- **Contact Sharing**: "Create QR codes containing business card information"
+- **WiFi Access**: "Generate QR codes for guest network access"
+
+```json
+{
+  "action": "save_file",
+  "text": "https://example.com",
+  "size": 300,
+  "centerImageUrl": "https://example.com/logo.png",
+  "centerImageSizeRatio": 0.2,
+  "caption": "Visit our website"
+}
+```
+
+### `create-watermark`
+
+Add watermarks and logos to images - get URL or save as file
+
+**Documentation**: [Watermark API](https://quickchart.io/documentation/watermark-api/)
+
+- **Input**: Action (get_url/save_file), outputPath, main image URL, watermark image URL, positioning, and opacity options
+- **Output**: Watermarked image URL or confirmation message with saved file path
+
+**Positioning Options:**
+
+- **Preset Positions**: Center, corners, top/bottom middle, left/right middle
+- **Custom Position**: Precise placement using X/Y coordinates
+- **Margin Settings**: Distance adjustment from edges
+- **Size Adjustment**: Ratio specification, absolute size specification
+- **Opacity Control**: Range from 0.0 (transparent) to 1.0 (opaque)
+
+**Usage Examples:**
+
+- **Document Protection**: "Add company logo watermark to reports"
+- **Brand Consistency**: "Apply watermarks to all marketing materials"
+- **Copyright Protection**: "Add attribution to shared visualizations"
 
 ```json
 {
@@ -525,6 +496,7 @@ The beauty of this MCP server is that you don't need to know the technical detai
   "opacity": 0.7
 }
 ```
+
 
 ## Development
 
