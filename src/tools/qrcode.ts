@@ -152,14 +152,40 @@ function prepareQRCodeConfig(text: string, args: any): Record<string, string> {
   });
 }
 
+async function fetchQRCodeContent(
+  params: Record<string, string>,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const queryString = new URLSearchParams(params).toString();
+    const qrUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
+    
+    const responseType = format === "svg" ? "text" : "arraybuffer";
+    const response = await axios.get(qrUrl, {
+      responseType: responseType as any,
+      timeout: 30000,
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch QR code content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateQRCodeUrls(params: Record<string, string>): {
-  qrUrl: string;
+  chartUrl: string;
 } {
-  const queryString = new URLSearchParams(params).toString();
-  const qrUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
+  // Use only the text for simple URL
+  const text = decodeURIComponent(params.text);
+  const encodedText = encodeURIComponent(text);
   
   return {
-    qrUrl
+    chartUrl: `https://quickchart.io/qr?text=${encodedText}`,
   };
 }
 
@@ -174,63 +200,74 @@ export async function handleQRCodeTool(args: any): Promise<any> {
     );
   }
 
-  const format = (args.format as string) || "png";
   const params = prepareQRCodeConfig(args.text as string, args);
-  const { qrUrl } = generateQRCodeUrls(params);
+  const { chartUrl } = generateQRCodeUrls(params);
+
+  // Generate PNG image for display
+  const pngData = await fetchQRCodeContent(params, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the QR code URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: "qrcode",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: qrUrl,
-        },
-      ],
-      metadata: {
-        qrType: "text",
-        generatedAt: new Date().toISOString(),
-        qrUrl: qrUrl,
-      },
-    };
+    return result;
   }
 
+  const format = (args.format as string) || "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
     format
   );
 
   try {
-    const responseType = format === "svg" ? "text" : "arraybuffer";
-    const response = await axios.get(qrUrl, {
-      responseType: responseType as any,
-      timeout: 30000,
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
+    const data = await fetchQRCodeContent(params, format);
     if (format === "svg") {
-      fs.writeFileSync(outputPath, response.data, "utf8");
+      fs.writeFileSync(outputPath, data, "utf8");
     } else {
-      fs.writeFileSync(outputPath, response.data);
+      fs.writeFileSync(outputPath, data);
     }
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: qrUrl,
-        },
-      ],
-      metadata: {
-        qrType: "text",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        qrUrl: qrUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,

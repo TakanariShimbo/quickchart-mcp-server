@@ -201,14 +201,40 @@ function prepareWordCloudConfig(text: string, args: any): any {
   });
 }
 
+async function fetchWordCloudContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const responseType = format === "svg" ? "text" : "arraybuffer";
+    const response = await axios.post(QuickChartUrls.wordcloud(), postConfig, {
+      responseType: responseType as any,
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch word cloud content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateWordCloudUrls(postConfig: any): {
-  wordcloudUrl: string;
+  chartUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  // Use only the text for simple URL
+  const text = postConfig.text;
+  const encodedText = encodeURIComponent(text);
   
   return {
-    wordcloudUrl: `https://quickchart.io/wordcloud?config=${encodedConfig}`
+    chartUrl: `https://quickchart.io/wordcloud?text=${encodedText}`,
   };
 }
 
@@ -223,74 +249,78 @@ export async function handleWordCloudTool(args: any): Promise<any> {
     );
   }
 
-  const wordCloudConfig = prepareWordCloudConfig(args.text as string, args);
-  const { wordcloudUrl } = generateWordCloudUrls(wordCloudConfig);
+  const postConfig = prepareWordCloudConfig(args.text as string, args);
+  const { chartUrl } = generateWordCloudUrls(postConfig);
+
+  // Generate PNG image for display
+  const pngData = await fetchWordCloudContent(postConfig, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the wordcloud URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: "wordcloud",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: wordcloudUrl,
-        },
-      ],
-      metadata: {
-        wordcloudType: "text",
-        generatedAt: new Date().toISOString(),
-        wordcloudUrl: wordcloudUrl,
-      },
-    };
+    return result;
   }
 
-  const format = (args.format as string) || "svg";
+  const format = (args.format as string) || "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
     format
   );
 
   try {
-    const responseType = format === "svg" ? "text" : "arraybuffer";
-    const response = await axios.post(
-      QuickChartUrls.wordcloud(),
-      wordCloudConfig,
-      {
-        responseType: responseType as any,
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
+    const data = await fetchWordCloudContent(postConfig, format);
     if (format === "svg") {
-      fs.writeFileSync(outputPath, response.data, "utf8");
+      fs.writeFileSync(outputPath, data, "utf8");
     } else {
-      fs.writeFileSync(outputPath, response.data);
+      fs.writeFileSync(outputPath, data);
     }
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: wordcloudUrl,
-        },
-      ],
-      metadata: {
-        wordcloudType: "text",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        wordcloudUrl: wordcloudUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
-      `Failed to save word cloud: ${
+      `Failed to save wordcloud: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
