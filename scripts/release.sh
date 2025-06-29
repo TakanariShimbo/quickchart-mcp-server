@@ -160,37 +160,39 @@ git pull origin main
 # =====================
 # 6. Version Consistency Check
 #
-# Check versions across package.json, package-lock.json, and index.ts
+# Check versions across package.json, package-lock.json, index.ts, and manifest.json
 #
 # Examples:
-#   All synced → package.json: 0.1.3, package-lock.json: 0.1.3, index.ts: 0.1.3
-#   Mismatch → package.json: 0.1.4, package-lock.json: 0.1.3, index.ts: 0.1.3
+#   All synced → package.json: 0.1.3, package-lock.json: 0.1.3, index.ts: 0.1.3, manifest.json: 0.1.3
+#   Mismatch → package.json: 0.1.4, package-lock.json: 0.1.3, index.ts: 0.1.3, manifest.json: 0.1.3
 #   Missing version in index.ts → index.ts: (empty)
-#   Different formats → package.json: 1.0.0, index.ts: 1.0.0, package-lock.json: 1.0.0
+#   Different formats → package.json: 1.0.0, index.ts: 1.0.0, package-lock.json: 1.0.0, manifest.json: 1.0.0
 #
 # 6. バージョン整合性チェック
 #
-# package.json、package-lock.json、index.ts間でバージョンをチェック
+# package.json、package-lock.json、index.ts、manifest.json間でバージョンをチェック
 #
 # 例:
-#   すべて同期 → package.json: 0.1.3, package-lock.json: 0.1.3, index.ts: 0.1.3
-#   不整合 → package.json: 0.1.4, package-lock.json: 0.1.3, index.ts: 0.1.3
+#   すべて同期 → package.json: 0.1.3, package-lock.json: 0.1.3, index.ts: 0.1.3, manifest.json: 0.1.3
+#   不整合 → package.json: 0.1.4, package-lock.json: 0.1.3, index.ts: 0.1.3, manifest.json: 0.1.3
 #   index.tsにバージョンがない → index.ts: (空)
-#   異なる形式 → package.json: 1.0.0, index.ts: 1.0.0, package-lock.json: 1.0.0
+#   異なる形式 → package.json: 1.0.0, index.ts: 1.0.0, package-lock.json: 1.0.0, manifest.json: 1.0.0
 # =====================
 PACKAGE_VERSION=$(grep -o '"version": "[^"]*"' package.json | cut -d'"' -f4)
 PACKAGE_LOCK_VERSION=$(grep -o '"version": "[^"]*"' package-lock.json | head -1 | cut -d'"' -f4)
 INDEX_VERSION=$(grep -o 'version: "[^"]*"' src/index.ts | cut -d'"' -f2)
+MANIFEST_VERSION=$(grep -o '"version": "[^"]*"' manifest.json | cut -d'"' -f4)
 
 echo "Current versions:"
 echo "- package.json: $PACKAGE_VERSION"
 echo "- package-lock.json: $PACKAGE_LOCK_VERSION"
 echo "- src/index.ts: $INDEX_VERSION"
+echo "- manifest.json: $MANIFEST_VERSION"
 
 # =====================
-# 7. Version Update Function
+# 7. Version Update Functions
 #
-# Function to update version in index.ts file
+# Functions to update version in index.ts and manifest.json files
 #
 # Examples:
 #   update_index_version "0.1.3" "0.1.4" → Changes 'version: "0.1.3"' to 'version: "0.1.4"'
@@ -200,7 +202,7 @@ echo "- src/index.ts: $INDEX_VERSION"
 #
 # 7. バージョン更新関数
 #
-# index.tsファイルのバージョンを更新する関数
+# index.tsとmanifest.jsonファイルのバージョンを更新する関数
 #
 # 例:
 #   update_index_version "0.1.3" "0.1.4" → 'version: "0.1.3"'を'version: "0.1.4"'に変更
@@ -228,6 +230,21 @@ update_index_version() {
   fi
 }
 
+update_manifest_version() {
+  local old_version=$1
+  local new_version=$2
+  
+  echo "Updating version in manifest.json from $old_version to $new_version..."
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    sed -i '' "s/\"version\": \"$old_version\"/\"version\": \"$new_version\"/" manifest.json
+  else
+    # Linux
+    sed -i "s/\"version\": \"$old_version\"/\"version\": \"$new_version\"/" manifest.json
+  fi
+  git add manifest.json
+}
+
 # =====================
 # 8. Version Mismatch Warning
 #
@@ -235,7 +252,7 @@ update_index_version() {
 #
 # Examples:
 #   No mismatch → Skip this section entirely
-#   package.json: 0.1.4, index.ts: 0.1.3 → "Warning: Version mismatch detected between files."
+#   package.json: 0.1.4, index.ts: 0.1.3, manifest.json: 0.1.3 → "Warning: Version mismatch detected between files."
 #   With specific version → "Will update all files to version: 0.2.0"
 #   With increment → "Will update all files using increment: patch"
 #   User types 'n' → Script exits
@@ -247,13 +264,13 @@ update_index_version() {
 #
 # 例:
 #   不整合なし → このセクションを完全にスキップ
-#   package.json: 0.1.4, index.ts: 0.1.3 → "警告: ファイル間でバージョンの不整合が検出されました。"
+#   package.json: 0.1.4, index.ts: 0.1.3, manifest.json: 0.1.3 → "警告: ファイル間でバージョンの不整合が検出されました。"
 #   特定のバージョンで → "すべてのファイルをバージョン0.2.0に更新します"
 #   増分で → "増分patchを使用してすべてのファイルを更新します"
 #   ユーザーが'n'を入力 → スクリプト終了
 #   ユーザーが'y'を入力 → 同期してスクリプト続行
 # =====================
-if [ "$PACKAGE_VERSION" != "$PACKAGE_LOCK_VERSION" ] || [ "$PACKAGE_VERSION" != "$INDEX_VERSION" ]; then
+if [ "$PACKAGE_VERSION" != "$PACKAGE_LOCK_VERSION" ] || [ "$PACKAGE_VERSION" != "$INDEX_VERSION" ] || [ "$PACKAGE_VERSION" != "$MANIFEST_VERSION" ]; then
   echo "Warning: Version mismatch detected between files."
   
   if [ -n "$SPECIFIC_VERSION" ]; then
@@ -275,10 +292,10 @@ fi
 # Update versions in all files and commit changes
 #
 # Examples:
-#   patch increment → 0.1.3 → 0.1.4 (package.json, package-lock.json, index.ts)
-#   minor increment → 0.1.3 → 0.2.0 (package.json, package-lock.json, index.ts)
-#   major increment → 0.1.3 → 1.0.0 (package.json, package-lock.json, index.ts)
-#   specific version → any version → 0.5.0 (package.json, package-lock.json, index.ts)
+#   patch increment → 0.1.3 → 0.1.4 (package.json, package-lock.json, index.ts, manifest.json)
+#   minor increment → 0.1.3 → 0.2.0 (package.json, package-lock.json, index.ts, manifest.json)
+#   major increment → 0.1.3 → 1.0.0 (package.json, package-lock.json, index.ts, manifest.json)
+#   specific version → any version → 0.5.0 (package.json, package-lock.json, index.ts, manifest.json)
 #   Creates commit → "chore: release version 0.1.4"
 #   Creates tag → "v0.1.4" with message "Version 0.1.4"
 #
@@ -287,10 +304,10 @@ fi
 # すべてのファイルでバージョンを更新し、変更をコミット
 #
 # 例:
-#   パッチ増分 → 0.1.3 → 0.1.4 (package.json, package-lock.json, index.ts)
-#   マイナー増分 → 0.1.3 → 0.2.0 (package.json, package-lock.json, index.ts)
-#   メジャー増分 → 0.1.3 → 1.0.0 (package.json, package-lock.json, index.ts)
-#   特定のバージョン → 任意のバージョン → 0.5.0 (package.json, package-lock.json, index.ts)
+#   パッチ増分 → 0.1.3 → 0.1.4 (package.json, package-lock.json, index.ts, manifest.json)
+#   マイナー増分 → 0.1.3 → 0.2.0 (package.json, package-lock.json, index.ts, manifest.json)
+#   メジャー増分 → 0.1.3 → 1.0.0 (package.json, package-lock.json, index.ts, manifest.json)
+#   特定のバージョン → 任意のバージョン → 0.5.0 (package.json, package-lock.json, index.ts, manifest.json)
 #   コミット作成 → "chore: release version 0.1.4"
 #   タグ作成 → "v0.1.4" メッセージ "Version 0.1.4"
 # =====================
@@ -301,6 +318,7 @@ if [ -n "$INCREMENT_TYPE" ]; then
   NEW_VERSION=$(grep -o '"version": "[^"]*"' package.json | cut -d'"' -f4)
   
   update_index_version "$INDEX_VERSION" "$NEW_VERSION"
+  update_manifest_version "$MANIFEST_VERSION" "$NEW_VERSION"
   
   git add package.json package-lock.json
   git commit -m "chore: release version $NEW_VERSION"
@@ -310,6 +328,7 @@ else
   
   npm version $SPECIFIC_VERSION --no-git-tag-version
   update_index_version "$INDEX_VERSION" "$SPECIFIC_VERSION"
+  update_manifest_version "$MANIFEST_VERSION" "$SPECIFIC_VERSION"
   
   git add package.json package-lock.json
   git commit -m "chore: release version $SPECIFIC_VERSION"
