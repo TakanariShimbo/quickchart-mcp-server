@@ -212,12 +212,13 @@ function generateChartUrls(postConfig: any): {
   chartUrl: string;
   editorUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  const chartOnly = postConfig.chart;
+  const chartOnlyJson = JSON.stringify(chartOnly);
+  const encodedChartOnly = encodeURIComponent(chartOnlyJson);
 
   return {
-    chartUrl: `https://quickchart.io/chart?c=${encodedConfig}`,
-    editorUrl: `https://quickchart.io/editor?c=${encodedConfig}`,
+    chartUrl: `https://quickchart.io/chart?c=${encodedChartOnly}`,
+    editorUrl: `https://quickchart.io/sandbox#${encodedChartOnly}`,
   };
 }
 
