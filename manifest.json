@@ -20,7 +20,7 @@
       "default": "https://quickchart.io"
     },
     "quickchart_api_base_url": {
-      "type": "string", 
+      "type": "string",
       "title": "QuickChart API Base URL",
       "description": "QuickChart API server base URL for table endpoints",
       "default": "https://api.quickchart.io"
@@ -33,14 +33,14 @@
     },
     "enable_apexcharts": {
       "type": "boolean",
-      "title": "Enable ApexCharts Tool", 
+      "title": "Enable ApexCharts Tool",
       "description": "Enable ApexCharts tool",
       "default": true
     },
     "enable_googlecharts": {
       "type": "boolean",
       "title": "Enable Google Charts Tool",
-      "description": "Enable Google Charts tool", 
+      "description": "Enable Google Charts tool",
       "default": true
     },
     "enable_qrcode": {
@@ -50,7 +50,7 @@
       "default": true
     },
     "enable_barcode": {
-      "type": "boolean", 
+      "type": "boolean",
       "title": "Enable Barcode Tool",
       "description": "Enable barcode generation tool",
       "default": true
@@ -63,7 +63,7 @@
     },
     "enable_graphviz": {
       "type": "boolean",
-      "title": "Enable GraphViz Tool", 
+      "title": "Enable GraphViz Tool",
       "description": "Enable GraphViz diagram tool",
       "default": true
     },
@@ -76,7 +76,7 @@
     "enable_watermark": {
       "type": "boolean",
       "title": "Enable Watermark Tool",
-      "description": "Enable watermark tool", 
+      "description": "Enable watermark tool",
       "default": true
     }
   },
