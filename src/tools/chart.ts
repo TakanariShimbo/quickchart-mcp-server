@@ -7,7 +7,8 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
   name: "create-chart-using-chartjs",
-  description: "Create a chart using QuickChart.io - get chart image URL or save chart image to file",
+  description:
+    "Create a chart using QuickChart.io - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {
@@ -220,6 +221,45 @@ function generateChartUrls(postConfig: any): {
   };
 }
 
+async function fetchChartContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  const config = { ...postConfig, format };
+  const responseType = format === "svg" ? "text" : "arraybuffer";
+
+  try {
+    const response = await axios.post(QuickChartUrls.chart(), config, {
+      responseType: responseType as any,
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch chart content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
+async function fetchSvgContent(
+  postConfig: any
+): Promise<{ content: string; base64: string }> {
+  const svgContent = (await fetchChartContent(postConfig, "svg")) as string;
+  const base64 = Buffer.from(svgContent).toString("base64");
+
+  return {
+    content: svgContent,
+    base64: base64,
+  };
+}
+
 export async function handleChartTool(args: any): Promise<any> {
   const chartConfig = args.chart as any;
   if (!chartConfig) {
@@ -239,22 +279,30 @@ export async function handleChartTool(args: any): Promise<any> {
 
   const postConfig = prepareChartConfig(chartConfig, args);
   const { chartUrl, editorUrl } = generateChartUrls(postConfig);
+  const svgData = await fetchSvgContent(postConfig);
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: editorUrl,
+      },
+      {
+        type: "image",
+        data: svgData.base64,
+        mimeType: "image/svg+xml",
+      },
+    ],
+    metadata: {
+      chartType: chartConfig.type,
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      editableUrl: editorUrl,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: chartUrl,
-        },
-      ],
-      metadata: {
-        chartType: chartConfig.type,
-        generatedAt: new Date().toISOString(),
-        chartUrl: chartUrl,
-        editableUrl: editorUrl,
-      },
-    };
+    return result;
   }
 
   const format = (args.format as string) || "png";
@@ -264,41 +312,20 @@ export async function handleChartTool(args: any): Promise<any> {
   );
 
   try {
-    const responseType = format === "svg" ? "text" : "arraybuffer";
-    const response = await axios.post(QuickChartUrls.chart(), postConfig, {
-      responseType: responseType as any,
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
     if (format === "svg") {
-      fs.writeFileSync(outputPath, response.data, "utf8");
+      fs.writeFileSync(outputPath, svgData.content, "utf8");
     } else {
-      fs.writeFileSync(outputPath, response.data);
+      const data = await fetchChartContent(postConfig, format);
+      fs.writeFileSync(outputPath, data);
     }
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: chartUrl,
-        },
-      ],
-      metadata: {
-        chartType: chartConfig.type,
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        chartUrl: chartUrl,
-        editableUrl: editorUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
