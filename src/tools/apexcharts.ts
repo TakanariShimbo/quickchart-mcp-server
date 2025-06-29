@@ -80,14 +80,40 @@ function prepareApexChartsConfig(config: any, args: any): any {
   });
 }
 
+async function fetchApexChartsContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const response = await axios.post(QuickChartUrls.apexCharts(), postConfig, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch ApexCharts content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateApexChartsUrls(postConfig: any): {
-  apexchartsUrl: string;
+  chartUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  // Use only the config part for URL (not width/height/version)
+  const configOnly = postConfig.config;
+  const configOnlyJson = JSON.stringify(configOnly);
+  const encodedConfigOnly = encodeURIComponent(configOnlyJson);
   
   return {
-    apexchartsUrl: `https://quickchart.io/apex-charts/render?config=${encodedConfig}`
+    chartUrl: `https://quickchart.io/apex-charts/render?config=${encodedConfigOnly}`,
   };
 }
 
@@ -102,68 +128,74 @@ export async function handleApexChartsTool(args: any): Promise<any> {
     );
   }
 
-  const apexConfig = prepareApexChartsConfig(args.config, args);
-  const { apexchartsUrl } = generateApexChartsUrls(apexConfig);
+  const postConfig = prepareApexChartsConfig(args.config, args);
+  const { chartUrl } = generateApexChartsUrls(postConfig);
+
+  // Generate PNG image for display
+  const pngData = await fetchApexChartsContent(postConfig, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the chart URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: args.config?.chart?.type || "unknown",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: apexchartsUrl,
-        },
-      ],
-      metadata: {
-        apexchartsType: args.config?.chart?.type || "unknown",
-        generatedAt: new Date().toISOString(),
-        apexchartsUrl: apexchartsUrl,
-      },
-    };
+    return result;
   }
 
+  const format = "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
-    "png"
+    format
   );
 
   try {
-    const response = await axios.post(
-      QuickChartUrls.apexCharts(),
-      apexConfig,
-      {
-        responseType: "arraybuffer",
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    const data = await fetchApexChartsContent(postConfig, format);
+    fs.writeFileSync(outputPath, data);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: apexchartsUrl,
-        },
-      ],
-      metadata: {
-        apexchartsType: args.config?.chart?.type || "unknown",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        apexchartsUrl: apexchartsUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
-      `Failed to save Apex Charts image: ${
+      `Failed to save chart: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
