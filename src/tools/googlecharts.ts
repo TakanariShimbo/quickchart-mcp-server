@@ -86,14 +86,39 @@ function prepareGoogleChartsConfig(code: string, args: any): any {
   });
 }
 
+async function fetchGoogleChartsContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const response = await axios.post(QuickChartUrls.googleCharts(), postConfig, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch Google Charts content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateGoogleChartsUrls(postConfig: any): {
-  googlechartsUrl: string;
+  chartUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  // Use only the code part for URL (not width/height/packages)
+  const codeOnly = postConfig.code;
+  const encodedCodeOnly = encodeURIComponent(codeOnly);
   
   return {
-    googlechartsUrl: `https://quickchart.io/google-charts/render?config=${encodedConfig}`
+    chartUrl: `https://quickchart.io/google-charts/render?code=${encodedCodeOnly}`,
   };
 }
 
@@ -108,64 +133,74 @@ export async function handleGoogleChartsTool(args: any): Promise<any> {
     );
   }
 
-  const config = prepareGoogleChartsConfig(args.code as string, args);
-  const { googlechartsUrl } = generateGoogleChartsUrls(config);
+  const postConfig = prepareGoogleChartsConfig(args.code as string, args);
+  const { chartUrl } = generateGoogleChartsUrls(postConfig);
+
+  // Generate PNG image for display
+  const pngData = await fetchGoogleChartsContent(postConfig, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the chart URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: args.packages || "corechart",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: googlechartsUrl,
-        },
-      ],
-      metadata: {
-        googlechartsType: args.packages || "corechart",
-        generatedAt: new Date().toISOString(),
-        googlechartsUrl: googlechartsUrl,
-      },
-    };
+    return result;
   }
 
+  const format = "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
-    "png"
+    format
   );
 
   try {
-    const response = await axios.post(QuickChartUrls.googleCharts(), config, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    const data = await fetchGoogleChartsContent(postConfig, format);
+    fs.writeFileSync(outputPath, data);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: googlechartsUrl,
-        },
-      ],
-      metadata: {
-        googlechartsType: args.packages || "corechart",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        googlechartsUrl: googlechartsUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
-      `Failed to save Google Charts image: ${
+      `Failed to save chart: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
