@@ -91,12 +91,41 @@ function prepareGraphvizConfig(graph: string, args: any): any {
 function generateGraphvizUrls(postConfig: any): {
   graphvizUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  const graph = postConfig.graph;
+  const layout = postConfig.layout || 'dot';
+  const format = postConfig.format || 'svg';
+  const encodedGraph = encodeURIComponent(graph);
   
   return {
-    graphvizUrl: `https://quickchart.io/graphviz?config=${encodedConfig}`
+    graphvizUrl: `https://quickchart.io/graphviz?graph=${encodedGraph}&layout=${layout}&format=${format}`
   };
+}
+
+async function fetchGraphvizContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  const config = { ...postConfig, format };
+  const responseType = format === "svg" ? "text" : "arraybuffer";
+
+  try {
+    const response = await axios.post(QuickChartUrls.graphviz(), config, {
+      responseType: responseType as any,
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch GraphViz content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }
 
 export async function handleGraphvizTool(args: any): Promise<any> {
@@ -110,66 +139,72 @@ export async function handleGraphvizTool(args: any): Promise<any> {
     );
   }
 
-  const format = (args.format as string) || "svg";
   const config = prepareGraphvizConfig(args.graph as string, args);
   const { graphvizUrl } = generateGraphvizUrls(config);
+  const pngData = await fetchGraphvizContent(config, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the GraphViz diagram URL:",
+      },
+      {
+        type: "text",
+        text: graphvizUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      graphvizType: args.layout || "dot",
+      generatedAt: new Date().toISOString(),
+      graphvizUrl: graphvizUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: graphvizUrl,
-        },
-      ],
-      metadata: {
-        graphvizType: args.layout || "dot",
-        generatedAt: new Date().toISOString(),
-        graphvizUrl: graphvizUrl,
-      },
-    };
+    return result;
   }
 
+  const format = (args.format as string) || "svg";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
     format
   );
 
   try {
-    const responseType = format === "svg" ? "text" : "arraybuffer";
-    const response = await axios.post(QuickChartUrls.graphviz(), config, {
-      responseType: responseType as any,
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
+    const data = await fetchGraphvizContent(config, format);
     if (format === "svg") {
-      fs.writeFileSync(outputPath, response.data, "utf8");
+      fs.writeFileSync(outputPath, data, "utf8");
     } else {
-      fs.writeFileSync(outputPath, response.data);
+      fs.writeFileSync(outputPath, data);
     }
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: graphvizUrl,
-        },
-      ],
-      metadata: {
-        graphvizType: args.layout || "dot",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        graphvizUrl: graphvizUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,

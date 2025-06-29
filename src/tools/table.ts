@@ -162,12 +162,35 @@ function prepareTableConfig(data: any, args: any): any {
 function generateTableUrls(postConfig: any): {
   tableUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  const dataJson = JSON.stringify(postConfig.data || postConfig);
+  const encodedData = encodeURIComponent(dataJson);
   
   return {
-    tableUrl: `https://api.quickchart.io/v1/table?config=${encodedConfig}`
+    tableUrl: `https://api.quickchart.io/v1/table?data=${encodedData}`
   };
+}
+
+async function fetchTableContent(
+  postConfig: any
+): Promise<any> {
+  try {
+    const response = await axios.post(QuickChartUrls.table(), postConfig, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch table content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }
 
 export async function handleTableTool(args: any): Promise<any> {
@@ -183,21 +206,39 @@ export async function handleTableTool(args: any): Promise<any> {
 
   const config = prepareTableConfig(args.data, args);
   const { tableUrl } = generateTableUrls(config);
+  const pngData = await fetchTableContent(config);
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the table URL:",
+      },
+      {
+        type: "text",
+        text: tableUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      tableType: "data",
+      generatedAt: new Date().toISOString(),
+      tableUrl: tableUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: tableUrl,
-        },
-      ],
-      metadata: {
-        tableType: "data",
-        generatedAt: new Date().toISOString(),
-        tableUrl: tableUrl,
-      },
-    };
+    return result;
   }
 
   const outputPath = getDownloadPath(
@@ -206,35 +247,23 @@ export async function handleTableTool(args: any): Promise<any> {
   );
 
   try {
-    const response = await axios.post(QuickChartUrls.table(), config, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    fs.writeFileSync(outputPath, pngData);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: tableUrl,
-        },
-      ],
-      metadata: {
-        tableType: "data",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        tableUrl: tableUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,

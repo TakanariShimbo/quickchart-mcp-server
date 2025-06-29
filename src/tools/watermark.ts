@@ -174,12 +174,48 @@ function prepareWatermarkConfig(
 function generateWatermarkUrls(postConfig: any): {
   watermarkUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  const mainImageUrl = encodeURIComponent(postConfig.mainImageUrl);
+  const markImageUrl = encodeURIComponent(postConfig.markImageUrl);
+  let url = `https://quickchart.io/watermark?mainImageUrl=${mainImageUrl}&markImageUrl=${markImageUrl}`;
+  
+  // Add optional parameters
+  if (postConfig.opacity !== undefined) url += `&opacity=${postConfig.opacity}`;
+  if (postConfig.position) url += `&position=${postConfig.position}`;
+  if (postConfig.markRatio !== undefined) url += `&markRatio=${postConfig.markRatio}`;
+  if (postConfig.markWidth !== undefined) url += `&markWidth=${postConfig.markWidth}`;
+  if (postConfig.markHeight !== undefined) url += `&markHeight=${postConfig.markHeight}`;
+  if (postConfig.imageWidth !== undefined) url += `&imageWidth=${postConfig.imageWidth}`;
+  if (postConfig.imageHeight !== undefined) url += `&imageHeight=${postConfig.imageHeight}`;
+  if (postConfig.positionX !== undefined) url += `&positionX=${postConfig.positionX}`;
+  if (postConfig.positionY !== undefined) url += `&positionY=${postConfig.positionY}`;
+  if (postConfig.margin !== undefined) url += `&margin=${postConfig.margin}`;
   
   return {
-    watermarkUrl: `https://quickchart.io/watermark?config=${encodedConfig}`
+    watermarkUrl: url
   };
+}
+
+async function fetchWatermarkContent(
+  postConfig: any
+): Promise<any> {
+  try {
+    const response = await axios.post(QuickChartUrls.watermark(), postConfig, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch watermark content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }
 
 export async function handleWatermarkTool(args: any): Promise<any> {
@@ -202,21 +238,39 @@ export async function handleWatermarkTool(args: any): Promise<any> {
     args
   );
   const { watermarkUrl } = generateWatermarkUrls(config);
+  const pngData = await fetchWatermarkContent(config);
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the watermarked image URL:",
+      },
+      {
+        type: "text",
+        text: watermarkUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      watermarkType: "image",
+      generatedAt: new Date().toISOString(),
+      watermarkUrl: watermarkUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: watermarkUrl,
-        },
-      ],
-      metadata: {
-        watermarkType: "image",
-        generatedAt: new Date().toISOString(),
-        watermarkUrl: watermarkUrl,
-      },
-    };
+    return result;
   }
 
   const outputPath = getDownloadPath(
@@ -225,35 +279,23 @@ export async function handleWatermarkTool(args: any): Promise<any> {
   );
 
   try {
-    const response = await axios.post(QuickChartUrls.watermark(), config, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    fs.writeFileSync(outputPath, pngData);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: watermarkUrl,
-        },
-      ],
-      metadata: {
-        watermarkType: "image",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        watermarkUrl: watermarkUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,

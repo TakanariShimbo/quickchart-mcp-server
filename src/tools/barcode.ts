@@ -110,14 +110,41 @@ function prepareBarcodeConfig(type: string, text: string, args: any): Record<str
   });
 }
 
+async function fetchBarcodeContent(
+  params: Record<string, string>,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const queryString = new URLSearchParams(params).toString();
+    const barcodeUrl = `${QuickChartUrls.barcode()}?${queryString}`;
+    
+    const response = await axios.get(barcodeUrl, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch barcode content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateBarcodeUrls(params: Record<string, string>): {
-  barcodeUrl: string;
+  chartUrl: string;
 } {
-  const queryString = new URLSearchParams(params).toString();
-  const barcodeUrl = `${QuickChartUrls.barcode()}?${queryString}`;
+  // Use only type and text for simple URL
+  const simpleParams = new URLSearchParams({
+    type: params.type,
+    text: params.text
+  }).toString();
   
   return {
-    barcodeUrl
+    chartUrl: `https://quickchart.io/barcode?${simpleParams}`,
   };
 }
 
@@ -133,56 +160,69 @@ export async function handleBarcodeTool(args: any): Promise<any> {
   }
 
   const params = prepareBarcodeConfig(args.type as string, args.text as string, args);
-  const { barcodeUrl } = generateBarcodeUrls(params);
+  const { chartUrl } = generateBarcodeUrls(params);
+
+  // Generate PNG image for display
+  const pngData = await fetchBarcodeContent(params, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the barcode URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: "barcode",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: barcodeUrl,
-        },
-      ],
-      metadata: {
-        barcodeType: args.type,
-        generatedAt: new Date().toISOString(),
-        barcodeUrl: barcodeUrl,
-      },
-    };
+    return result;
   }
 
+  const format = "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
-    "png"
+    format
   );
 
   try {
-    const response = await axios.get(barcodeUrl, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    const data = await fetchBarcodeContent(params, format);
+    fs.writeFileSync(outputPath, data);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: barcodeUrl,
-        },
-      ],
-      metadata: {
-        barcodeType: args.type,
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        barcodeUrl: barcodeUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
