@@ -4,28 +4,151 @@
   "display_name": "quickchart",
   "version": "0.6.2",
   "description": "A Model Context Protocol server that generates charts using QuickChart.io",
-  "long_description": "This Model Context Protocol (MCP) server provides powerful visualization tools using QuickChart.io APIs.  ",
+  "long_description": "This Model Context Protocol (MCP) server provides powerful visualization tools using QuickChart.io APIs. Create charts, diagrams, barcodes, QR codes, word clouds, tables, and more.",
   "author": {
-    "name": "TakanariShimbo",
-    "email": "rts, diagrams, barcodes, QR codes, word clouds, tables, and more."
+    "name": "TakanariShimbo"
   },
   "homepage": "https://github.com/TakanariShimbo/quickchart-mcp-server",
   "documentation": "https://github.com/TakanariShimbo/quickchart-mcp-server",
   "support": "https://github.com/TakanariShimbo/quickchart-mcp-server",
   "icon": "icon.png",
+  "user_config": {
+    "quickchart_base_url": {
+      "type": "string",
+      "title": "QuickChart Base URL",
+      "description": "Main QuickChart API base URL",
+      "default": "https://quickchart.io"
+    },
+    "quickchart_api_base_url": {
+      "type": "string", 
+      "title": "QuickChart API Base URL",
+      "description": "QuickChart API server base URL for table endpoints",
+      "default": "https://api.quickchart.io"
+    },
+    "enable_chart": {
+      "type": "boolean",
+      "title": "Enable Chart.js Tool",
+      "description": "Enable Chart.js chart creation tool",
+      "default": true
+    },
+    "enable_apexcharts": {
+      "type": "boolean",
+      "title": "Enable ApexCharts Tool", 
+      "description": "Enable ApexCharts tool",
+      "default": true
+    },
+    "enable_googlecharts": {
+      "type": "boolean",
+      "title": "Enable Google Charts Tool",
+      "description": "Enable Google Charts tool", 
+      "default": true
+    },
+    "enable_qrcode": {
+      "type": "boolean",
+      "title": "Enable QR Code Tool",
+      "description": "Enable QR code generation tool",
+      "default": true
+    },
+    "enable_barcode": {
+      "type": "boolean", 
+      "title": "Enable Barcode Tool",
+      "description": "Enable barcode generation tool",
+      "default": true
+    },
+    "enable_wordcloud": {
+      "type": "boolean",
+      "title": "Enable Word Cloud Tool",
+      "description": "Enable word cloud tool",
+      "default": true
+    },
+    "enable_graphviz": {
+      "type": "boolean",
+      "title": "Enable GraphViz Tool", 
+      "description": "Enable GraphViz diagram tool",
+      "default": true
+    },
+    "enable_table": {
+      "type": "boolean",
+      "title": "Enable Table Tool",
+      "description": "Enable table image tool",
+      "default": true
+    },
+    "enable_watermark": {
+      "type": "boolean",
+      "title": "Enable Watermark Tool",
+      "description": "Enable watermark tool", 
+      "default": true
+    }
+  },
   "server": {
     "type": "node",
     "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
       "args": ["${__dirname}/dist/index.js"],
-      "env": {}
+      "env": {
+        "QUICKCHART_BASE_URL": "${user_config.quickchart_base_url}",
+        "QUICKCHART_API_BASE_URL": "${user_config.quickchart_api_base_url}",
+        "QUICKCHART_ENABLE_CHART": "${user_config.enable_chart}",
+        "QUICKCHART_ENABLE_APEXCHARTS": "${user_config.enable_apexcharts}",
+        "QUICKCHART_ENABLE_GOOGLECHARTS": "${user_config.enable_googlecharts}",
+        "QUICKCHART_ENABLE_QRCODE": "${user_config.enable_qrcode}",
+        "QUICKCHART_ENABLE_BARCODE": "${user_config.enable_barcode}",
+        "QUICKCHART_ENABLE_WORDCLOUD": "${user_config.enable_wordcloud}",
+        "QUICKCHART_ENABLE_GRAPHVIZ": "${user_config.enable_graphviz}",
+        "QUICKCHART_ENABLE_TABLE": "${user_config.enable_table}",
+        "QUICKCHART_ENABLE_WATERMARK": "${user_config.enable_watermark}"
+      }
     }
   },
   "tools": [
     {
       "name": "create-chart-using-chartjs",
       "description": "Create charts using Chart.js and QuickChart.io - get URL or save as file"
+    },
+    {
+      "name": "create-chart-using-apexcharts",
+      "description": "Create charts using ApexCharts library - get URL or save as file"
+    },
+    {
+      "name": "create-chart-using-googlecharts",
+      "description": "Create charts using Google Charts library - get URL or save as file"
+    },
+    {
+      "name": "create-chart-using-natural-language",
+      "description": "Generate charts from natural language descriptions - get URL or save as file"
+    },
+    {
+      "name": "create-sparkline-using-chartjs",
+      "description": "Create compact sparkline charts - get URL or save as file"
+    },
+    {
+      "name": "create-diagram-using-graphviz",
+      "description": "Create graph diagrams using GraphViz - get URL or save as file"
+    },
+    {
+      "name": "create-wordcloud",
+      "description": "Create word cloud visualizations - get URL or save as file"
+    },
+    {
+      "name": "create-barcode",
+      "description": "Generate barcodes and QR codes - get URL or save as file"
+    },
+    {
+      "name": "create-qr-code",
+      "description": "Create QR codes with extensive customization options - get URL or save as file"
+    },
+    {
+      "name": "create-table",
+      "description": "Convert data to table images - get URL or save as file"
+    },
+    {
+      "name": "create-watermark",
+      "description": "Add watermarks and logos to images - get URL or save as file"
+    },
+    {
+      "name": "get-visualization-tool-help",
+      "description": "Get detailed usage information and examples for all available chart, diagram, and QR code tools"
     }
   ],
   "keywords": ["quickchart", "chart", "visualization"],
