@@ -275,7 +275,23 @@ export async function handleChartTool(args: any): Promise<any> {
     content: [
       {
         type: "text",
+        text: "Below is the chart URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the editor URL:",
+      },
+      {
+        type: "text",
         text: editorUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
       },
       {
         type: "image",
@@ -288,6 +304,7 @@ export async function handleChartTool(args: any): Promise<any> {
       generatedAt: new Date().toISOString(),
       chartUrl: chartUrl,
       editableUrl: editorUrl,
+      pngBase64: pngBase64,
     },
   };
 
@@ -315,6 +332,14 @@ export async function handleChartTool(args: any): Promise<any> {
     }
 
     result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
     return result;
   } catch (error) {
     throw new McpError(
