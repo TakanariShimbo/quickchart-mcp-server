@@ -11,7 +11,7 @@ const TOOL_DOCUMENTATION = {
       chartjsDocumentation: "https://www.chartjs.org/docs/latest/",
       chartjsExamples: "https://www.chartjs.org/docs/latest/samples/",
       quickChartGallery: "https://quickchart.io/gallery/",
-      apiReference: "https://quickchart.io/documentation/#chart"
+      apiReference: "https://quickchart.io/documentation/#chart",
     },
     supportedChartTypes: [
       "bar - Bar charts for comparing values across categories",
@@ -58,7 +58,7 @@ const TOOL_DOCUMENTATION = {
     additionalResources: {
       apexchartsDocumentation: "https://apexcharts.com/docs/",
       apexchartsDemos: "https://apexcharts.com/javascript-chart-demos/",
-      quickChartGallery: "https://quickchart.io/gallery/"
+      quickChartGallery: "https://quickchart.io/gallery/",
     },
     supportedChartTypes: [
       "line - Line charts for depicting trends and behaviors over time",
@@ -110,8 +110,9 @@ const TOOL_DOCUMENTATION = {
       "https://quickchart.io/documentation/google-charts-image-server/",
     additionalResources: {
       googleChartsDocumentation: "https://developers.google.com/chart",
-      googleChartsGallery: "https://developers.google.com/chart/interactive/docs/gallery",
-      quickChartGallery: "https://quickchart.io/gallery/"
+      googleChartsGallery:
+        "https://developers.google.com/chart/interactive/docs/gallery",
+      quickChartGallery: "https://quickchart.io/gallery/",
     },
     supportedChartTypes: [
       "bar - Bar charts for category data comparison",
@@ -155,7 +156,7 @@ const TOOL_DOCUMENTATION = {
     documentation: "https://quickchart.io/documentation/apis/text-to-chart/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/apis/text-to-chart/",
-      quickChartGallery: "https://quickchart.io/gallery/"
+      quickChartGallery: "https://quickchart.io/gallery/",
     },
     mainFeatures: [
       'Natural Language Analysis: Understands descriptions like "blue line chart showing monthly sales"',
@@ -178,11 +179,12 @@ const TOOL_DOCUMENTATION = {
   },
   "create-sparkline-using-chartjs": {
     name: "create-sparkline-using-chartjs",
-    description: "Create compact sparkline charts - get sparkline image URL or save sparkline image to file",
+    description:
+      "Create compact sparkline charts - get sparkline image URL or save sparkline image to file",
     documentation: "https://quickchart.io/documentation/sparkline-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/sparkline-api/",
-      chartjsDocumentation: "https://www.chartjs.org/docs/latest/"
+      chartjsDocumentation: "https://www.chartjs.org/docs/latest/",
     },
     supportedChartTypes: [
       "line - Single line sparklines for trend visualization",
@@ -227,7 +229,7 @@ const TOOL_DOCUMENTATION = {
       graphvizDocumentation: "https://graphviz.org/documentation/",
       graphvizGallery: "https://graphviz.org/gallery/",
       dotLanguageGuide: "https://graphviz.org/doc/info/lang.html",
-      apiReference: "https://quickchart.io/documentation/graphviz-api/"
+      apiReference: "https://quickchart.io/documentation/graphviz-api/",
     },
     whatYouCanCreate: [
       "Flowcharts: Step-by-step process diagrams with decision points",
@@ -262,10 +264,11 @@ const TOOL_DOCUMENTATION = {
   },
   "create-wordcloud": {
     name: "create-wordcloud",
-    description: "Create word cloud visualizations - get word cloud image URL or save word cloud image to file",
+    description:
+      "Create word cloud visualizations - get word cloud image URL or save word cloud image to file",
     documentation: "https://quickchart.io/documentation/word-cloud-api/",
     additionalResources: {
-      apiReference: "https://quickchart.io/documentation/word-cloud-api/"
+      apiReference: "https://quickchart.io/documentation/word-cloud-api/",
     },
     promptExamples: [
       'Content Analysis: "Create a word cloud from customer feedback"',
@@ -282,11 +285,12 @@ const TOOL_DOCUMENTATION = {
   },
   "create-barcode": {
     name: "create-barcode",
-    description: "Generate barcodes and QR codes - get barcode image URL or save barcode image to file",
+    description:
+      "Generate barcodes and QR codes - get barcode image URL or save barcode image to file",
     documentation: "https://quickchart.io/documentation/barcode-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/barcode-api/",
-      supportedFormats: "https://github.com/bwipp/postscriptbarcode/wiki"
+      supportedFormats: "https://github.com/bwipp/postscriptbarcode/wiki",
     },
     supportedBarcodeTypes: [
       "QR Code: High-density 2D barcode for URLs, text, and data",
@@ -325,10 +329,11 @@ const TOOL_DOCUMENTATION = {
   },
   "create-table": {
     name: "create-table",
-    description: "Convert data to table images - get table image URL or save table image to file",
+    description:
+      "Convert data to table images - get table image URL or save table image to file",
     documentation: "https://quickchart.io/documentation/apis/table-image-api/",
     additionalResources: {
-      apiReference: "https://quickchart.io/documentation/apis/table-image-api/"
+      apiReference: "https://quickchart.io/documentation/apis/table-image-api/",
     },
     promptExamples: [
       'Financial Reports: "Convert quarterly earnings data into professional table"',
@@ -357,7 +362,7 @@ const TOOL_DOCUMENTATION = {
     documentation: "https://quickchart.io/documentation/qr-codes/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/qr-codes/",
-      qrCodeBestPractices: "https://blog.qr4.nl/post/qr-code-best-practices/"
+      qrCodeBestPractices: "https://blog.qr4.nl/post/qr-code-best-practices/",
     },
     whatYouCanCreate: [
       "Website Links: Direct links to websites, landing pages, and online content",
@@ -392,10 +397,11 @@ const TOOL_DOCUMENTATION = {
   },
   "create-watermark": {
     name: "create-watermark",
-    description: "Add watermarks and logos to images - get watermarked image URL or save watermarked image to file",
+    description:
+      "Add watermarks and logos to images - get watermarked image URL or save watermarked image to file",
     documentation: "https://quickchart.io/documentation/watermark-api/",
     additionalResources: {
-      apiReference: "https://quickchart.io/documentation/watermark-api/"
+      apiReference: "https://quickchart.io/documentation/watermark-api/",
     },
     promptExamples: [
       'Document Protection: "Add company logo watermark to reports"',

@@ -7,15 +7,15 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_APEXCHARTS_TOOL: Tool = {
   name: "create-chart-using-apexcharts",
-  description: "Create charts using Apex Charts - get chart image URL or save chart image to file",
+  description:
+    "Create charts using Apex Charts - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get chart URL or save as file",
+        description: "Whether to get chart URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -92,7 +92,7 @@ async function fetchApexChartsContent(
         "Content-Type": "application/json",
       },
     });
-    
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -107,11 +107,10 @@ async function fetchApexChartsContent(
 function generateApexChartsUrls(postConfig: any): {
   chartUrl: string;
 } {
-  // Use only the config part for URL (not width/height/version)
   const configOnly = postConfig.config;
   const configOnlyJson = JSON.stringify(configOnly);
   const encodedConfigOnly = encodeURIComponent(configOnlyJson);
-  
+
   return {
     chartUrl: `https://quickchart.io/apex-charts/render?config=${encodedConfigOnly}`,
   };
@@ -130,8 +129,6 @@ export async function handleApexChartsTool(args: any): Promise<any> {
 
   const postConfig = prepareApexChartsConfig(args.config, args);
   const { chartUrl } = generateApexChartsUrls(postConfig);
-
-  // Generate PNG image for display
   const pngData = await fetchApexChartsContent(postConfig, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -185,11 +182,11 @@ export async function handleApexChartsTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

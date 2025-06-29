@@ -15,8 +15,7 @@ export const CREATE_WATERMARK_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get watermarked image URL or save as file",
+        description: "Whether to get watermarked image URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -177,27 +176,32 @@ function generateWatermarkUrls(postConfig: any): {
   const mainImageUrl = encodeURIComponent(postConfig.mainImageUrl);
   const markImageUrl = encodeURIComponent(postConfig.markImageUrl);
   let url = `https://quickchart.io/watermark?mainImageUrl=${mainImageUrl}&markImageUrl=${markImageUrl}`;
-  
+
   // Add optional parameters
   if (postConfig.opacity !== undefined) url += `&opacity=${postConfig.opacity}`;
   if (postConfig.position) url += `&position=${postConfig.position}`;
-  if (postConfig.markRatio !== undefined) url += `&markRatio=${postConfig.markRatio}`;
-  if (postConfig.markWidth !== undefined) url += `&markWidth=${postConfig.markWidth}`;
-  if (postConfig.markHeight !== undefined) url += `&markHeight=${postConfig.markHeight}`;
-  if (postConfig.imageWidth !== undefined) url += `&imageWidth=${postConfig.imageWidth}`;
-  if (postConfig.imageHeight !== undefined) url += `&imageHeight=${postConfig.imageHeight}`;
-  if (postConfig.positionX !== undefined) url += `&positionX=${postConfig.positionX}`;
-  if (postConfig.positionY !== undefined) url += `&positionY=${postConfig.positionY}`;
+  if (postConfig.markRatio !== undefined)
+    url += `&markRatio=${postConfig.markRatio}`;
+  if (postConfig.markWidth !== undefined)
+    url += `&markWidth=${postConfig.markWidth}`;
+  if (postConfig.markHeight !== undefined)
+    url += `&markHeight=${postConfig.markHeight}`;
+  if (postConfig.imageWidth !== undefined)
+    url += `&imageWidth=${postConfig.imageWidth}`;
+  if (postConfig.imageHeight !== undefined)
+    url += `&imageHeight=${postConfig.imageHeight}`;
+  if (postConfig.positionX !== undefined)
+    url += `&positionX=${postConfig.positionX}`;
+  if (postConfig.positionY !== undefined)
+    url += `&positionY=${postConfig.positionY}`;
   if (postConfig.margin !== undefined) url += `&margin=${postConfig.margin}`;
-  
+
   return {
-    watermarkUrl: url
+    watermarkUrl: url,
   };
 }
 
-async function fetchWatermarkContent(
-  postConfig: any
-): Promise<any> {
+async function fetchWatermarkContent(postConfig: any): Promise<any> {
   try {
     const response = await axios.post(QuickChartUrls.watermark(), postConfig, {
       responseType: "arraybuffer",
@@ -289,11 +293,11 @@ export async function handleWatermarkTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

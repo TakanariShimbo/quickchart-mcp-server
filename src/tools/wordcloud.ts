@@ -15,8 +15,7 @@ export const CREATE_WORDCLOUD_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get word cloud URL or save as file",
+        description: "Whether to get word cloud URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -214,7 +213,7 @@ async function fetchWordCloudContent(
         "Content-Type": "application/json",
       },
     });
-    
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -229,10 +228,9 @@ async function fetchWordCloudContent(
 function generateWordCloudUrls(postConfig: any): {
   chartUrl: string;
 } {
-  // Use only the text for simple URL
   const text = postConfig.text;
   const encodedText = encodeURIComponent(text);
-  
+
   return {
     chartUrl: `https://quickchart.io/wordcloud?text=${encodedText}`,
   };
@@ -251,8 +249,6 @@ export async function handleWordCloudTool(args: any): Promise<any> {
 
   const postConfig = prepareWordCloudConfig(args.text as string, args);
   const { chartUrl } = generateWordCloudUrls(postConfig);
-
-  // Generate PNG image for display
   const pngData = await fetchWordCloudContent(postConfig, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -310,11 +306,11 @@ export async function handleWordCloudTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

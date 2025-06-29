@@ -7,15 +7,15 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
   name: "create-chart-using-googlecharts",
-  description: "Create charts using Google Charts - get chart image URL or save chart image to file",
+  description:
+    "Create charts using Google Charts - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get chart URL or save as file",
+        description: "Whether to get chart URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -91,14 +91,18 @@ async function fetchGoogleChartsContent(
   format: string = "png"
 ): Promise<any> {
   try {
-    const response = await axios.post(QuickChartUrls.googleCharts(), postConfig, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    
+    const response = await axios.post(
+      QuickChartUrls.googleCharts(),
+      postConfig,
+      {
+        responseType: "arraybuffer",
+        timeout: 30000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -113,10 +117,9 @@ async function fetchGoogleChartsContent(
 function generateGoogleChartsUrls(postConfig: any): {
   chartUrl: string;
 } {
-  // Use only the code part for URL (not width/height/packages)
   const codeOnly = postConfig.code;
   const encodedCodeOnly = encodeURIComponent(codeOnly);
-  
+
   return {
     chartUrl: `https://quickchart.io/google-charts/render?code=${encodedCodeOnly}`,
   };
@@ -135,8 +138,6 @@ export async function handleGoogleChartsTool(args: any): Promise<any> {
 
   const postConfig = prepareGoogleChartsConfig(args.code as string, args);
   const { chartUrl } = generateGoogleChartsUrls(postConfig);
-
-  // Generate PNG image for display
   const pngData = await fetchGoogleChartsContent(postConfig, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -190,11 +191,11 @@ export async function handleGoogleChartsTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

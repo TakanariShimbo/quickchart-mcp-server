@@ -7,15 +7,15 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_BARCODE_TOOL: Tool = {
   name: "create-barcode",
-  description: "Create barcodes using QuickChart - get barcode image URL or save barcode image to file",
+  description:
+    "Create barcodes using QuickChart - get barcode image URL or save barcode image to file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get barcode URL or save as file",
+        description: "Whether to get barcode URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -100,7 +100,11 @@ export function buildBarcodeParams(
   return params;
 }
 
-function prepareBarcodeConfig(type: string, text: string, args: any): Record<string, string> {
+function prepareBarcodeConfig(
+  type: string,
+  text: string,
+  args: any
+): Record<string, string> {
   return buildBarcodeParams(type, text, {
     width: args.width as number,
     height: args.height as number,
@@ -117,12 +121,12 @@ async function fetchBarcodeContent(
   try {
     const queryString = new URLSearchParams(params).toString();
     const barcodeUrl = `${QuickChartUrls.barcode()}?${queryString}`;
-    
+
     const response = await axios.get(barcodeUrl, {
       responseType: "arraybuffer",
       timeout: 30000,
     });
-    
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -137,12 +141,11 @@ async function fetchBarcodeContent(
 function generateBarcodeUrls(params: Record<string, string>): {
   chartUrl: string;
 } {
-  // Use only type and text for simple URL
   const simpleParams = new URLSearchParams({
     type: params.type,
-    text: params.text
+    text: params.text,
   }).toString();
-  
+
   return {
     chartUrl: `https://quickchart.io/barcode?${simpleParams}`,
   };
@@ -159,10 +162,12 @@ export async function handleBarcodeTool(args: any): Promise<any> {
     );
   }
 
-  const params = prepareBarcodeConfig(args.type as string, args.text as string, args);
+  const params = prepareBarcodeConfig(
+    args.type as string,
+    args.text as string,
+    args
+  );
   const { chartUrl } = generateBarcodeUrls(params);
-
-  // Generate PNG image for display
   const pngData = await fetchBarcodeContent(params, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -216,11 +221,11 @@ export async function handleBarcodeTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

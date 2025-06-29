@@ -15,8 +15,7 @@ export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get sparkline URL or save as file",
+        description: "Whether to get sparkline URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -99,12 +98,12 @@ async function fetchSparklineContent(
   try {
     const queryString = new URLSearchParams(params).toString();
     const sparklineUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
-    
+
     const response = await axios.get(sparklineUrl, {
       responseType: "arraybuffer",
       timeout: 30000,
     });
-    
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -119,10 +118,9 @@ async function fetchSparklineContent(
 function generateSparklineUrls(params: Record<string, string>): {
   chartUrl: string;
 } {
-  // Use only the chart part for URL (not width/height/background)
   const chartOnly = JSON.parse(params.c);
   const encodedChartOnly = encodeURIComponent(JSON.stringify(chartOnly));
-  
+
   return {
     chartUrl: `https://quickchart.io/chart?c=${encodedChartOnly}`,
   };
@@ -141,8 +139,6 @@ export async function handleSparklineTool(args: any): Promise<any> {
 
   const params = prepareSparklineConfig(args.chart, args);
   const { chartUrl } = generateSparklineUrls(params);
-
-  // Generate PNG image for display
   const pngData = await fetchSparklineContent(params, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -196,11 +192,11 @@ export async function handleSparklineTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

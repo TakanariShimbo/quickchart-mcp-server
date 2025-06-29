@@ -15,8 +15,7 @@ export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get chart URL or save as file",
+        description: "Whether to get chart URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -124,7 +123,7 @@ async function fetchTextChartContent(
         "Content-Type": "application/json",
       },
     });
-    
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -139,10 +138,9 @@ async function fetchTextChartContent(
 function generateTextChartUrls(postConfig: any): {
   chartUrl: string;
 } {
-  // Use only the description for simple URL
   const description = postConfig.description;
   const encodedDescription = encodeURIComponent(description);
-  
+
   return {
     chartUrl: `https://quickchart.io/natural/${encodedDescription}`,
   };
@@ -161,8 +159,6 @@ export async function handleTextChartTool(args: any): Promise<any> {
 
   const postConfig = prepareTextChartConfig(args.description as string, args);
   const { chartUrl } = generateTextChartUrls(postConfig);
-
-  // Generate PNG image for display
   const pngData = await fetchTextChartContent(postConfig, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -216,11 +212,11 @@ export async function handleTextChartTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

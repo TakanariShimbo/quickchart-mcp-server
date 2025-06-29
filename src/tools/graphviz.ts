@@ -7,15 +7,15 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
   name: "create-diagram-using-graphviz",
-  description: "Create graph diagrams using GraphViz - get diagram image URL or save diagram image to file",
+  description:
+    "Create graph diagrams using GraphViz - get diagram image URL or save diagram image to file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get graph URL or save as file",
+        description: "Whether to get graph URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -92,12 +92,12 @@ function generateGraphvizUrls(postConfig: any): {
   graphvizUrl: string;
 } {
   const graph = postConfig.graph;
-  const layout = postConfig.layout || 'dot';
-  const format = postConfig.format || 'svg';
+  const layout = postConfig.layout || "dot";
+  const format = postConfig.format || "svg";
   const encodedGraph = encodeURIComponent(graph);
-  
+
   return {
-    graphvizUrl: `https://quickchart.io/graphviz?graph=${encodedGraph}&layout=${layout}&format=${format}`
+    graphvizUrl: `https://quickchart.io/graphviz?graph=${encodedGraph}&layout=${layout}&format=${format}`,
   };
 }
 
@@ -198,11 +198,11 @@ export async function handleGraphvizTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

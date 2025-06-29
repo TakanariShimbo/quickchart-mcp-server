@@ -7,15 +7,15 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_TABLE_TOOL: Tool = {
   name: "create-table",
-  description: "Create table images using QuickChart - get table image URL or save table image to file",
+  description:
+    "Create table images using QuickChart - get table image URL or save table image to file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get table URL or save as file",
+        description: "Whether to get table URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -164,15 +164,13 @@ function generateTableUrls(postConfig: any): {
 } {
   const dataJson = JSON.stringify(postConfig.data || postConfig);
   const encodedData = encodeURIComponent(dataJson);
-  
+
   return {
-    tableUrl: `https://api.quickchart.io/v1/table?data=${encodedData}`
+    tableUrl: `https://api.quickchart.io/v1/table?data=${encodedData}`,
   };
 }
 
-async function fetchTableContent(
-  postConfig: any
-): Promise<any> {
+async function fetchTableContent(postConfig: any): Promise<any> {
   try {
     const response = await axios.post(QuickChartUrls.table(), postConfig, {
       responseType: "arraybuffer",
@@ -257,11 +255,11 @@ export async function handleTableTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {

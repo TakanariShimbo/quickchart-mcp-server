@@ -7,15 +7,15 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_QR_CODE_TOOL: Tool = {
   name: "create-qr-code",
-  description: "Create QR codes using QuickChart - get QR code image URL or save QR code image to file",
+  description:
+    "Create QR codes using QuickChart - get QR code image URL or save QR code image to file",
   inputSchema: {
     type: "object",
     properties: {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get QR code URL or save as file",
+        description: "Whether to get QR code URL or save as file",
       },
       outputPath: {
         type: "string",
@@ -159,13 +159,13 @@ async function fetchQRCodeContent(
   try {
     const queryString = new URLSearchParams(params).toString();
     const qrUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
-    
+
     const responseType = format === "svg" ? "text" : "arraybuffer";
     const response = await axios.get(qrUrl, {
       responseType: responseType as any,
       timeout: 30000,
     });
-    
+
     return response.data;
   } catch (error) {
     throw new McpError(
@@ -180,10 +180,9 @@ async function fetchQRCodeContent(
 function generateQRCodeUrls(params: Record<string, string>): {
   chartUrl: string;
 } {
-  // Use only the text for simple URL
   const text = decodeURIComponent(params.text);
   const encodedText = encodeURIComponent(text);
-  
+
   return {
     chartUrl: `https://quickchart.io/qr?text=${encodedText}`,
   };
@@ -202,8 +201,6 @@ export async function handleQRCodeTool(args: any): Promise<any> {
 
   const params = prepareQRCodeConfig(args.text as string, args);
   const { chartUrl } = generateQRCodeUrls(params);
-
-  // Generate PNG image for display
   const pngData = await fetchQRCodeContent(params, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
@@ -261,11 +258,11 @@ export async function handleQRCodeTool(args: any): Promise<any> {
     result.metadata.savedPath = outputPath;
     result.content.push({
       type: "text",
-      text: "Below is the saved file path:"
+      text: "Below is the saved file path:",
     });
     result.content.push({
-      type: "text", 
-      text: outputPath
+      type: "text",
+      text: outputPath,
     });
     return result;
   } catch (error) {
