@@ -14,8 +14,7 @@ export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
       action: {
         type: "string",
         enum: ["get_url", "save_file"],
-        description:
-          "Whether to get chart URL or save chart as file",
+        description: "Whether to get chart URL or save chart as file",
       },
       outputPath: {
         type: "string",
@@ -208,13 +207,16 @@ function prepareChartConfig(chartConfig: any, args: any): any {
   });
 }
 
-function generateChartUrls(postConfig: any): { chartUrl: string; editorUrl: string } {
+function generateChartUrls(postConfig: any): {
+  chartUrl: string;
+  editorUrl: string;
+} {
   const configJson = JSON.stringify(postConfig);
   const encodedConfig = encodeURIComponent(configJson);
-  
+
   return {
     chartUrl: `https://quickchart.io/chart?c=${encodedConfig}`,
-    editorUrl: `https://quickchart.io/editor?c=${encodedConfig}`
+    editorUrl: `https://quickchart.io/editor?c=${encodedConfig}`,
   };
 }
 
@@ -243,17 +245,15 @@ export async function handleChartTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: "Chart generated successfully"
+          text: chartUrl,
         },
-        {
-          type: "text", 
-          text: `${chartUrl}`
-        },
-        {
-          type: "text",
-          text: `${editorUrl}`
-        }
-      ]
+      ],
+      metadata: {
+        chartType: chartConfig.type,
+        generatedAt: new Date().toISOString(),
+        chartUrl: chartUrl,
+        editableUrl: editorUrl,
+      },
     };
   }
 
@@ -288,21 +288,16 @@ export async function handleChartTool(args: any): Promise<any> {
       content: [
         {
           type: "text",
-          text: "Chart saved successfully"
+          text: chartUrl,
         },
-        {
-          type: "text",
-          text: `${outputPath}`
-        },
-        {
-          type: "text", 
-          text: `${chartUrl}`
-        },
-        {
-          type: "text",
-          text: `${editorUrl}`
-        }
-      ]
+      ],
+      metadata: {
+        chartType: chartConfig.type,
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        chartUrl: chartUrl,
+        editableUrl: editorUrl,
+      },
     };
   } catch (error) {
     throw new McpError(
