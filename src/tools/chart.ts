@@ -195,8 +195,30 @@ export function buildPostConfig(
   };
 }
 
+function prepareChartConfig(chartConfig: any, args: any): any {
+  return buildPostConfig(chartConfig, {
+    format: args.format as string,
+    width: args.width as number,
+    height: args.height as number,
+    backgroundColor: args.backgroundColor as string,
+    devicePixelRatio: args.devicePixelRatio as number,
+    version: args.version as string,
+    encoding: args.encoding as string,
+    key: args.key as string,
+  });
+}
+
+function generateChartUrls(postConfig: any): { chartUrl: string; editorUrl: string } {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    chartUrl: `https://quickchart.io/chart?c=${encodedConfig}`,
+    editorUrl: `https://quickchart.io/editor?c=${encodedConfig}`
+  };
+}
+
 export async function handleChartTool(args: any): Promise<any> {
-  // Extract chart configuration from args
   const chartConfig = args.chart as any;
   if (!chartConfig) {
     throw new McpError(ErrorCode.InvalidParams, "Missing chart configuration");
@@ -206,92 +228,88 @@ export async function handleChartTool(args: any): Promise<any> {
   validateDatasets(chartConfig.data?.datasets as any[]);
 
   const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const postConfig = prepareChartConfig(chartConfig, args);
+  const { chartUrl, editorUrl } = generateChartUrls(postConfig);
 
   if (action === "get_url") {
-    const postConfig = buildPostConfig(chartConfig, {
-      format: args.format as string,
-      width: args.width as number,
-      height: args.height as number,
-      backgroundColor: args.backgroundColor as string,
-      devicePixelRatio: args.devicePixelRatio as number,
-      version: args.version as string,
-      encoding: args.encoding as string,
-      key: args.key as string,
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Chart generated successfully"
+        },
+        {
+          type: "text", 
+          text: `${chartUrl}`
+        },
+        {
+          type: "text",
+          text: `${editorUrl}`
+        }
+      ]
+    };
+  }
+
+  const format = (args.format as string) || "png";
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    format
+  );
+
+  try {
+    const responseType = format === "svg" ? "text" : "arraybuffer";
+    const response = await axios.post(QuickChartUrls.chart(), postConfig, {
+      responseType: responseType as any,
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    if (format === "svg") {
+      fs.writeFileSync(outputPath, response.data, "utf8");
+    } else {
+      fs.writeFileSync(outputPath, response.data);
+    }
 
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.chart()}\nContent-Type: application/json\n\n${JSON.stringify(
-            postConfig,
-            null,
-            2
-          )}`,
+          text: "Chart saved successfully"
         },
-      ],
+        {
+          type: "text",
+          text: `${outputPath}`
+        },
+        {
+          type: "text", 
+          text: `${chartUrl}`
+        },
+        {
+          type: "text",
+          text: `${editorUrl}`
+        }
+      ]
     };
-  }
-
-  if (action === "save_file") {
-    const format = (args.format as string) || "png";
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      format
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save chart: ${
+        error instanceof Error ? error.message : String(error)
+      }`
     );
-
-    const postConfig = buildPostConfig(chartConfig, {
-      format: args.format as string,
-      width: args.width as number,
-      height: args.height as number,
-      backgroundColor: args.backgroundColor as string,
-      devicePixelRatio: args.devicePixelRatio as number,
-      version: args.version as string,
-      encoding: args.encoding as string,
-      key: args.key as string,
-    });
-
-    try {
-      const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.post(QuickChartUrls.chart(), postConfig, {
-        responseType: responseType as any,
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      if (format === "svg") {
-        fs.writeFileSync(outputPath, response.data, "utf8");
-      } else {
-        fs.writeFileSync(outputPath, response.data);
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Chart saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save chart: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
   }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-  );
 }
