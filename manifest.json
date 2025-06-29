@@ -1,0 +1,37 @@
+{
+  "dxt_version": "0.1",
+  "name": "@takanarishimbo/quickchart-mcp-server",
+  "display_name": "quickchart",
+  "version": "0.6.2",
+  "description": "A Model Context Protocol server that generates charts using QuickChart.io",
+  "long_description": "This Model Context Protocol (MCP) server provides powerful visualization tools using QuickChart.io APIs.  ",
+  "author": {
+    "name": "TakanariShimbo",
+    "email": "rts, diagrams, barcodes, QR codes, word clouds, tables, and more."
+  },
+  "homepage": "https://github.com/TakanariShimbo/quickchart-mcp-server",
+  "documentation": "https://github.com/TakanariShimbo/quickchart-mcp-server",
+  "support": "https://github.com/TakanariShimbo/quickchart-mcp-server",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/index.js"],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "create-chart-using-chartjs",
+      "description": "Create charts using Chart.js and QuickChart.io - get URL or save as file"
+    }
+  ],
+  "keywords": ["quickchart", "chart", "visualization"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TakanariShimbo/quickchart-mcp-server.git"
+  }
+}
