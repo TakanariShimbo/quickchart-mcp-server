@@ -155,70 +155,92 @@ export function buildTableConfig(data: any, options: any = {}): any {
   return config;
 }
 
+function prepareTableConfig(data: any, args: any): any {
+  return buildTableConfig(data, args.options);
+}
+
+function generateTableUrls(postConfig: any): {
+  tableUrl: string;
+} {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    tableUrl: `https://api.quickchart.io/v1/table?config=${encodedConfig}`
+  };
+}
+
 export async function handleTableTool(args: any): Promise<any> {
   validateTableData(args.data);
 
   const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
 
-  const config = buildTableConfig(args.data, args.options);
+  const config = prepareTableConfig(args.data, args);
+  const { tableUrl } = generateTableUrls(config);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.table()}\nContent-Type: application/json\n\n${JSON.stringify(
-            config,
-            null,
-            2
-          )}`,
+          text: tableUrl,
         },
       ],
+      metadata: {
+        tableType: "data",
+        generatedAt: new Date().toISOString(),
+        tableUrl: tableUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      "png"
-    );
-
-    try {
-      const response = await axios.post(QuickChartUrls.table(), config, {
-        responseType: "arraybuffer",
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(outputPath, response.data);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Table image saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save table image: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    "png"
   );
+
+  try {
+    const response = await axios.post(QuickChartUrls.table(), config, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(outputPath, response.data);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: tableUrl,
+        },
+      ],
+      metadata: {
+        tableType: "data",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        tableUrl: tableUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save table image: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

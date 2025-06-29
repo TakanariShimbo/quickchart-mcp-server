@@ -72,78 +72,100 @@ export function buildApexChartsConfig(
   return payload;
 }
 
-export async function handleApexChartsTool(args: any): Promise<any> {
-  validateApexChartsConfig(args.config);
-
-  const action = args.action as string;
-
-  const apexConfig = buildApexChartsConfig(args.config, {
+function prepareApexChartsConfig(config: any, args: any): any {
+  return buildApexChartsConfig(config, {
     width: args.width as number,
     height: args.height as number,
     apexChartsVersion: args.apexChartsVersion as string,
   });
+}
+
+function generateApexChartsUrls(postConfig: any): {
+  apexchartsUrl: string;
+} {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    apexchartsUrl: `https://quickchart.io/apex-charts/render?config=${encodedConfig}`
+  };
+}
+
+export async function handleApexChartsTool(args: any): Promise<any> {
+  validateApexChartsConfig(args.config);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const apexConfig = prepareApexChartsConfig(args.config, args);
+  const { apexchartsUrl } = generateApexChartsUrls(apexConfig);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.apexCharts()}\nContent-Type: application/json\n\n${JSON.stringify(
-            apexConfig,
-            null,
-            2
-          )}`,
+          text: apexchartsUrl,
         },
       ],
+      metadata: {
+        apexchartsType: args.config?.chart?.type || "unknown",
+        generatedAt: new Date().toISOString(),
+        apexchartsUrl: apexchartsUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      "png"
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    "png"
+  );
+
+  try {
+    const response = await axios.post(
+      QuickChartUrls.apexCharts(),
+      apexConfig,
+      {
+        responseType: "arraybuffer",
+        timeout: 30000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
 
-    try {
-      const response = await axios.post(
-        QuickChartUrls.apexCharts(),
-        apexConfig,
-        {
-          responseType: "arraybuffer",
-          timeout: 30000,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(outputPath, response.data);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Apex Charts image saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save Apex Charts image: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
-  }
 
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-  );
+    fs.writeFileSync(outputPath, response.data);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: apexchartsUrl,
+        },
+      ],
+      metadata: {
+        apexchartsType: args.config?.chart?.type || "unknown",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        apexchartsUrl: apexchartsUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save Apex Charts image: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

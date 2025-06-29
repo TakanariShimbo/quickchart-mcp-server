@@ -100,72 +100,95 @@ export function buildBarcodeParams(
   return params;
 }
 
-export async function handleBarcodeTool(args: any): Promise<any> {
-  validateBarcodeParams(args.type as string, args.text as string);
-
-  const action = args.action as string;
-
-  const params = buildBarcodeParams(args.type as string, args.text as string, {
+function prepareBarcodeConfig(type: string, text: string, args: any): Record<string, string> {
+  return buildBarcodeParams(type, text, {
     width: args.width as number,
     height: args.height as number,
     scale: args.scale as number,
     includeText: args.includeText as boolean,
     rotate: args.rotate as string,
   });
+}
 
+function generateBarcodeUrls(params: Record<string, string>): {
+  barcodeUrl: string;
+} {
   const queryString = new URLSearchParams(params).toString();
-  const fullUrl = `${QuickChartUrls.barcode()}?${queryString}`;
+  const barcodeUrl = `${QuickChartUrls.barcode()}?${queryString}`;
+  
+  return {
+    barcodeUrl
+  };
+}
+
+export async function handleBarcodeTool(args: any): Promise<any> {
+  validateBarcodeParams(args.type as string, args.text as string);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const params = prepareBarcodeConfig(args.type as string, args.text as string, args);
+  const { barcodeUrl } = generateBarcodeUrls(params);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `GET ${fullUrl}`,
+          text: barcodeUrl,
         },
       ],
+      metadata: {
+        barcodeType: args.type,
+        generatedAt: new Date().toISOString(),
+        barcodeUrl: barcodeUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      "png"
-    );
-
-    try {
-      const response = await axios.get(fullUrl, {
-        responseType: "arraybuffer",
-        timeout: 30000,
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(outputPath, response.data);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Barcode saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save barcode: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    "png"
   );
+
+  try {
+    const response = await axios.get(barcodeUrl, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(outputPath, response.data);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: barcodeUrl,
+        },
+      ],
+      metadata: {
+        barcodeType: args.type,
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        barcodeUrl: barcodeUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save barcode: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

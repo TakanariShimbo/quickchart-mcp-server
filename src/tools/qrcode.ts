@@ -135,14 +135,9 @@ export function buildQRCodeParams(
   return params;
 }
 
-export async function handleQRCodeTool(args: any): Promise<any> {
-  validateQRCodeText(args.text as string);
-
-  const action = args.action as string;
-  const format = (args.format as string) || "png";
-
-  const params = buildQRCodeParams(args.text as string, {
-    format: format,
+function prepareQRCodeConfig(text: string, args: any): Record<string, string> {
+  return buildQRCodeParams(text, {
+    format: args.format as string,
     size: args.size as number,
     margin: args.margin as number,
     dark: args.dark as string,
@@ -155,65 +150,93 @@ export async function handleQRCodeTool(args: any): Promise<any> {
     captionFontSize: args.captionFontSize as number,
     captionFontColor: args.captionFontColor as string,
   });
+}
 
+function generateQRCodeUrls(params: Record<string, string>): {
+  qrUrl: string;
+} {
   const queryString = new URLSearchParams(params).toString();
-  const fullUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
+  const qrUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
+  
+  return {
+    qrUrl
+  };
+}
+
+export async function handleQRCodeTool(args: any): Promise<any> {
+  validateQRCodeText(args.text as string);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const format = (args.format as string) || "png";
+  const params = prepareQRCodeConfig(args.text as string, args);
+  const { qrUrl } = generateQRCodeUrls(params);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `GET ${fullUrl}`,
+          text: qrUrl,
         },
       ],
+      metadata: {
+        qrType: "text",
+        generatedAt: new Date().toISOString(),
+        qrUrl: qrUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      format
-    );
-
-    try {
-      const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.get(fullUrl, {
-        responseType: responseType as any,
-        timeout: 30000,
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      if (format === "svg") {
-        fs.writeFileSync(outputPath, response.data, "utf8");
-      } else {
-        fs.writeFileSync(outputPath, response.data);
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `QR code saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save QR code: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    format
   );
+
+  try {
+    const responseType = format === "svg" ? "text" : "arraybuffer";
+    const response = await axios.get(qrUrl, {
+      responseType: responseType as any,
+      timeout: 30000,
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    if (format === "svg") {
+      fs.writeFileSync(outputPath, response.data, "utf8");
+    } else {
+      fs.writeFileSync(outputPath, response.data);
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: qrUrl,
+        },
+      ],
+      metadata: {
+        qrType: "text",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        qrUrl: qrUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save QR code: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

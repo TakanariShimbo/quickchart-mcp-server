@@ -150,7 +150,6 @@ export function buildWordCloudConfig(
     format: options.format || "svg",
   };
 
-  // Add optional parameters only if they are provided
   if (options.width !== undefined) config.width = options.width;
   if (options.height !== undefined) config.height = options.height;
   if (options.backgroundColor) config.backgroundColor = options.backgroundColor;
@@ -178,12 +177,8 @@ export function buildWordCloudConfig(
   return config;
 }
 
-export async function handleWordCloudTool(args: any): Promise<any> {
-  validateWordCloudText(args.text as string);
-
-  const action = args.action as string;
-
-  const wordCloudConfig = buildWordCloudConfig(args.text as string, {
+function prepareWordCloudConfig(text: string, args: any): any {
+  return buildWordCloudConfig(text, {
     format: args.format as string,
     width: args.width as number,
     height: args.height as number,
@@ -204,74 +199,100 @@ export async function handleWordCloudTool(args: any): Promise<any> {
     language: args.language as string,
     useWordList: args.useWordList as boolean,
   });
+}
+
+function generateWordCloudUrls(postConfig: any): {
+  wordcloudUrl: string;
+} {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    wordcloudUrl: `https://quickchart.io/wordcloud?config=${encodedConfig}`
+  };
+}
+
+export async function handleWordCloudTool(args: any): Promise<any> {
+  validateWordCloudText(args.text as string);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const wordCloudConfig = prepareWordCloudConfig(args.text as string, args);
+  const { wordcloudUrl } = generateWordCloudUrls(wordCloudConfig);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.wordcloud()}\nContent-Type: application/json\n\n${JSON.stringify(
-            wordCloudConfig,
-            null,
-            2
-          )}`,
+          text: wordcloudUrl,
         },
       ],
+      metadata: {
+        wordcloudType: "text",
+        generatedAt: new Date().toISOString(),
+        wordcloudUrl: wordcloudUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const format = (args.format as string) || "svg";
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      format
+  const format = (args.format as string) || "svg";
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    format
+  );
+
+  try {
+    const responseType = format === "svg" ? "text" : "arraybuffer";
+    const response = await axios.post(
+      QuickChartUrls.wordcloud(),
+      wordCloudConfig,
+      {
+        responseType: responseType as any,
+        timeout: 30000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
 
-    try {
-      const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.post(
-        QuickChartUrls.wordcloud(),
-        wordCloudConfig,
-        {
-          responseType: responseType as any,
-          timeout: 30000,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      if (format === "svg") {
-        fs.writeFileSync(outputPath, response.data, "utf8");
-      } else {
-        fs.writeFileSync(outputPath, response.data);
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Word cloud saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save word cloud: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
-  }
 
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-  );
+    if (format === "svg") {
+      fs.writeFileSync(outputPath, response.data, "utf8");
+    } else {
+      fs.writeFileSync(outputPath, response.data);
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: wordcloudUrl,
+        },
+      ],
+      metadata: {
+        wordcloudType: "text",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        wordcloudUrl: wordcloudUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save word cloud: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

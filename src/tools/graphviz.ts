@@ -79,81 +79,103 @@ export function buildGraphvizConfig(
   return config;
 }
 
+function prepareGraphvizConfig(graph: string, args: any): any {
+  return buildGraphvizConfig(graph, {
+    layout: args.layout as string,
+    format: args.format as string,
+    width: args.width as number,
+    height: args.height as number,
+  });
+}
+
+function generateGraphvizUrls(postConfig: any): {
+  graphvizUrl: string;
+} {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    graphvizUrl: `https://quickchart.io/graphviz?config=${encodedConfig}`
+  };
+}
+
 export async function handleGraphvizTool(args: any): Promise<any> {
   validateGraphvizGraph(args.graph as string);
 
   const action = args.action as string;
-  const format = (args.format as string) || "svg";
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
 
-  const config = buildGraphvizConfig(args.graph as string, {
-    layout: args.layout as string,
-    format: format,
-    width: args.width as number,
-    height: args.height as number,
-  });
+  const format = (args.format as string) || "svg";
+  const config = prepareGraphvizConfig(args.graph as string, args);
+  const { graphvizUrl } = generateGraphvizUrls(config);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.graphviz()}\nContent-Type: application/json\n\n${JSON.stringify(
-            config,
-            null,
-            2
-          )}`,
+          text: graphvizUrl,
         },
       ],
+      metadata: {
+        graphvizType: args.layout || "dot",
+        generatedAt: new Date().toISOString(),
+        graphvizUrl: graphvizUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      format
-    );
-
-    try {
-      const responseType = format === "svg" ? "text" : "arraybuffer";
-      const response = await axios.post(QuickChartUrls.graphviz(), config, {
-        responseType: responseType as any,
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      if (format === "svg") {
-        fs.writeFileSync(outputPath, response.data, "utf8");
-      } else {
-        fs.writeFileSync(outputPath, response.data);
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `GraphViz diagram saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save GraphViz diagram: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    format
   );
+
+  try {
+    const responseType = format === "svg" ? "text" : "arraybuffer";
+    const response = await axios.post(QuickChartUrls.graphviz(), config, {
+      responseType: responseType as any,
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    if (format === "svg") {
+      fs.writeFileSync(outputPath, response.data, "utf8");
+    } else {
+      fs.writeFileSync(outputPath, response.data);
+    }
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: graphvizUrl,
+        },
+      ],
+      metadata: {
+        graphvizType: args.layout || "dot",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        graphvizUrl: graphvizUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save GraphViz diagram: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

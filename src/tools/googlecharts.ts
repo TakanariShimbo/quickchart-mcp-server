@@ -77,75 +77,97 @@ export function buildGoogleChartsConfig(
   return config;
 }
 
-export async function handleGoogleChartsTool(args: any): Promise<any> {
-  validateGoogleChartsCode(args.code as string);
-
-  const action = args.action as string;
-
-  const config = buildGoogleChartsConfig(args.code as string, {
+function prepareGoogleChartsConfig(code: string, args: any): any {
+  return buildGoogleChartsConfig(code, {
     packages: args.packages as string,
     width: args.width as number,
     height: args.height as number,
     mapsApiKey: args.mapsApiKey as string,
   });
+}
+
+function generateGoogleChartsUrls(postConfig: any): {
+  googlechartsUrl: string;
+} {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    googlechartsUrl: `https://quickchart.io/google-charts/render?config=${encodedConfig}`
+  };
+}
+
+export async function handleGoogleChartsTool(args: any): Promise<any> {
+  validateGoogleChartsCode(args.code as string);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const config = prepareGoogleChartsConfig(args.code as string, args);
+  const { googlechartsUrl } = generateGoogleChartsUrls(config);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.googleCharts()}\nContent-Type: application/json\n\n${JSON.stringify(
-            config,
-            null,
-            2
-          )}`,
+          text: googlechartsUrl,
         },
       ],
+      metadata: {
+        googlechartsType: args.packages || "corechart",
+        generatedAt: new Date().toISOString(),
+        googlechartsUrl: googlechartsUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      "png"
-    );
-
-    try {
-      const response = await axios.post(QuickChartUrls.googleCharts(), config, {
-        responseType: "arraybuffer",
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(outputPath, response.data);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Google Charts image saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save Google Charts image: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    "png"
   );
+
+  try {
+    const response = await axios.post(QuickChartUrls.googleCharts(), config, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(outputPath, response.data);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: googlechartsUrl,
+        },
+      ],
+      metadata: {
+        googlechartsType: args.packages || "corechart",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        googlechartsUrl: googlechartsUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save Google Charts image: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

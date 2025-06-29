@@ -83,71 +83,94 @@ export function buildSparklineParams(
   return params;
 }
 
-export async function handleSparklineTool(args: any): Promise<any> {
-  validateSparklineChart(args.chart);
-
-  const action = args.action as string;
-
-  const params = buildSparklineParams(args.chart, {
+function prepareSparklineConfig(chart: any, args: any): Record<string, string> {
+  return buildSparklineParams(chart, {
     width: args.width as number,
     height: args.height as number,
     devicePixelRatio: args.devicePixelRatio as number,
     backgroundColor: args.backgroundColor as string,
   });
+}
 
+function generateSparklineUrls(params: Record<string, string>): {
+  sparklineUrl: string;
+} {
   const queryString = new URLSearchParams(params).toString();
-  const fullUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
+  const sparklineUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
+  
+  return {
+    sparklineUrl
+  };
+}
+
+export async function handleSparklineTool(args: any): Promise<any> {
+  validateSparklineChart(args.chart);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const params = prepareSparklineConfig(args.chart, args);
+  const { sparklineUrl } = generateSparklineUrls(params);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `GET ${fullUrl}`,
+          text: sparklineUrl,
         },
       ],
+      metadata: {
+        sparklineType: args.chart?.type || "line",
+        generatedAt: new Date().toISOString(),
+        sparklineUrl: sparklineUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      "png"
-    );
-
-    try {
-      const response = await axios.get(fullUrl, {
-        responseType: "arraybuffer",
-        timeout: 30000,
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(outputPath, response.data);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Sparkline chart saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save sparkline chart: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    "png"
   );
+
+  try {
+    const response = await axios.get(sparklineUrl, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(outputPath, response.data);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: sparklineUrl,
+        },
+      ],
+      metadata: {
+        sparklineType: args.chart?.type || "line",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        sparklineUrl: sparklineUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save sparkline chart: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }

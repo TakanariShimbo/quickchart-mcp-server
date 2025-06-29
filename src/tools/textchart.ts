@@ -100,12 +100,8 @@ export function buildTextChartConfig(
   return config;
 }
 
-export async function handleTextChartTool(args: any): Promise<any> {
-  validateTextChartDescription(args.description as string);
-
-  const action = args.action as string;
-
-  const config = buildTextChartConfig(args.description as string, {
+function prepareTextChartConfig(description: string, args: any): any {
+  return buildTextChartConfig(description, {
     width: args.width as number,
     height: args.height as number,
     backgroundColor: args.backgroundColor as string,
@@ -114,64 +110,90 @@ export async function handleTextChartTool(args: any): Promise<any> {
     labels: args.labels as string,
     title: args.title as string,
   });
+}
+
+function generateTextChartUrls(postConfig: any): {
+  textchartUrl: string;
+} {
+  const configJson = JSON.stringify(postConfig);
+  const encodedConfig = encodeURIComponent(configJson);
+  
+  return {
+    textchartUrl: `https://quickchart.io/natural?config=${encodedConfig}`
+  };
+}
+
+export async function handleTextChartTool(args: any): Promise<any> {
+  validateTextChartDescription(args.description as string);
+
+  const action = args.action as string;
+  if (action !== "get_url" && action !== "save_file") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+    );
+  }
+
+  const config = prepareTextChartConfig(args.description as string, args);
+  const { textchartUrl } = generateTextChartUrls(config);
 
   if (action === "get_url") {
     return {
       content: [
         {
           type: "text",
-          text: `POST to ${QuickChartUrls.textChart()}\nContent-Type: application/json\n\n${JSON.stringify(
-            config,
-            null,
-            2
-          )}`,
+          text: textchartUrl,
         },
       ],
+      metadata: {
+        textchartType: "natural-language",
+        generatedAt: new Date().toISOString(),
+        textchartUrl: textchartUrl,
+      },
     };
   }
 
-  if (action === "save_file") {
-    const outputPath = getDownloadPath(
-      args.outputPath as string | undefined,
-      "png"
-    );
-
-    try {
-      const response = await axios.post(QuickChartUrls.textChart(), config, {
-        responseType: "arraybuffer",
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const dir = path.dirname(outputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
-      fs.writeFileSync(outputPath, response.data);
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `Text-to-chart image saved successfully to: ${outputPath}`,
-          },
-        ],
-      };
-    } catch (error) {
-      throw new McpError(
-        ErrorCode.InternalError,
-        `Failed to save text-to-chart image: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
-    }
-  }
-
-  throw new McpError(
-    ErrorCode.InvalidParams,
-    `Invalid action: ${action}. Use 'get_url' or 'save_file'`
+  const outputPath = getDownloadPath(
+    args.outputPath as string | undefined,
+    "png"
   );
+
+  try {
+    const response = await axios.post(QuickChartUrls.textChart(), config, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+
+    fs.writeFileSync(outputPath, response.data);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: textchartUrl,
+        },
+      ],
+      metadata: {
+        textchartType: "natural-language",
+        generatedAt: new Date().toISOString(),
+        savedPath: outputPath,
+        textchartUrl: textchartUrl,
+      },
+    };
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to save text-to-chart image: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
 }
