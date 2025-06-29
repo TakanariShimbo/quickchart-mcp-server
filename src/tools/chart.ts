@@ -317,12 +317,8 @@ export async function handleChartTool(args: any): Promise<any> {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    if (format === "svg") {
-      fs.writeFileSync(outputPath, svgData.content, "utf8");
-    } else {
-      const data = await fetchChartContent(postConfig, format);
-      fs.writeFileSync(outputPath, data);
-    }
+    const data = await fetchChartContent(postConfig, format);
+    fs.writeFileSync(outputPath, data);
 
     result.metadata.savedPath = outputPath;
     return result;
