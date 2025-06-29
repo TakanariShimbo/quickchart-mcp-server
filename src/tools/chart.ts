@@ -248,18 +248,6 @@ async function fetchChartContent(
   }
 }
 
-async function fetchSvgContent(
-  postConfig: any
-): Promise<{ content: string; base64: string }> {
-  const svgContent = (await fetchChartContent(postConfig, "svg")) as string;
-  const base64 = Buffer.from(svgContent).toString("base64");
-
-  return {
-    content: svgContent,
-    base64: base64,
-  };
-}
-
 export async function handleChartTool(args: any): Promise<any> {
   const chartConfig = args.chart as any;
   if (!chartConfig) {
@@ -279,7 +267,8 @@ export async function handleChartTool(args: any): Promise<any> {
 
   const postConfig = prepareChartConfig(chartConfig, args);
   const { chartUrl, editorUrl } = generateChartUrls(postConfig);
-  const svgData = await fetchSvgContent(postConfig);
+  const pngData = await fetchChartContent(postConfig, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
 
   const result: any = {
     content: [
@@ -289,8 +278,8 @@ export async function handleChartTool(args: any): Promise<any> {
       },
       {
         type: "image",
-        data: svgData.base64,
-        mimeType: "image/svg+xml",
+        data: pngBase64,
+        mimeType: "image/png",
       },
     ],
     metadata: {
@@ -318,7 +307,11 @@ export async function handleChartTool(args: any): Promise<any> {
     }
 
     const data = await fetchChartContent(postConfig, format);
-    fs.writeFileSync(outputPath, data);
+    if (format === "svg") {
+      fs.writeFileSync(outputPath, data, "utf8");
+    } else {
+      fs.writeFileSync(outputPath, data);
+    }
 
     result.metadata.savedPath = outputPath;
     return result;
