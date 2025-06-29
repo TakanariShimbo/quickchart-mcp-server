@@ -104,47 +104,47 @@
   "tools": [
     {
       "name": "create-chart-using-chartjs",
-      "description": "Create charts using Chart.js and QuickChart.io - get URL or save as file"
+      "description": "Create charts using Chart.js and QuickChart.io - get chart image URL or save chart image to file"
     },
     {
       "name": "create-chart-using-apexcharts",
-      "description": "Create charts using ApexCharts library - get URL or save as file"
+      "description": "Create charts using ApexCharts library - get chart image URL or save chart image to file"
     },
     {
       "name": "create-chart-using-googlecharts",
-      "description": "Create charts using Google Charts library - get URL or save as file"
+      "description": "Create charts using Google Charts library - get chart image URL or save chart image to file"
     },
     {
       "name": "create-chart-using-natural-language",
-      "description": "Generate charts from natural language descriptions - get URL or save as file"
+      "description": "Generate charts from natural language descriptions - get chart image URL or save chart image to file"
     },
     {
       "name": "create-sparkline-using-chartjs",
-      "description": "Create compact sparkline charts - get URL or save as file"
+      "description": "Create compact sparkline charts - get sparkline image URL or save sparkline image to file"
     },
     {
       "name": "create-diagram-using-graphviz",
-      "description": "Create graph diagrams using GraphViz - get URL or save as file"
+      "description": "Create graph diagrams using GraphViz - get diagram image URL or save diagram image to file"
     },
     {
       "name": "create-wordcloud",
-      "description": "Create word cloud visualizations - get URL or save as file"
+      "description": "Create word cloud visualizations - get word cloud image URL or save word cloud image to file"
     },
     {
       "name": "create-barcode",
-      "description": "Generate barcodes and QR codes - get URL or save as file"
+      "description": "Generate barcodes and QR codes - get barcode image URL or save barcode image to file"
     },
     {
       "name": "create-qr-code",
-      "description": "Create QR codes with extensive customization options - get URL or save as file"
+      "description": "Create QR codes with extensive customization options - get QR code image URL or save QR code image to file"
     },
     {
       "name": "create-table",
-      "description": "Convert data to table images - get URL or save as file"
+      "description": "Convert data to table images - get table image URL or save table image to file"
     },
     {
       "name": "create-watermark",
-      "description": "Add watermarks and logos to images - get URL or save as file"
+      "description": "Add watermarks and logos to images - get watermarked image URL or save watermarked image to file"
     },
     {
       "name": "get-visualization-tool-help",
