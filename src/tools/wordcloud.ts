@@ -8,7 +8,7 @@ import { QuickChartUrls } from "../utils/config.js";
 export const CREATE_WORDCLOUD_TOOL: Tool = {
   name: "create-wordcloud",
   description:
-    "Create a word cloud using QuickChart.io - get URL or save as file",
+    "Create a word cloud using QuickChart.io - get word cloud image URL or save word cloud image to file",
   inputSchema: {
     type: "object",
     properties: {

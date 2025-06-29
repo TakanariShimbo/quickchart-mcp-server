@@ -8,7 +8,7 @@ import { QuickChartUrls } from "../utils/config.js";
 export const CREATE_WATERMARK_TOOL: Tool = {
   name: "create-watermark",
   description:
-    "Add watermarks/logos to images using QuickChart - get URL or save as file",
+    "Add watermarks/logos to images using QuickChart - get watermarked image URL or save watermarked image to file",
   inputSchema: {
     type: "object",
     properties: {

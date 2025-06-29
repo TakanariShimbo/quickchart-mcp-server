@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_TABLE_TOOL: Tool = {
   name: "create-table",
-  description: "Create table images using QuickChart - get URL or save as file",
+  description: "Create table images using QuickChart - get table image URL or save table image to file",
   inputSchema: {
     type: "object",
     properties: {

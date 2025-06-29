@@ -5,7 +5,7 @@ const TOOL_DOCUMENTATION = {
   "create-chart-using-chartjs": {
     name: "create-chart-using-chartjs",
     description:
-      "Create charts using Chart.js and QuickChart.io - get URL or save as file",
+      "Create charts using Chart.js and QuickChart.io - get chart image URL or save chart image to file",
     documentation: "https://quickchart.io/documentation/",
     additionalResources: {
       chartjsDocumentation: "https://www.chartjs.org/docs/latest/",
@@ -52,7 +52,7 @@ const TOOL_DOCUMENTATION = {
   "create-chart-using-apexcharts": {
     name: "create-chart-using-apexcharts",
     description:
-      "Create charts using ApexCharts library - get URL or save as file",
+      "Create charts using ApexCharts library - get chart image URL or save chart image to file",
     documentation:
       "https://quickchart.io/documentation/apex-charts-image-rendering/",
     additionalResources: {
@@ -105,7 +105,7 @@ const TOOL_DOCUMENTATION = {
   "create-chart-using-googlecharts": {
     name: "create-chart-using-googlecharts",
     description:
-      "Create charts using Google Charts library - get URL or save as file",
+      "Create charts using Google Charts library - get chart image URL or save chart image to file",
     documentation:
       "https://quickchart.io/documentation/google-charts-image-server/",
     additionalResources: {
@@ -151,7 +151,7 @@ const TOOL_DOCUMENTATION = {
   "create-chart-using-natural-language": {
     name: "create-chart-using-natural-language",
     description:
-      "Generate charts from natural language descriptions - get URL or save as file",
+      "Generate charts from natural language descriptions - get chart image URL or save chart image to file",
     documentation: "https://quickchart.io/documentation/apis/text-to-chart/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/apis/text-to-chart/",
@@ -178,7 +178,7 @@ const TOOL_DOCUMENTATION = {
   },
   "create-sparkline-using-chartjs": {
     name: "create-sparkline-using-chartjs",
-    description: "Create compact sparkline charts - get URL or save as file",
+    description: "Create compact sparkline charts - get sparkline image URL or save sparkline image to file",
     documentation: "https://quickchart.io/documentation/sparkline-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/sparkline-api/",
@@ -221,7 +221,7 @@ const TOOL_DOCUMENTATION = {
   "create-diagram-using-graphviz": {
     name: "create-diagram-using-graphviz",
     description:
-      "Create graph diagrams using GraphViz - get URL or save as file",
+      "Create graph diagrams using GraphViz - get diagram image URL or save diagram image to file",
     documentation: "https://quickchart.io/documentation/graphviz-api/",
     additionalResources: {
       graphvizDocumentation: "https://graphviz.org/documentation/",
@@ -262,7 +262,7 @@ const TOOL_DOCUMENTATION = {
   },
   "create-wordcloud": {
     name: "create-wordcloud",
-    description: "Create word cloud visualizations - get URL or save as file",
+    description: "Create word cloud visualizations - get word cloud image URL or save word cloud image to file",
     documentation: "https://quickchart.io/documentation/word-cloud-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/word-cloud-api/"
@@ -282,7 +282,7 @@ const TOOL_DOCUMENTATION = {
   },
   "create-barcode": {
     name: "create-barcode",
-    description: "Generate barcodes and QR codes - get URL or save as file",
+    description: "Generate barcodes and QR codes - get barcode image URL or save barcode image to file",
     documentation: "https://quickchart.io/documentation/barcode-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/barcode-api/",
@@ -325,7 +325,7 @@ const TOOL_DOCUMENTATION = {
   },
   "create-table": {
     name: "create-table",
-    description: "Convert data to table images - get URL or save as file",
+    description: "Convert data to table images - get table image URL or save table image to file",
     documentation: "https://quickchart.io/documentation/apis/table-image-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/apis/table-image-api/"
@@ -353,7 +353,7 @@ const TOOL_DOCUMENTATION = {
   "create-qr-code": {
     name: "create-qr-code",
     description:
-      "Create QR codes with extensive customization options - get URL or save as file",
+      "Create QR codes with extensive customization options - get QR code image URL or save QR code image to file",
     documentation: "https://quickchart.io/documentation/qr-codes/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/qr-codes/",
@@ -392,7 +392,7 @@ const TOOL_DOCUMENTATION = {
   },
   "create-watermark": {
     name: "create-watermark",
-    description: "Add watermarks and logos to images - get URL or save as file",
+    description: "Add watermarks and logos to images - get watermarked image URL or save watermarked image to file",
     documentation: "https://quickchart.io/documentation/watermark-api/",
     additionalResources: {
       apiReference: "https://quickchart.io/documentation/watermark-api/"

@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
   name: "create-chart-using-chartjs",
-  description: "Create a chart using QuickChart.io - get URL or save as file",
+  description: "Create a chart using QuickChart.io - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {

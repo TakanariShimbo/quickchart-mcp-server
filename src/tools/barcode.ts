@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_BARCODE_TOOL: Tool = {
   name: "create-barcode",
-  description: "Create barcodes using QuickChart - get URL or save as file",
+  description: "Create barcodes using QuickChart - get barcode image URL or save barcode image to file",
   inputSchema: {
     type: "object",
     properties: {

@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
   name: "create-chart-using-googlecharts",
-  description: "Create charts using Google Charts - get URL or save as file",
+  description: "Create charts using Google Charts - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {

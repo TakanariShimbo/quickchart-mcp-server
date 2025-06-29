@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_CHART_USING_APEXCHARTS_TOOL: Tool = {
   name: "create-chart-using-apexcharts",
-  description: "Create charts using Apex Charts - get URL or save as file",
+  description: "Create charts using Apex Charts - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {

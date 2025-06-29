@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_DIAGRAM_USING_GRAPHVIZ_TOOL: Tool = {
   name: "create-diagram-using-graphviz",
-  description: "Create graph diagrams using GraphViz - get URL or save as file",
+  description: "Create graph diagrams using GraphViz - get diagram image URL or save diagram image to file",
   inputSchema: {
     type: "object",
     properties: {

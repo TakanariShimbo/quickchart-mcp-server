@@ -8,7 +8,7 @@ import { QuickChartUrls } from "../utils/config.js";
 export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
   name: "create-chart-using-natural-language",
   description:
-    "Create charts from natural language descriptions - get URL or save as file",
+    "Create charts from natural language descriptions - get chart image URL or save chart image to file",
   inputSchema: {
     type: "object",
     properties: {

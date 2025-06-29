@@ -7,7 +7,7 @@ import { QuickChartUrls } from "../utils/config.js";
 
 export const CREATE_QR_CODE_TOOL: Tool = {
   name: "create-qr-code",
-  description: "Create QR codes using QuickChart - get URL or save as file",
+  description: "Create QR codes using QuickChart - get QR code image URL or save QR code image to file",
   inputSchema: {
     type: "object",
     properties: {

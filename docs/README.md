@@ -118,7 +118,7 @@ To disable specific tools, set these environment variables to `false`:
 
 ### `create-chart-using-chartjs`
 
-Create charts using Chart.js and QuickChart.io - get URL or save as file
+Create charts using Chart.js and QuickChart.io - get chart image URL or save chart image to file
 
 **Documentation**: [QuickChart.io Chart API](https://quickchart.io/documentation/)
 
@@ -169,7 +169,7 @@ Create charts using Chart.js and QuickChart.io - get URL or save as file
 
 ### `create-chart-using-apexcharts`
 
-Create charts using ApexCharts library - get URL or save as file
+Create charts using ApexCharts library - get chart image URL or save chart image to file
 
 **Documentation**: [ApexCharts Image Rendering](https://quickchart.io/documentation/apex-charts-image-rendering/)
 
@@ -226,7 +226,7 @@ Create charts using ApexCharts library - get URL or save as file
 
 ### `create-chart-using-googlecharts`
 
-Create charts using Google Charts library - get URL or save as file
+Create charts using Google Charts library - get chart image URL or save chart image to file
 
 **Documentation**: [Google Charts Image Server](https://quickchart.io/documentation/google-charts-image-server/)
 
@@ -276,7 +276,7 @@ Create charts using Google Charts library - get URL or save as file
 
 ### `create-chart-using-natural-language`
 
-Generate charts from natural language descriptions - get URL or save as file
+Generate charts from natural language descriptions - get chart image URL or save chart image to file
 
 **Documentation**: [Text to Chart API](https://quickchart.io/documentation/apis/text-to-chart/)
 
@@ -310,7 +310,7 @@ Generate charts from natural language descriptions - get URL or save as file
 
 ### `create-sparkline-using-chartjs`
 
-Create compact sparkline charts - get URL or save as file
+Create compact sparkline charts - get sparkline image URL or save sparkline image to file
 
 **Documentation**: [Sparkline API](https://quickchart.io/documentation/sparkline-api/)
 
@@ -360,7 +360,7 @@ Create compact sparkline charts - get URL or save as file
 
 ### `create-diagram-using-graphviz`
 
-Create graph diagrams using GraphViz - get URL or save as file
+Create graph diagrams using GraphViz - get diagram image URL or save diagram image to file
 
 **Documentation**: [GraphViz API](https://quickchart.io/documentation/graphviz-api/)
 
@@ -412,7 +412,7 @@ Create graph diagrams using GraphViz - get URL or save as file
 
 ### `create-wordcloud`
 
-Create word cloud visualizations - get URL or save as file
+Create word cloud visualizations - get word cloud image URL or save word cloud image to file
 
 **Documentation**: [Word Cloud API](https://quickchart.io/documentation/word-cloud-api/)
 
@@ -445,7 +445,7 @@ Create word cloud visualizations - get URL or save as file
 
 ### `create-barcode`
 
-Generate barcodes and QR codes - get URL or save as file
+Generate barcodes and QR codes - get barcode image URL or save barcode image to file
 
 **Documentation**: [Barcode API](https://quickchart.io/documentation/barcode-api/)
 
@@ -502,7 +502,7 @@ Generate barcodes and QR codes - get URL or save as file
 
 ### `create-table`
 
-Convert data to table images - get URL or save as file
+Convert data to table images - get table image URL or save table image to file
 
 **Documentation**: [Table Image API](https://quickchart.io/documentation/apis/table-image-api/)
 
@@ -542,7 +542,7 @@ Convert data to table images - get URL or save as file
 
 ### `create-qr-code`
 
-Create QR codes with extensive customization options - get URL or save as file
+Create QR codes with extensive customization options - get QR code image URL or save QR code image to file
 
 **Documentation**: [QR Code API](https://quickchart.io/documentation/qr-codes/)
 
@@ -595,7 +595,7 @@ Create QR codes with extensive customization options - get URL or save as file
 
 ### `create-watermark`
 
-Add watermarks and logos to images - get URL or save as file
+Add watermarks and logos to images - get watermarked image URL or save watermarked image to file
 
 **Documentation**: [Watermark API](https://quickchart.io/documentation/watermark-api/)
 

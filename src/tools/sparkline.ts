@@ -8,7 +8,7 @@ import { QuickChartUrls } from "../utils/config.js";
 export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
   name: "create-sparkline-using-chartjs",
   description:
-    "Create sparkline charts using Chart.js - get URL or save as file",
+    "Create sparkline charts using Chart.js - get sparkline image URL or save sparkline image to file",
   inputSchema: {
     type: "object",
     properties: {
