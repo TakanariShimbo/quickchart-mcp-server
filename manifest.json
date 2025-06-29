@@ -151,6 +151,58 @@
       "description": "Get detailed usage information and examples for all available chart, diagram, and QR code tools"
     }
   ],
+  "prompts": [
+    {
+      "name": "create_sales_chart_url",
+      "description": "Create a sales chart and get URL",
+      "text": "I need a chart showing our Q4 sales by region. Please create a bar chart or line chart that clearly displays the sales performance. Use action: get_url to provide me with a URL I can share."
+    },
+    {
+      "name": "create_sales_chart_file",
+      "description": "Create a sales chart and save to file",
+      "text": "I need a chart showing our Q4 sales by region. Please create a bar chart or line chart that clearly displays the sales performance. Use action: save_file to save it to my desktop."
+    },
+    {
+      "name": "create_qr_code_url",
+      "description": "Create a QR code and get URL",
+      "text": "Create a QR code for our contact information. Make it professional and easily scannable. Use action: get_url so I can embed it in our website."
+    },
+    {
+      "name": "create_qr_code_file",
+      "description": "Create a QR code and save to file",
+      "text": "Create a QR code for our contact information. Make it professional and easily scannable. Use action: save_file and save it as 'contact_qr.png' on my desktop."
+    },
+    {
+      "name": "generate_table_url",
+      "description": "Generate a table and get URL",
+      "text": "Generate a professional table from this CSV data. Format it with clear headers and appropriate styling. Use action: get_url to create a shareable link."
+    },
+    {
+      "name": "generate_table_file",
+      "description": "Generate a table and save to file",
+      "text": "Generate a professional table from this CSV data. Format it with clear headers and appropriate styling. Use action: save_file to save it for my presentation."
+    },
+    {
+      "name": "create_word_cloud_url",
+      "description": "Create a word cloud and get URL",
+      "text": "Make a word cloud from these customer reviews. Highlight the most frequently mentioned terms in an attractive visual format. Use action: get_url for quick preview and sharing."
+    },
+    {
+      "name": "create_word_cloud_file",
+      "description": "Create a word cloud and save to file",
+      "text": "Make a word cloud from these customer reviews. Highlight the most frequently mentioned terms in an attractive visual format. Use action: save_file to save it as 'reviews_wordcloud.png'."
+    },
+    {
+      "name": "draw_flowchart_url",
+      "description": "Draw a flowchart and get URL",
+      "text": "Draw a flowchart of our deployment process. Include all major steps and decision points with clear flow directions. Use action: get_url to share with the team."
+    },
+    {
+      "name": "draw_flowchart_file",
+      "description": "Draw a flowchart and save to file",
+      "text": "Draw a flowchart of our deployment process. Include all major steps and decision points with clear flow directions. Use action: save_file to save it in our documentation folder."
+    }
+  ],
   "keywords": ["quickchart", "chart", "visualization"],
   "license": "MIT",
   "repository": {
