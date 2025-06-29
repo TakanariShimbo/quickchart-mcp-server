@@ -92,14 +92,39 @@ function prepareSparklineConfig(chart: any, args: any): Record<string, string> {
   });
 }
 
+async function fetchSparklineContent(
+  params: Record<string, string>,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const queryString = new URLSearchParams(params).toString();
+    const sparklineUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
+    
+    const response = await axios.get(sparklineUrl, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch sparkline content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateSparklineUrls(params: Record<string, string>): {
-  sparklineUrl: string;
+  chartUrl: string;
 } {
-  const queryString = new URLSearchParams(params).toString();
-  const sparklineUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
+  // Use only the chart part for URL (not width/height/background)
+  const chartOnly = JSON.parse(params.c);
+  const encodedChartOnly = encodeURIComponent(JSON.stringify(chartOnly));
   
   return {
-    sparklineUrl
+    chartUrl: `https://quickchart.io/chart?c=${encodedChartOnly}`,
   };
 }
 
@@ -115,60 +140,73 @@ export async function handleSparklineTool(args: any): Promise<any> {
   }
 
   const params = prepareSparklineConfig(args.chart, args);
-  const { sparklineUrl } = generateSparklineUrls(params);
+  const { chartUrl } = generateSparklineUrls(params);
+
+  // Generate PNG image for display
+  const pngData = await fetchSparklineContent(params, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the chart URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: args.chart?.type || "sparkline",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: sparklineUrl,
-        },
-      ],
-      metadata: {
-        sparklineType: args.chart?.type || "line",
-        generatedAt: new Date().toISOString(),
-        sparklineUrl: sparklineUrl,
-      },
-    };
+    return result;
   }
 
+  const format = "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
-    "png"
+    format
   );
 
   try {
-    const response = await axios.get(sparklineUrl, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    const data = await fetchSparklineContent(params, format);
+    fs.writeFileSync(outputPath, data);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: sparklineUrl,
-        },
-      ],
-      metadata: {
-        sparklineType: args.chart?.type || "line",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        sparklineUrl: sparklineUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
-      `Failed to save sparkline chart: ${
+      `Failed to save chart: ${
         error instanceof Error ? error.message : String(error)
       }`
     );

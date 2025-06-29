@@ -112,14 +112,39 @@ function prepareTextChartConfig(description: string, args: any): any {
   });
 }
 
+async function fetchTextChartContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  try {
+    const response = await axios.post(QuickChartUrls.textChart(), postConfig, {
+      responseType: "arraybuffer",
+      timeout: 30000,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    
+    return response.data;
+  } catch (error) {
+    throw new McpError(
+      ErrorCode.InternalError,
+      `Failed to fetch text chart content: ${
+        error instanceof Error ? error.message : String(error)
+      }`
+    );
+  }
+}
+
 function generateTextChartUrls(postConfig: any): {
-  textchartUrl: string;
+  chartUrl: string;
 } {
-  const configJson = JSON.stringify(postConfig);
-  const encodedConfig = encodeURIComponent(configJson);
+  // Use only the description for simple URL
+  const description = postConfig.description;
+  const encodedDescription = encodeURIComponent(description);
   
   return {
-    textchartUrl: `https://quickchart.io/natural?config=${encodedConfig}`
+    chartUrl: `https://quickchart.io/natural/${encodedDescription}`,
   };
 }
 
@@ -134,64 +159,74 @@ export async function handleTextChartTool(args: any): Promise<any> {
     );
   }
 
-  const config = prepareTextChartConfig(args.description as string, args);
-  const { textchartUrl } = generateTextChartUrls(config);
+  const postConfig = prepareTextChartConfig(args.description as string, args);
+  const { chartUrl } = generateTextChartUrls(postConfig);
+
+  // Generate PNG image for display
+  const pngData = await fetchTextChartContent(postConfig, "png");
+  const pngBase64 = Buffer.from(pngData).toString("base64");
+
+  const result: any = {
+    content: [
+      {
+        type: "text",
+        text: "Below is the chart URL:",
+      },
+      {
+        type: "text",
+        text: chartUrl,
+      },
+      {
+        type: "text",
+        text: "Below is the PNG image:",
+      },
+      {
+        type: "image",
+        data: pngBase64,
+        mimeType: "image/png",
+      },
+    ],
+    metadata: {
+      chartType: "natural-language",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      pngBase64: pngBase64,
+    },
+  };
 
   if (action === "get_url") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: textchartUrl,
-        },
-      ],
-      metadata: {
-        textchartType: "natural-language",
-        generatedAt: new Date().toISOString(),
-        textchartUrl: textchartUrl,
-      },
-    };
+    return result;
   }
 
+  const format = "png";
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
-    "png"
+    format
   );
 
   try {
-    const response = await axios.post(QuickChartUrls.textChart(), config, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
     const dir = path.dirname(outputPath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, response.data);
+    const data = await fetchTextChartContent(postConfig, format);
+    fs.writeFileSync(outputPath, data);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: textchartUrl,
-        },
-      ],
-      metadata: {
-        textchartType: "natural-language",
-        generatedAt: new Date().toISOString(),
-        savedPath: outputPath,
-        textchartUrl: textchartUrl,
-      },
-    };
+    result.metadata.savedPath = outputPath;
+    result.content.push({
+      type: "text",
+      text: "Below is the saved file path:"
+    });
+    result.content.push({
+      type: "text", 
+      text: outputPath
+    });
+    return result;
   } catch (error) {
     throw new McpError(
       ErrorCode.InternalError,
-      `Failed to save text-to-chart image: ${
+      `Failed to save chart: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
