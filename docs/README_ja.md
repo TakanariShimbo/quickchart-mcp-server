@@ -798,6 +798,36 @@ quickchart-mcp-server/
 - [QR コードジェネレーター](https://www.qr-code-generator.com/) - オンライン QR コードテスト
 - [GraphViz オンライン](https://dreampuf.github.io/GraphvizOnline/) - DOT 構文のオンラインテスト
 
+## Desktop Extension (DXT) の作成
+
+Desktop Extensions (.dxt) により、Claude Desktop での MCP サーバーのワンクリックインストールが可能になります。このサーバー用の DXT ファイルを作成する手順：
+
+### 1. DXT マニフェストの初期化
+
+プロジェクトルートディレクトリで以下のコマンドを実行：
+
+```bash
+npx @anthropic-ai/dxt init
+```
+
+### 2. DXT パッケージの作成
+
+```bash
+npx @anthropic-ai/dxt pack
+```
+
+これにより、ユーザーが Claude Desktop でワンクリックインストールできる `.dxt` ファイルが作成されます。
+
+### 3. ユーザー設定
+
+DXT ファイルには、ユーザーが以下を設定できるユーザー設定可能オプションが含まれています：
+
+- **URL 設定**: カスタム QuickChart インスタンス URL の設定
+- **ツール管理**: 特定の可視化ツールの有効/無効の切り替え
+- **簡単インストール**: 手動 JSON 設定不要
+
+ユーザーはインストール時または後で Claude Desktop の拡張機能管理インターフェースを通じてこれらの設定を変更できます。
+
 ## ライセンス
 
 MIT - 詳細は [LICENSE](LICENSE) ファイルを参照してください
