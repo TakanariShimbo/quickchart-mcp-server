@@ -25,6 +25,12 @@
       "description": "QuickChart API server base URL for table endpoints",
       "default": "https://api.quickchart.io"
     },
+    "default_output_dir": {
+      "type": "string",
+      "title": "Default Output Directory",
+      "description": "Default directory for saving files (absolute path only, empty defaults to Desktop)",
+      "default": ""
+    },
     "enable_chart": {
       "type": "boolean",
       "title": "Enable Chart.js Tool",
@@ -89,6 +95,7 @@
       "env": {
         "QUICKCHART_BASE_URL": "${user_config.quickchart_base_url}",
         "QUICKCHART_API_BASE_URL": "${user_config.quickchart_api_base_url}",
+        "QUICKCHART_DEFAULT_OUTPUT_DIR": "${user_config.default_output_dir}",
         "QUICKCHART_ENABLE_CHART": "${user_config.enable_chart}",
         "QUICKCHART_ENABLE_APEXCHARTS": "${user_config.enable_apexcharts}",
         "QUICKCHART_ENABLE_GOOGLECHARTS": "${user_config.enable_googlecharts}",

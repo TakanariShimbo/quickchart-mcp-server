@@ -35,7 +35,8 @@ AI アシスタントは、この MCP を経由することで、チャート、
 
 **ファイル管理:**
 
-- ファイルはデフォルトでデスクトップに保存
+- ファイルはデフォルトでデスクトップに保存（設定可能）
+- 環境変数によるカスタム出力ディレクトリ
 - 整理のためのカスタムパスサポート
 - 必要に応じて自動ディレクトリ作成
 
@@ -56,7 +57,7 @@ Claude Desktop の設定に追加：
 }
 ```
 
-### カスタム QuickChart インスタンスを使用
+### カスタム設定を使用
 
 ```json
 {
@@ -66,6 +67,7 @@ Claude Desktop の設定に追加：
       "args": ["-y", "@takanarishimbo/quickchart-mcp-server"],
       "env": {
         "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com",
+        "QUICKCHART_DEFAULT_OUTPUT_DIR": "/home/username/Downloads",
         "QUICKCHART_ENABLE_QRCODE": "false"
       }
     }
@@ -113,6 +115,20 @@ Claude Desktop の設定に追加：
 - **QUICKCHART_ENABLE_TABLE**: テーブルツール
 - **QUICKCHART_ENABLE_WATERMARK**: ウォーターマークツール
 - **QUICKCHART_ENABLE_HELP**: ビジュアライゼーションツールヘルプ
+
+**ファイル管理:**
+
+- **QUICKCHART_DEFAULT_OUTPUT_DIR**: ファイル保存用のデフォルトディレクトリ（絶対パス、デフォルト: ホームディレクトリの `Desktop`）
+
+**デフォルト出力ディレクトリの例:**
+
+```bash
+# カスタムチャートディレクトリに保存（Linux/macOS）
+QUICKCHART_DEFAULT_OUTPUT_DIR=/home/username/Documents/charts
+
+# カスタムチャートディレクトリに保存（Windows）
+QUICKCHART_DEFAULT_OUTPUT_DIR=C:/Users/username/Documents/charts
+```
 
 ## ツール
 

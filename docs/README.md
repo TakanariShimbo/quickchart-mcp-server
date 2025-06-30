@@ -35,7 +35,8 @@ With this MCP, AI assistants can create charts, diagrams, barcodes, QR codes, wo
 
 **File Management:**
 
-- Files are saved to your Desktop by default
+- Files are saved to your Desktop by default (configurable)
+- Custom output directory via environment variable
 - Custom paths supported for organization
 - Automatic directory creation when needed
 
@@ -56,7 +57,7 @@ Add to your Claude Desktop configuration:
 }
 ```
 
-### With Custom QuickChart Instance
+### With Custom Configuration
 
 ```json
 {
@@ -66,6 +67,7 @@ Add to your Claude Desktop configuration:
       "args": ["-y", "@takanarishimbo/quickchart-mcp-server"],
       "env": {
         "QUICKCHART_BASE_URL": "https://your-quickchart-instance.com",
+        "QUICKCHART_DEFAULT_OUTPUT_DIR": "/home/username/Downloads",
         "QUICKCHART_ENABLE_QRCODE": "false"
       }
     }
@@ -113,6 +115,20 @@ To disable specific tools, set these environment variables to `false`:
 - **QUICKCHART_ENABLE_TABLE**: Table tool
 - **QUICKCHART_ENABLE_WATERMARK**: Watermark tool
 - **QUICKCHART_ENABLE_HELP**: Visualization tool help
+
+**File Management:**
+
+- **QUICKCHART_DEFAULT_OUTPUT_DIR**: Default directory for saving files (absolute path, default: `Desktop` in home directory)
+
+**Default Output Directory Examples:**
+
+```bash
+# Save to custom charts directory (Linux/macOS)
+QUICKCHART_DEFAULT_OUTPUT_DIR=/home/username/Documents/charts
+
+# Save to custom charts directory (Windows)
+QUICKCHART_DEFAULT_OUTPUT_DIR=C:/Users/username/Documents/charts
+```
 
 ## Tools
 
