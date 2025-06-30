@@ -788,6 +788,36 @@ npm run release 1.2.3
 5. Workflow builds project and publishes to NPM
 6. Package becomes available globally via `npm install`
 
+## Creating Desktop Extension (DXT)
+
+Desktop Extensions (.dxt) enable one-click installation of MCP servers in Claude Desktop. To create a DXT file for this server:
+
+### 1. Initialize DXT Manifest
+
+Run this command in the project root directory:
+
+```bash
+npx @anthropic-ai/dxt init
+```
+
+### 2. Create DXT Package
+
+```bash
+npx @anthropic-ai/dxt pack
+```
+
+This creates a `.dxt` file that users can install in Claude Desktop with a single click.
+
+### 3. User Configuration
+
+The DXT file includes user-configurable options that allow users to:
+
+- **URL Configuration**: Set custom QuickChart instance URLs
+- **Tool Management**: Enable/disable specific visualization tools
+- **Easy Installation**: No manual JSON configuration required
+
+Users can modify these settings during installation or later through Claude Desktop's extension management interface.
+
 ## Project Structure
 
 ```
@@ -866,36 +896,6 @@ quickchart-mcp-server/
 - [Chart.js Chart Builder](https://www.chartjs.org/docs/latest/getting-started/) - Interactive chart builder
 - [QR Code Generator](https://www.qr-code-generator.com/) - Online QR code testing
 - [GraphViz Online](https://dreampuf.github.io/GraphvizOnline/) - Test DOT syntax online
-
-## Creating Desktop Extension (DXT)
-
-Desktop Extensions (.dxt) enable one-click installation of MCP servers in Claude Desktop. To create a DXT file for this server:
-
-### 1. Initialize DXT Manifest
-
-Run this command in the project root directory:
-
-```bash
-npx @anthropic-ai/dxt init
-```
-
-### 2. Create DXT Package
-
-```bash
-npx @anthropic-ai/dxt pack
-```
-
-This creates a `.dxt` file that users can install in Claude Desktop with a single click.
-
-### 3. User Configuration
-
-The DXT file includes user-configurable options that allow users to:
-
-- **URL Configuration**: Set custom QuickChart instance URLs
-- **Tool Management**: Enable/disable specific visualization tools
-- **Easy Installation**: No manual JSON configuration required
-
-Users can modify these settings during installation or later through Claude Desktop's extension management interface.
 
 ## License
 
