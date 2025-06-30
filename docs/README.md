@@ -707,7 +707,6 @@ This project includes automated NPM publishing via GitHub Actions. To set up pub
    - Go to [https://www.npmjs.com/settings/tokens](https://www.npmjs.com/settings/tokens)
    - Click "Generate New Token"
    - Select "Automation" (for CI/CD usage)
-   - Choose "Publish" permission level
    - Copy the generated token (starts with `npm_`)
 
 ### 2. Add Token to GitHub Repository
