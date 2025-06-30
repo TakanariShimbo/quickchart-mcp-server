@@ -785,6 +785,7 @@ quickchart-mcp-server/
 │   │   ├── watermark.ts  # ウォーターマークツール
 │   │   └── qrcode.ts     # QR コードツール
 │   └── utils/
+│       ├── config.ts     # 設定管理
 │       └── file.ts       # ファイルユーティリティ
 ├── package.json          # パッケージ設定
 ├── package-lock.json
