@@ -317,7 +317,7 @@ function validateKey(key?: string): void {
 /**
  * Fetches
  */
-function buildPostConfig(
+function buildChartConfig(
   chartConfig: any,
   options: {
     format?: string;
@@ -343,30 +343,16 @@ function buildPostConfig(
   };
 }
 
-function prepareChartConfig(chartConfig: any, args: any): any {
-  return buildPostConfig(chartConfig, {
-    format: args.format as string,
-    width: args.width as number,
-    height: args.height as number,
-    backgroundColor: args.backgroundColor as string,
-    devicePixelRatio: args.devicePixelRatio as number,
-    version: args.version as string,
-    encoding: args.encoding as string,
-    key: args.key as string,
-  });
-}
-
-function generateChartUrls(postConfig: any): {
+function buildChartUrls(chartConfig: any): {
   chartUrl: string;
   editorUrl: string;
 } {
-  const chartOnly = postConfig.chart;
-  const chartOnlyJson = JSON.stringify(chartOnly);
-  const encodedChartOnly = encodeURIComponent(chartOnlyJson);
+  const chartOnlyJson = JSON.stringify(chartConfig);
+  const encodedChart = encodeURIComponent(chartOnlyJson);
 
   return {
-    chartUrl: `https://quickchart.io/chart?c=${encodedChartOnly}`,
-    editorUrl: `https://quickchart.io/sandbox#${encodedChartOnly}`,
+    chartUrl: `https://quickchart.io/chart?c=${encodedChart}`,
+    editorUrl: `https://quickchart.io/sandbox#${encodedChart}`,
   };
 }
 
@@ -375,25 +361,32 @@ async function fetchChartContent(
   format: string = "png"
 ): Promise<any> {
   const config = { ...postConfig, format };
-  const responseType = format === "svg" ? "text" : "arraybuffer";
+  const isSvg = format === "svg";
+  const axiosConfig = {
+    responseType: (isSvg ? "text" : "arraybuffer") as any,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: isSvg ? "image/svg+xml,*/*" : "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
 
   try {
-    const response = await axios.post(QuickChartUrls.chart(), config, {
-      responseType: responseType as any,
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
+    const response = await axios.post(QuickChartUrls.chart(), config, axiosConfig);
     return response.data;
   } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch chart content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch chart content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch chart content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
   }
 }
 
@@ -417,8 +410,17 @@ export async function handleChartTool(args: any): Promise<any> {
   validateEncoding(args.encoding);
   validateKey(args.key);
 
-  const postConfig = prepareChartConfig(chartConfig, args);
-  const { chartUrl, editorUrl } = generateChartUrls(postConfig);
+  const postConfig = buildChartConfig(chartConfig, {
+    format: args.format as string,
+    width: args.width as number,
+    height: args.height as number,
+    backgroundColor: args.backgroundColor as string,
+    devicePixelRatio: args.devicePixelRatio as number,
+    version: args.version as string,
+    encoding: args.encoding as string,
+    key: args.key as string,
+  });
+  const { chartUrl, editorUrl } = buildChartUrls(chartConfig);
   const pngData = await fetchChartContent(postConfig, "png");
   const pngBase64 = Buffer.from(pngData).toString("base64");
 
