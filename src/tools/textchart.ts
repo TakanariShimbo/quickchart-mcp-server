@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
   name: "create-chart-using-natural-language",
   description:
@@ -59,7 +62,10 @@ export const CREATE_CHART_USING_NATURAL_LANGUAGE_TOOL: Tool = {
   },
 };
 
-export function validateTextChartDescription(description: string): void {
+/**
+ * Validates
+ */
+function validateDescription(description: string): void {
   if (
     !description ||
     typeof description !== "string" ||
@@ -72,7 +78,84 @@ export function validateTextChartDescription(description: string): void {
   }
 }
 
-export function buildTextChartConfig(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validateDimensions(width?: number, height?: number): void {
+  if (width !== undefined) {
+    if (!Number.isInteger(width) || width <= 0 || width > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Width must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+  if (height !== undefined) {
+    if (!Number.isInteger(height) || height <= 0 || height > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Height must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validateBackgroundColor(backgroundColor?: string): void {
+  if (backgroundColor !== undefined) {
+    if (typeof backgroundColor !== "string" || backgroundColor.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Background color must be a non-empty string"
+      );
+    }
+  }
+}
+
+function validateDataString(data?: string, fieldName?: string): void {
+  if (data !== undefined) {
+    if (typeof data !== "string" || data.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `${fieldName || "Data"} must be a non-empty string`
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildTextChartConfig(
   description: string,
   options: {
     width?: number;
@@ -99,8 +182,66 @@ export function buildTextChartConfig(
   return config;
 }
 
-function prepareTextChartConfig(description: string, args: any): any {
-  return buildTextChartConfig(description, {
+function buildTextChartUrl(description: string): string {
+  const encodedDescription = encodeURIComponent(description);
+
+  return `https://quickchart.io/natural/${encodedDescription}`;
+}
+
+async function fetchTextChartContent(
+  postConfig: any,
+  format: string = "png"
+): Promise<any> {
+  const axiosConfig = {
+    responseType: "arraybuffer" as any,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
+
+  try {
+    const response = await axios.post(
+      QuickChartUrls.textChart(),
+      postConfig,
+      axiosConfig
+    );
+    return response.data;
+  } catch (error) {
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch text chart content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch text chart content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
+  }
+}
+
+/**
+ * Tool handler
+ */
+export async function handleTextChartTool(args: any): Promise<any> {
+  const description = args.description as string;
+  const action = args.action as string;
+  
+  validateDescription(description);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validateDimensions(args.width, args.height);
+  validateBackgroundColor(args.backgroundColor);
+  validateDataString(args.data1, "Data1");
+  validateDataString(args.data2, "Data2");
+  validateDataString(args.labels, "Labels");
+  validateDataString(args.title, "Title");
+
+  const postConfig = buildTextChartConfig(description, {
     width: args.width as number,
     height: args.height as number,
     backgroundColor: args.backgroundColor as string,
@@ -109,58 +250,7 @@ function prepareTextChartConfig(description: string, args: any): any {
     labels: args.labels as string,
     title: args.title as string,
   });
-}
-
-async function fetchTextChartContent(
-  postConfig: any,
-  format: string = "png"
-): Promise<any> {
-  try {
-    const response = await axios.post(QuickChartUrls.textChart(), postConfig, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch text chart content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-}
-
-function generateTextChartUrls(postConfig: any): {
-  chartUrl: string;
-} {
-  const description = postConfig.description;
-  const encodedDescription = encodeURIComponent(description);
-
-  return {
-    chartUrl: `https://quickchart.io/natural/${encodedDescription}`,
-  };
-}
-
-export async function handleTextChartTool(args: any): Promise<any> {
-  validateTextChartDescription(args.description as string);
-
-  const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
-
-  const postConfig = prepareTextChartConfig(args.description as string, args);
-  const { chartUrl } = generateTextChartUrls(postConfig);
-  const pngData = await fetchTextChartContent(postConfig, "png");
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const chartUrl = buildTextChartUrl(description);
 
   const result: any = {
     content: [
@@ -172,6 +262,19 @@ export async function handleTextChartTool(args: any): Promise<any> {
         type: "text",
         text: chartUrl,
       },
+    ],
+    metadata: {
+      chartType: "natural-language",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+    },
+  };
+
+  try {
+    const pngData = await fetchTextChartContent(postConfig, "png");
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -180,15 +283,21 @@ export async function handleTextChartTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      chartType: "natural-language",
-      generatedAt: new Date().toISOString(),
-      chartUrl: chartUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch chart image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;

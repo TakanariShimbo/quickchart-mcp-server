@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
   name: "create-sparkline-using-chartjs",
   description:
@@ -48,7 +51,10 @@ export const CREATE_SPARKLINE_USING_CHARTJS_TOOL: Tool = {
   },
 };
 
-export function validateSparklineChart(chart: any): void {
+/**
+ * Validates
+ */
+function validateChart(chart: any): void {
   if (!chart || typeof chart !== "object") {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -57,7 +63,85 @@ export function validateSparklineChart(chart: any): void {
   }
 }
 
-export function buildSparklineParams(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validateDimensions(width?: number, height?: number): void {
+  if (width !== undefined) {
+    if (!Number.isInteger(width) || width <= 0 || width > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Width must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+  if (height !== undefined) {
+    if (!Number.isInteger(height) || height <= 0 || height > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Height must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validateDevicePixelRatio(devicePixelRatio?: number): void {
+  if (devicePixelRatio !== undefined) {
+    const validRatios = [1, 2];
+    if (!validRatios.includes(devicePixelRatio)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid device pixel ratio: ${devicePixelRatio}. Valid ratios are: ${validRatios.join(", ")}`
+      );
+    }
+  }
+}
+
+function validateBackgroundColor(backgroundColor?: string): void {
+  if (backgroundColor !== undefined) {
+    if (typeof backgroundColor !== "string" || backgroundColor.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Background color must be a non-empty string"
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildSparklineParams(
   chart: any,
   options: {
     width?: number;
@@ -82,65 +166,67 @@ export function buildSparklineParams(
   return params;
 }
 
-function prepareSparklineConfig(chart: any, args: any): Record<string, string> {
-  return buildSparklineParams(chart, {
-    width: args.width as number,
-    height: args.height as number,
-    devicePixelRatio: args.devicePixelRatio as number,
-    backgroundColor: args.backgroundColor as string,
-  });
+function buildSparklineUrl(chart: any): string {
+  const encodedChart = encodeURIComponent(JSON.stringify(chart));
+
+  return `https://quickchart.io/chart?c=${encodedChart}`;
 }
 
 async function fetchSparklineContent(
   params: Record<string, string>,
   format: string = "png"
 ): Promise<any> {
+  const queryString = new URLSearchParams(params).toString();
+  const sparklineUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
+
+  const axiosConfig = {
+    responseType: "arraybuffer" as any,
+    timeout: 30000,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
+
   try {
-    const queryString = new URLSearchParams(params).toString();
-    const sparklineUrl = `${QuickChartUrls.sparkline()}?${queryString}`;
-
-    const response = await axios.get(sparklineUrl, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-    });
-
+    const response = await axios.get(sparklineUrl, axiosConfig);
     return response.data;
   } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch sparkline content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch sparkline content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch sparkline content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
   }
 }
 
-function generateSparklineUrls(params: Record<string, string>): {
-  chartUrl: string;
-} {
-  const chartOnly = JSON.parse(params.c);
-  const encodedChartOnly = encodeURIComponent(JSON.stringify(chartOnly));
-
-  return {
-    chartUrl: `https://quickchart.io/chart?c=${encodedChartOnly}`,
-  };
-}
-
+/**
+ * Tool handler
+ */
 export async function handleSparklineTool(args: any): Promise<any> {
-  validateSparklineChart(args.chart);
-
+  const chart = args.chart as any;
   const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
+  
+  validateChart(chart);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validateDimensions(args.width, args.height);
+  validateDevicePixelRatio(args.devicePixelRatio);
+  validateBackgroundColor(args.backgroundColor);
 
-  const params = prepareSparklineConfig(args.chart, args);
-  const { chartUrl } = generateSparklineUrls(params);
-  const pngData = await fetchSparklineContent(params, "png");
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const params = buildSparklineParams(chart, {
+    width: args.width as number,
+    height: args.height as number,
+    devicePixelRatio: args.devicePixelRatio as number,
+    backgroundColor: args.backgroundColor as string,
+  });
+  const chartUrl = buildSparklineUrl(chart);
 
   const result: any = {
     content: [
@@ -152,6 +238,19 @@ export async function handleSparklineTool(args: any): Promise<any> {
         type: "text",
         text: chartUrl,
       },
+    ],
+    metadata: {
+      chartType: chart?.type || "sparkline",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+    },
+  };
+
+  try {
+    const pngData = await fetchSparklineContent(params, "png");
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -160,15 +259,21 @@ export async function handleSparklineTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      chartType: args.chart?.type || "sparkline",
-      generatedAt: new Date().toISOString(),
-      chartUrl: chartUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch chart image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
