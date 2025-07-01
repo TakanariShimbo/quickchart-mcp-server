@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
   name: "create-chart-using-googlecharts",
   description:
@@ -47,7 +50,10 @@ export const CREATE_CHART_USING_GOOGLECHARTS_TOOL: Tool = {
   },
 };
 
-export function validateGoogleChartsCode(code: string): void {
+/**
+ * Validates
+ */
+function validateCode(code: string): void {
   if (!code || typeof code !== "string" || code.trim().length === 0) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -56,7 +62,84 @@ export function validateGoogleChartsCode(code: string): void {
   }
 }
 
-export function buildGoogleChartsConfig(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validatePackages(packages?: string): void {
+  if (packages !== undefined) {
+    if (typeof packages !== "string" || packages.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Packages must be a non-empty string"
+      );
+    }
+  }
+}
+
+function validateDimensions(width?: number, height?: number): void {
+  if (width !== undefined) {
+    if (!Number.isInteger(width) || width <= 0 || width > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Width must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+  if (height !== undefined) {
+    if (!Number.isInteger(height) || height <= 0 || height > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Height must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validateMapsApiKey(mapsApiKey?: string): void {
+  if (mapsApiKey !== undefined) {
+    if (typeof mapsApiKey !== "string" || mapsApiKey.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Maps API key must be a non-empty string"
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildGoogleChartsConfig(
   code: string,
   options: {
     packages?: string;
@@ -77,69 +160,69 @@ export function buildGoogleChartsConfig(
   return config;
 }
 
-function prepareGoogleChartsConfig(code: string, args: any): any {
-  return buildGoogleChartsConfig(code, {
-    packages: args.packages as string,
-    width: args.width as number,
-    height: args.height as number,
-    mapsApiKey: args.mapsApiKey as string,
-  });
+function buildGoogleChartsUrl(code: string): string {
+  const encodedCode = encodeURIComponent(code);
+
+  return `https://quickchart.io/google-charts/render?code=${encodedCode}`;
 }
 
 async function fetchGoogleChartsContent(
   postConfig: any,
   format: string = "png"
 ): Promise<any> {
+  const axiosConfig = {
+    responseType: "arraybuffer" as any,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
+
   try {
     const response = await axios.post(
       QuickChartUrls.googleCharts(),
       postConfig,
-      {
-        responseType: "arraybuffer",
-        timeout: 30000,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      axiosConfig
     );
-
     return response.data;
   } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch Google Charts content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch Google Charts content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch Google Charts content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
   }
 }
 
-function generateGoogleChartsUrls(postConfig: any): {
-  chartUrl: string;
-} {
-  const codeOnly = postConfig.code;
-  const encodedCodeOnly = encodeURIComponent(codeOnly);
-
-  return {
-    chartUrl: `https://quickchart.io/google-charts/render?code=${encodedCodeOnly}`,
-  };
-}
-
+/**
+ * Tool handler
+ */
 export async function handleGoogleChartsTool(args: any): Promise<any> {
-  validateGoogleChartsCode(args.code as string);
-
+  const code = args.code as string;
   const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
+  
+  validateCode(code);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validatePackages(args.packages);
+  validateDimensions(args.width, args.height);
+  validateMapsApiKey(args.mapsApiKey);
 
-  const postConfig = prepareGoogleChartsConfig(args.code as string, args);
-  const { chartUrl } = generateGoogleChartsUrls(postConfig);
-  const pngData = await fetchGoogleChartsContent(postConfig, "png");
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const postConfig = buildGoogleChartsConfig(code, {
+    packages: args.packages as string,
+    width: args.width as number,
+    height: args.height as number,
+    mapsApiKey: args.mapsApiKey as string,
+  });
+  const chartUrl = buildGoogleChartsUrl(code);
 
   const result: any = {
     content: [
@@ -151,6 +234,19 @@ export async function handleGoogleChartsTool(args: any): Promise<any> {
         type: "text",
         text: chartUrl,
       },
+    ],
+    metadata: {
+      chartType: args.packages || "corechart",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+    },
+  };
+
+  try {
+    const pngData = await fetchGoogleChartsContent(postConfig, "png");
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -159,15 +255,21 @@ export async function handleGoogleChartsTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      chartType: args.packages || "corechart",
-      generatedAt: new Date().toISOString(),
-      chartUrl: chartUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch chart image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
