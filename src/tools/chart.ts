@@ -378,7 +378,11 @@ async function fetchChartContent(
   };
 
   try {
-    const response = await axios.post(QuickChartUrls.chart(), config, axiosConfig);
+    const response = await axios.post(
+      QuickChartUrls.chart(),
+      config,
+      axiosConfig
+    );
     return response.data;
   } catch (error) {
     const axiosError = error as any;
@@ -421,8 +425,6 @@ export async function handleChartTool(args: any): Promise<any> {
     key: args.key as string,
   });
   const { chartUrl, editorUrl } = buildChartUrls(chartConfig);
-  const pngData = await fetchChartContent(postConfig, "png");
-  const pngBase64 = Buffer.from(pngData).toString("base64");
 
   const result: any = {
     content: [
@@ -442,6 +444,20 @@ export async function handleChartTool(args: any): Promise<any> {
         type: "text",
         text: editorUrl,
       },
+    ],
+    metadata: {
+      chartType: chartConfig.type,
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+      editableUrl: editorUrl,
+    },
+  };
+
+  try {
+    const pngData = await fetchChartContent(postConfig, "png");
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -450,22 +466,29 @@ export async function handleChartTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      chartType: chartConfig.type,
-      generatedAt: new Date().toISOString(),
-      chartUrl: chartUrl,
-      editableUrl: editorUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch chart image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
   }
 
   const format = (args.format as string) || "png";
+  validateFormat(format);
+
   const outputPath = getDownloadPath(
     args.outputPath as string | undefined,
     format
