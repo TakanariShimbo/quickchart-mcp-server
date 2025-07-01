@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_CHART_USING_APEXCHARTS_TOOL: Tool = {
   name: "create-chart-using-apexcharts",
   description:
@@ -43,7 +46,10 @@ export const CREATE_CHART_USING_APEXCHARTS_TOOL: Tool = {
   },
 };
 
-export function validateApexChartsConfig(config: any): void {
+/**
+ * Validates
+ */
+function validateConfig(config: any): void {
   if (!config || typeof config !== "object") {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -52,7 +58,73 @@ export function validateApexChartsConfig(config: any): void {
   }
 }
 
-export function buildApexChartsConfig(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validateDimensions(width?: number, height?: number): void {
+  if (width !== undefined) {
+    if (!Number.isInteger(width) || width <= 0 || width > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Width must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+  if (height !== undefined) {
+    if (!Number.isInteger(height) || height <= 0 || height > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Height must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validateApexChartsVersion(version?: string): void {
+  if (version !== undefined) {
+    if (typeof version !== "string" || version.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "ApexCharts version must be a non-empty string"
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildApexChartsConfig(
   config: any,
   options: {
     width?: number;
@@ -72,65 +144,68 @@ export function buildApexChartsConfig(
   return payload;
 }
 
-function prepareApexChartsConfig(config: any, args: any): any {
-  return buildApexChartsConfig(config, {
-    width: args.width as number,
-    height: args.height as number,
-    apexChartsVersion: args.apexChartsVersion as string,
-  });
+function buildApexChartsUrl(config: any): string {
+  const configOnlyJson = JSON.stringify(config);
+  const encodedConfig = encodeURIComponent(configOnlyJson);
+
+  return `https://quickchart.io/apex-charts/render?config=${encodedConfig}`;
 }
 
 async function fetchApexChartsContent(
   postConfig: any,
   format: string = "png"
 ): Promise<any> {
-  try {
-    const response = await axios.post(QuickChartUrls.apexCharts(), postConfig, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const axiosConfig = {
+    responseType: "arraybuffer" as any,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
 
+  try {
+    const response = await axios.post(
+      QuickChartUrls.apexCharts(),
+      postConfig,
+      axiosConfig
+    );
     return response.data;
   } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch ApexCharts content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch ApexCharts content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch ApexCharts content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
   }
 }
 
-function generateApexChartsUrls(postConfig: any): {
-  chartUrl: string;
-} {
-  const configOnly = postConfig.config;
-  const configOnlyJson = JSON.stringify(configOnly);
-  const encodedConfigOnly = encodeURIComponent(configOnlyJson);
-
-  return {
-    chartUrl: `https://quickchart.io/apex-charts/render?config=${encodedConfigOnly}`,
-  };
-}
-
+/**
+ * Tool handler
+ */
 export async function handleApexChartsTool(args: any): Promise<any> {
-  validateApexChartsConfig(args.config);
-
+  const config = args.config as any;
   const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
+  
+  validateConfig(config);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validateDimensions(args.width, args.height);
+  validateApexChartsVersion(args.apexChartsVersion);
 
-  const postConfig = prepareApexChartsConfig(args.config, args);
-  const { chartUrl } = generateApexChartsUrls(postConfig);
-  const pngData = await fetchApexChartsContent(postConfig, "png");
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const postConfig = buildApexChartsConfig(config, {
+    width: args.width as number,
+    height: args.height as number,
+    apexChartsVersion: args.apexChartsVersion as string,
+  });
+  const chartUrl = buildApexChartsUrl(config);
 
   const result: any = {
     content: [
@@ -142,6 +217,19 @@ export async function handleApexChartsTool(args: any): Promise<any> {
         type: "text",
         text: chartUrl,
       },
+    ],
+    metadata: {
+      chartType: config?.chart?.type || "unknown",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+    },
+  };
+
+  try {
+    const pngData = await fetchApexChartsContent(postConfig, "png");
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -150,15 +238,21 @@ export async function handleApexChartsTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      chartType: args.config?.chart?.type || "unknown",
-      generatedAt: new Date().toISOString(),
-      chartUrl: chartUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch chart image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
