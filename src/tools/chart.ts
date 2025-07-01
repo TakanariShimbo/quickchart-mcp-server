@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
   name: "create-chart-using-chartjs",
   description:
@@ -130,7 +133,19 @@ export const CREATE_CHART_USING_CHARTJS_TOOL: Tool = {
   },
 };
 
-export function validateChartType(type: string): void {
+/**
+ * Validates
+ */
+function validateChart(chart: any): void {
+  if (!chart || typeof chart !== "object") {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Chart must be a non-empty object"
+    );
+  }
+}
+
+function validateChartType(type: string): void {
   const validTypes = [
     "bar",
     "line",
@@ -151,7 +166,7 @@ export function validateChartType(type: string): void {
   }
 }
 
-export function validateDatasets(datasets: any[]): void {
+function validateDatasets(datasets: any[]): void {
   if (!Array.isArray(datasets) || datasets.length === 0) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -169,7 +184,140 @@ export function validateDatasets(datasets: any[]): void {
   });
 }
 
-export function buildPostConfig(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validateFormat(format?: string): void {
+  if (format !== undefined) {
+    const validFormats = ["png", "webp", "jpg", "svg", "pdf", "base64"];
+    if (!validFormats.includes(format)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid format: ${format}. Valid formats are: ${validFormats.join(
+          ", "
+        )}`
+      );
+    }
+  }
+}
+
+function validateDimensions(width?: number, height?: number): void {
+  if (width !== undefined) {
+    if (!Number.isInteger(width) || width <= 0 || width > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Width must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+  if (height !== undefined) {
+    if (!Number.isInteger(height) || height <= 0 || height > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Height must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validateDevicePixelRatio(devicePixelRatio?: number): void {
+  if (devicePixelRatio !== undefined) {
+    const validRatios = [1, 2];
+    if (!validRatios.includes(devicePixelRatio)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid device pixel ratio: ${devicePixelRatio}. Valid ratios are: ${validRatios.join(
+          ", "
+        )}`
+      );
+    }
+  }
+}
+
+function validateBackgroundColor(backgroundColor?: string): void {
+  if (backgroundColor !== undefined) {
+    if (
+      typeof backgroundColor !== "string" ||
+      backgroundColor.trim().length === 0
+    ) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Background color must be a non-empty string"
+      );
+    }
+  }
+}
+
+function validateVersion(version?: string): void {
+  if (version !== undefined) {
+    if (typeof version !== "string" || version.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Version must be a non-empty string"
+      );
+    }
+  }
+}
+
+function validateEncoding(encoding?: string): void {
+  if (encoding !== undefined) {
+    const validEncodings = ["url", "base64"];
+    if (!validEncodings.includes(encoding)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid encoding: ${encoding}. Valid encodings are: ${validEncodings.join(
+          ", "
+        )}`
+      );
+    }
+  }
+}
+
+function validateKey(key?: string): void {
+  if (key !== undefined) {
+    if (typeof key !== "string" || key.trim().length === 0) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "API key must be a non-empty string"
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildPostConfig(
   chartConfig: any,
   options: {
     format?: string;
@@ -249,22 +397,25 @@ async function fetchChartContent(
   }
 }
 
+/**
+ * Tool handler
+ */
 export async function handleChartTool(args: any): Promise<any> {
   const chartConfig = args.chart as any;
-  if (!chartConfig) {
-    throw new McpError(ErrorCode.InvalidParams, "Missing chart configuration");
-  }
+  const action = args.action as string;
 
+  validateChart(chartConfig);
   validateChartType(chartConfig.type as string);
   validateDatasets(chartConfig.data?.datasets as any[]);
-
-  const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validateFormat(args.format);
+  validateDimensions(args.width, args.height);
+  validateDevicePixelRatio(args.devicePixelRatio);
+  validateBackgroundColor(args.backgroundColor);
+  validateVersion(args.version);
+  validateEncoding(args.encoding);
+  validateKey(args.key);
 
   const postConfig = prepareChartConfig(chartConfig, args);
   const { chartUrl, editorUrl } = generateChartUrls(postConfig);
