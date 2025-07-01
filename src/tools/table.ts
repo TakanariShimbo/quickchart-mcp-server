@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_TABLE_TOOL: Tool = {
   name: "create-table",
   description:
@@ -116,7 +119,10 @@ export const CREATE_TABLE_TOOL: Tool = {
   },
 };
 
-export function validateTableData(data: any): void {
+/**
+ * Validates
+ */
+function validateTableData(data: any): void {
   if (!data || typeof data !== "object") {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -143,7 +149,43 @@ export function validateTableData(data: any): void {
   }
 }
 
-export function buildTableConfig(data: any, options: any = {}): any {
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildTableConfig(data: any, options: any = {}): any {
   const config: any = {
     data,
   };
@@ -155,57 +197,59 @@ export function buildTableConfig(data: any, options: any = {}): any {
   return config;
 }
 
-function prepareTableConfig(data: any, args: any): any {
-  return buildTableConfig(data, args.options);
-}
-
-function generateTableUrls(postConfig: any): {
-  tableUrl: string;
-} {
-  const dataJson = JSON.stringify(postConfig.data || postConfig);
+function buildTableUrl(data: any): string {
+  const dataJson = JSON.stringify(data);
   const encodedData = encodeURIComponent(dataJson);
 
-  return {
-    tableUrl: `https://api.quickchart.io/v1/table?data=${encodedData}`,
-  };
+  return `https://api.quickchart.io/v1/table?data=${encodedData}`;
 }
 
 async function fetchTableContent(postConfig: any): Promise<any> {
-  try {
-    const response = await axios.post(QuickChartUrls.table(), postConfig, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+  const axiosConfig = {
+    responseType: "arraybuffer" as any,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
 
+  try {
+    const response = await axios.post(
+      QuickChartUrls.table(),
+      postConfig,
+      axiosConfig
+    );
     return response.data;
   } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch table content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch table content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch table content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
   }
 }
 
+/**
+ * Tool handler
+ */
 export async function handleTableTool(args: any): Promise<any> {
-  validateTableData(args.data);
-
+  const data = args.data as any;
   const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
+  
+  validateTableData(data);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
 
-  const config = prepareTableConfig(args.data, args);
-  const { tableUrl } = generateTableUrls(config);
-  const pngData = await fetchTableContent(config);
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const config = buildTableConfig(data, args.options);
+  const tableUrl = buildTableUrl(data);
 
   const result: any = {
     content: [
@@ -217,6 +261,20 @@ export async function handleTableTool(args: any): Promise<any> {
         type: "text",
         text: tableUrl,
       },
+    ],
+    metadata: {
+      tableType: "data",
+      generatedAt: new Date().toISOString(),
+      tableUrl: tableUrl,
+    },
+  };
+
+  let pngData: any = null;
+  try {
+    pngData = await fetchTableContent(config);
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -225,15 +283,21 @@ export async function handleTableTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      tableType: "data",
-      generatedAt: new Date().toISOString(),
-      tableUrl: tableUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch table image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
@@ -250,7 +314,9 @@ export async function handleTableTool(args: any): Promise<any> {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, pngData);
+    // If pngData is null, fetch it again for file saving
+    const dataToSave = pngData || await fetchTableContent(config);
+    fs.writeFileSync(outputPath, dataToSave);
 
     result.metadata.savedPath = outputPath;
     result.content.push({

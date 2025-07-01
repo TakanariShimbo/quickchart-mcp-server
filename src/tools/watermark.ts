@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_WATERMARK_TOOL: Tool = {
   name: "create-watermark",
   description:
@@ -88,10 +91,10 @@ export const CREATE_WATERMARK_TOOL: Tool = {
   },
 };
 
-export function validateWatermarkUrls(
-  mainImageUrl: string,
-  markImageUrl: string
-): void {
+/**
+ * Validates
+ */
+function validateMainImageUrl(mainImageUrl: string): void {
   if (
     !mainImageUrl ||
     typeof mainImageUrl !== "string" ||
@@ -102,7 +105,9 @@ export function validateWatermarkUrls(
       "MainImageUrl is required and must be a non-empty string"
     );
   }
+}
 
+function validateMarkImageUrl(markImageUrl: string): void {
   if (
     !markImageUrl ||
     typeof markImageUrl !== "string" ||
@@ -115,7 +120,89 @@ export function validateWatermarkUrls(
   }
 }
 
-export function buildWatermarkConfig(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validateOpacity(opacity?: number): void {
+  if (opacity !== undefined) {
+    if (typeof opacity !== "number" || opacity < 0 || opacity > 1) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Opacity must be a number between 0.0 and 1.0"
+      );
+    }
+  }
+}
+
+function validateDimensions(width?: number, height?: number): void {
+  if (width !== undefined) {
+    if (!Number.isInteger(width) || width <= 0 || width > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Width must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+  if (height !== undefined) {
+    if (!Number.isInteger(height) || height <= 0 || height > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Height must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validatePosition(position?: string): void {
+  if (position !== undefined) {
+    const validPositions = [
+      "center", "topLeft", "topMiddle", "topRight",
+      "middleLeft", "middleRight", "bottomLeft",
+      "bottomMiddle", "bottomRight"
+    ];
+    if (!validPositions.includes(position)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid position: ${position}. Valid positions are: ${validPositions.join(", ")}`
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildWatermarkConfig(
   mainImageUrl: string,
   markImageUrl: string,
   options: {
@@ -151,12 +238,64 @@ export function buildWatermarkConfig(
   return config;
 }
 
-function prepareWatermarkConfig(
-  mainImageUrl: string,
-  markImageUrl: string,
-  args: any
-): any {
-  return buildWatermarkConfig(mainImageUrl, markImageUrl, {
+function buildWatermarkUrl(mainImageUrl: string, markImageUrl: string): string {
+  const encodedMainUrl = encodeURIComponent(mainImageUrl);
+  const encodedMarkUrl = encodeURIComponent(markImageUrl);
+
+  return `https://quickchart.io/watermark?mainImageUrl=${encodedMainUrl}&markImageUrl=${encodedMarkUrl}`;
+}
+
+async function fetchWatermarkContent(postConfig: any): Promise<any> {
+  const axiosConfig = {
+    responseType: "arraybuffer" as any,
+    timeout: 30000,
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
+
+  try {
+    const response = await axios.post(
+      QuickChartUrls.watermark(),
+      postConfig,
+      axiosConfig
+    );
+    return response.data;
+  } catch (error) {
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch watermark content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch watermark content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
+  }
+}
+
+/**
+ * Tool handler
+ */
+export async function handleWatermarkTool(args: any): Promise<any> {
+  const mainImageUrl = args.mainImageUrl as string;
+  const markImageUrl = args.markImageUrl as string;
+  const action = args.action as string;
+  
+  validateMainImageUrl(mainImageUrl);
+  validateMarkImageUrl(markImageUrl);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validateOpacity(args.opacity);
+  validateDimensions(args.imageWidth, args.imageHeight);
+  validateDimensions(args.markWidth, args.markHeight);
+  validatePosition(args.position);
+
+  const config = buildWatermarkConfig(mainImageUrl, markImageUrl, {
     opacity: args.opacity as number,
     imageWidth: args.imageWidth as number,
     imageHeight: args.imageHeight as number,
@@ -168,82 +307,7 @@ function prepareWatermarkConfig(
     positionY: args.positionY as number,
     margin: args.margin as number,
   });
-}
-
-function generateWatermarkUrls(postConfig: any): {
-  watermarkUrl: string;
-} {
-  const mainImageUrl = encodeURIComponent(postConfig.mainImageUrl);
-  const markImageUrl = encodeURIComponent(postConfig.markImageUrl);
-  let url = `https://quickchart.io/watermark?mainImageUrl=${mainImageUrl}&markImageUrl=${markImageUrl}`;
-
-  // Add optional parameters
-  if (postConfig.opacity !== undefined) url += `&opacity=${postConfig.opacity}`;
-  if (postConfig.position) url += `&position=${postConfig.position}`;
-  if (postConfig.markRatio !== undefined)
-    url += `&markRatio=${postConfig.markRatio}`;
-  if (postConfig.markWidth !== undefined)
-    url += `&markWidth=${postConfig.markWidth}`;
-  if (postConfig.markHeight !== undefined)
-    url += `&markHeight=${postConfig.markHeight}`;
-  if (postConfig.imageWidth !== undefined)
-    url += `&imageWidth=${postConfig.imageWidth}`;
-  if (postConfig.imageHeight !== undefined)
-    url += `&imageHeight=${postConfig.imageHeight}`;
-  if (postConfig.positionX !== undefined)
-    url += `&positionX=${postConfig.positionX}`;
-  if (postConfig.positionY !== undefined)
-    url += `&positionY=${postConfig.positionY}`;
-  if (postConfig.margin !== undefined) url += `&margin=${postConfig.margin}`;
-
-  return {
-    watermarkUrl: url,
-  };
-}
-
-async function fetchWatermarkContent(postConfig: any): Promise<any> {
-  try {
-    const response = await axios.post(QuickChartUrls.watermark(), postConfig, {
-      responseType: "arraybuffer",
-      timeout: 30000,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    return response.data;
-  } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch watermark content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-}
-
-export async function handleWatermarkTool(args: any): Promise<any> {
-  validateWatermarkUrls(
-    args.mainImageUrl as string,
-    args.markImageUrl as string
-  );
-
-  const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
-
-  const config = prepareWatermarkConfig(
-    args.mainImageUrl as string,
-    args.markImageUrl as string,
-    args
-  );
-  const { watermarkUrl } = generateWatermarkUrls(config);
-  const pngData = await fetchWatermarkContent(config);
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const watermarkUrl = buildWatermarkUrl(mainImageUrl, markImageUrl);
 
   const result: any = {
     content: [
@@ -255,6 +319,20 @@ export async function handleWatermarkTool(args: any): Promise<any> {
         type: "text",
         text: watermarkUrl,
       },
+    ],
+    metadata: {
+      watermarkType: "image",
+      generatedAt: new Date().toISOString(),
+      watermarkUrl: watermarkUrl,
+    },
+  };
+
+  let pngData: any = null;
+  try {
+    pngData = await fetchWatermarkContent(config);
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -263,15 +341,21 @@ export async function handleWatermarkTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      watermarkType: "image",
-      generatedAt: new Date().toISOString(),
-      watermarkUrl: watermarkUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch watermarked image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
@@ -288,7 +372,9 @@ export async function handleWatermarkTool(args: any): Promise<any> {
       fs.mkdirSync(dir, { recursive: true });
     }
 
-    fs.writeFileSync(outputPath, pngData);
+    // If pngData is null, fetch it again for file saving
+    const dataToSave = pngData || await fetchWatermarkContent(config);
+    fs.writeFileSync(outputPath, dataToSave);
 
     result.metadata.savedPath = outputPath;
     result.content.push({

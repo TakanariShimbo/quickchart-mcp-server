@@ -5,6 +5,9 @@ import * as path from "path";
 import { getDownloadPath } from "../utils/file.js";
 import { QuickChartUrls } from "../utils/config.js";
 
+/**
+ * Tool description
+ */
 export const CREATE_QR_CODE_TOOL: Tool = {
   name: "create-qr-code",
   description:
@@ -84,7 +87,10 @@ export const CREATE_QR_CODE_TOOL: Tool = {
   },
 };
 
-export function validateQRCodeText(text: string): void {
+/**
+ * Validates
+ */
+function validateText(text: string): void {
   if (!text || typeof text !== "string" || text.trim().length === 0) {
     throw new McpError(
       ErrorCode.InvalidParams,
@@ -93,7 +99,111 @@ export function validateQRCodeText(text: string): void {
   }
 }
 
-export function buildQRCodeParams(
+function validateAction(action: string): void {
+  if (!action || typeof action !== "string" || action.trim().length === 0) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Action must be a non-empty string"
+    );
+  }
+  const validActions = ["get_url", "save_file"];
+  if (!validActions.includes(action)) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      `Invalid action: ${action}. Valid actions are: ${validActions.join(", ")}`
+    );
+  }
+}
+
+function validateOutputPath(
+  outputPath: string | undefined,
+  action: string
+): void {
+  if (
+    action === "save_file" &&
+    (!outputPath ||
+      typeof outputPath !== "string" ||
+      outputPath.trim().length === 0)
+  ) {
+    throw new McpError(
+      ErrorCode.InvalidParams,
+      "Output path is required for save_file action"
+    );
+  }
+}
+
+function validateFormat(format?: string): void {
+  if (format !== undefined) {
+    const validFormats = ["png", "svg", "base64"];
+    if (!validFormats.includes(format)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid format: ${format}. Valid formats are: ${validFormats.join(", ")}`
+      );
+    }
+  }
+}
+
+function validateSize(size?: number): void {
+  if (size !== undefined) {
+    if (!Number.isInteger(size) || size <= 0 || size > 10000) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Size must be a positive integer between 1 and 10000"
+      );
+    }
+  }
+}
+
+function validateMargin(margin?: number): void {
+  if (margin !== undefined) {
+    if (!Number.isInteger(margin) || margin < 0 || margin > 100) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Margin must be an integer between 0 and 100"
+      );
+    }
+  }
+}
+
+function validateEcLevel(ecLevel?: string): void {
+  if (ecLevel !== undefined) {
+    const validLevels = ["L", "M", "Q", "H"];
+    if (!validLevels.includes(ecLevel)) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        `Invalid error correction level: ${ecLevel}. Valid levels are: ${validLevels.join(", ")}`
+      );
+    }
+  }
+}
+
+function validateCenterImageSizeRatio(ratio?: number): void {
+  if (ratio !== undefined) {
+    if (typeof ratio !== "number" || ratio < 0 || ratio > 1) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Center image size ratio must be a number between 0.0 and 1.0"
+      );
+    }
+  }
+}
+
+function validateFontSize(fontSize?: number): void {
+  if (fontSize !== undefined) {
+    if (!Number.isInteger(fontSize) || fontSize <= 0 || fontSize > 100) {
+      throw new McpError(
+        ErrorCode.InvalidParams,
+        "Font size must be a positive integer between 1 and 100"
+      );
+    }
+  }
+}
+
+/**
+ * Fetches
+ */
+function buildQRCodeParams(
   text: string,
   options: {
     format?: string;
@@ -135,8 +245,65 @@ export function buildQRCodeParams(
   return params;
 }
 
-function prepareQRCodeConfig(text: string, args: any): Record<string, string> {
-  return buildQRCodeParams(text, {
+function buildQRCodeUrl(text: string): string {
+  const encodedText = encodeURIComponent(text);
+
+  return `https://quickchart.io/qr?text=${encodedText}`;
+}
+
+async function fetchQRCodeContent(
+  params: Record<string, string>,
+  format: string = "png"
+): Promise<any> {
+  const queryString = new URLSearchParams(params).toString();
+  const qrUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
+
+  const isSvg = format === "svg";
+  const axiosConfig = {
+    responseType: (isSvg ? "text" : "arraybuffer") as any,
+    timeout: 30000,
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      Accept: isSvg ? "image/svg+xml,*/*" : "image/*,*/*",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate, br",
+      Connection: "keep-alive",
+    },
+    validateStatus: (status: number) => status >= 200 && status < 300,
+  };
+
+  try {
+    const response = await axios.get(qrUrl, axiosConfig);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as any;
+    const message = axiosError.response
+      ? `Failed to fetch QR code content from QuickChart - Status: ${axiosError.response.status}`
+      : `Failed to fetch QR code content from QuickChart - ${axiosError.message}`;
+
+    throw new McpError(ErrorCode.InternalError, message);
+  }
+}
+
+/**
+ * Tool handler
+ */
+export async function handleQRCodeTool(args: any): Promise<any> {
+  const text = args.text as string;
+  const action = args.action as string;
+  
+  validateText(text);
+  validateAction(action);
+  validateOutputPath(args.outputPath, action);
+  validateFormat(args.format);
+  validateSize(args.size);
+  validateMargin(args.margin);
+  validateEcLevel(args.ecLevel);
+  validateCenterImageSizeRatio(args.centerImageSizeRatio);
+  validateFontSize(args.captionFontSize);
+
+  const params = buildQRCodeParams(text, {
     format: args.format as string,
     size: args.size as number,
     margin: args.margin as number,
@@ -150,59 +317,7 @@ function prepareQRCodeConfig(text: string, args: any): Record<string, string> {
     captionFontSize: args.captionFontSize as number,
     captionFontColor: args.captionFontColor as string,
   });
-}
-
-async function fetchQRCodeContent(
-  params: Record<string, string>,
-  format: string = "png"
-): Promise<any> {
-  try {
-    const queryString = new URLSearchParams(params).toString();
-    const qrUrl = `${QuickChartUrls.qrCode()}?${queryString}`;
-
-    const responseType = format === "svg" ? "text" : "arraybuffer";
-    const response = await axios.get(qrUrl, {
-      responseType: responseType as any,
-      timeout: 30000,
-    });
-
-    return response.data;
-  } catch (error) {
-    throw new McpError(
-      ErrorCode.InternalError,
-      `Failed to fetch QR code content: ${
-        error instanceof Error ? error.message : String(error)
-      }`
-    );
-  }
-}
-
-function generateQRCodeUrls(params: Record<string, string>): {
-  chartUrl: string;
-} {
-  const text = decodeURIComponent(params.text);
-  const encodedText = encodeURIComponent(text);
-
-  return {
-    chartUrl: `https://quickchart.io/qr?text=${encodedText}`,
-  };
-}
-
-export async function handleQRCodeTool(args: any): Promise<any> {
-  validateQRCodeText(args.text as string);
-
-  const action = args.action as string;
-  if (action !== "get_url" && action !== "save_file") {
-    throw new McpError(
-      ErrorCode.InvalidParams,
-      `Invalid action: ${action}. Use 'get_url' or 'save_file'`
-    );
-  }
-
-  const params = prepareQRCodeConfig(args.text as string, args);
-  const { chartUrl } = generateQRCodeUrls(params);
-  const pngData = await fetchQRCodeContent(params, "png");
-  const pngBase64 = Buffer.from(pngData).toString("base64");
+  const chartUrl = buildQRCodeUrl(text);
 
   const result: any = {
     content: [
@@ -214,6 +329,19 @@ export async function handleQRCodeTool(args: any): Promise<any> {
         type: "text",
         text: chartUrl,
       },
+    ],
+    metadata: {
+      chartType: "qrcode",
+      generatedAt: new Date().toISOString(),
+      chartUrl: chartUrl,
+    },
+  };
+
+  try {
+    const pngData = await fetchQRCodeContent(params, "png");
+    const pngBase64 = Buffer.from(pngData).toString("base64");
+
+    result.content.push(
       {
         type: "text",
         text: "Below is the PNG image:",
@@ -222,15 +350,21 @@ export async function handleQRCodeTool(args: any): Promise<any> {
         type: "image",
         data: pngBase64,
         mimeType: "image/png",
-      },
-    ],
-    metadata: {
-      chartType: "qrcode",
-      generatedAt: new Date().toISOString(),
-      chartUrl: chartUrl,
-      pngBase64: pngBase64,
-    },
-  };
+      }
+    );
+    result.metadata.pngBase64 = pngBase64;
+  } catch (error) {
+    result.content.unshift({
+      type: "text",
+      text: "⚠️ Failed to fetch QR code image",
+    });
+    result.content.push({
+      type: "text",
+      text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+    });
+    result.metadata.error =
+      error instanceof Error ? error.message : String(error);
+  }
 
   if (action === "get_url") {
     return result;
