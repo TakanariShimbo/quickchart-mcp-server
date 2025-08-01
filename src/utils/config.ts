@@ -68,6 +68,7 @@ export const QuickChartUrls = {
  * Check if a tool is enabled via environment variables
  * Format: QUICKCHART_ENABLE_<TOOL_NAME>=true/false
  * Default: all tools are enabled
+ * Supports both string and boolean values
  */
 export function isToolEnabled(toolName: string): boolean {
   const envVar = `QUICKCHART_ENABLE_${toolName.toUpperCase()}`;
@@ -78,7 +79,12 @@ export function isToolEnabled(toolName: string): boolean {
     return true;
   }
 
-  // Parse boolean value
+  // Handle boolean values (from YAML config)
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  // Parse string boolean value
   return value.toLowerCase() === "true" || value === "1";
 }
 
