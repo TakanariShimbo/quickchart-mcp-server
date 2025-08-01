@@ -169,7 +169,7 @@ function buildSparklineParams(
 function buildSparklineUrl(chart: any): string {
   const encodedChart = encodeURIComponent(JSON.stringify(chart));
 
-  return `https://quickchart.io/chart?c=${encodedChart}`;
+  return `${QuickChartUrls.sparkline()}?c=${encodedChart}`;
 }
 
 async function fetchSparklineContent(

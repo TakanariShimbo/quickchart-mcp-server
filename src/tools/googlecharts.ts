@@ -163,7 +163,7 @@ function buildGoogleChartsConfig(
 function buildGoogleChartsUrl(code: string): string {
   const encodedCode = encodeURIComponent(code);
 
-  return `https://quickchart.io/google-charts/render?code=${encodedCode}`;
+  return `${QuickChartUrls.googleCharts()}?code=${encodedCode}`;
 }
 
 async function fetchGoogleChartsContent(

@@ -192,7 +192,7 @@ function buildBarcodeUrl(type: string, text: string): string {
     text,
   }).toString();
 
-  return `https://quickchart.io/barcode?${simpleParams}`;
+  return `${QuickChartUrls.barcode()}?${simpleParams}`;
 }
 
 async function fetchBarcodeContent(

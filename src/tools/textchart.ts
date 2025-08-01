@@ -185,7 +185,7 @@ function buildTextChartConfig(
 function buildTextChartUrl(description: string): string {
   const encodedDescription = encodeURIComponent(description);
 
-  return `https://quickchart.io/natural/${encodedDescription}`;
+  return `${QuickChartUrls.textChart()}/${encodedDescription}`;
 }
 
 async function fetchTextChartContent(

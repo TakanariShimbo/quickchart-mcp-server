@@ -248,7 +248,7 @@ function buildQRCodeParams(
 function buildQRCodeUrl(text: string): string {
   const encodedText = encodeURIComponent(text);
 
-  return `https://quickchart.io/qr?text=${encodedText}`;
+  return `${QuickChartUrls.qrCode()}?text=${encodedText}`;
 }
 
 async function fetchQRCodeContent(

@@ -264,7 +264,7 @@ function buildWordCloudConfig(
 function buildWordCloudUrl(text: string): string {
   const encodedText = encodeURIComponent(text);
 
-  return `https://quickchart.io/wordcloud?text=${encodedText}`;
+  return `${QuickChartUrls.wordcloud()}?text=${encodedText}`;
 }
 
 async function fetchWordCloudContent(

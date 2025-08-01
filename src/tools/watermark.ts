@@ -242,7 +242,7 @@ function buildWatermarkUrl(mainImageUrl: string, markImageUrl: string): string {
   const encodedMainUrl = encodeURIComponent(mainImageUrl);
   const encodedMarkUrl = encodeURIComponent(markImageUrl);
 
-  return `https://quickchart.io/watermark?mainImageUrl=${encodedMainUrl}&markImageUrl=${encodedMarkUrl}`;
+  return `${QuickChartUrls.watermark()}?mainImageUrl=${encodedMainUrl}&markImageUrl=${encodedMarkUrl}`;
 }
 
 async function fetchWatermarkContent(postConfig: any): Promise<any> {

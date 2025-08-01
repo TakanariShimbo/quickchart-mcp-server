@@ -167,7 +167,7 @@ function buildGraphvizConfig(
 function buildGraphvizUrl(graph: string, layout: string = "dot", format: string = "svg"): string {
   const encodedGraph = encodeURIComponent(graph);
 
-  return `https://quickchart.io/graphviz?graph=${encodedGraph}&layout=${layout}&format=${format}`;
+  return `${QuickChartUrls.graphviz()}?graph=${encodedGraph}&layout=${layout}&format=${format}`;
 }
 
 async function fetchGraphvizContent(

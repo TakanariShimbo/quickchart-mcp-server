@@ -351,8 +351,8 @@ function buildChartUrls(chartConfig: any): {
   const encodedChart = encodeURIComponent(chartOnlyJson);
 
   return {
-    chartUrl: `https://quickchart.io/chart?c=${encodedChart}`,
-    editorUrl: `https://quickchart.io/sandbox#${encodedChart}`,
+    chartUrl: `${QuickChartUrls.chart()}?c=${encodedChart}`,
+    editorUrl: `${QuickChartUrls.chart().replace('/chart', '/sandbox')}#${encodedChart}`,
   };
 }
 

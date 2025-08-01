@@ -148,7 +148,7 @@ function buildApexChartsUrl(config: any): string {
   const configOnlyJson = JSON.stringify(config);
   const encodedConfig = encodeURIComponent(configOnlyJson);
 
-  return `https://quickchart.io/apex-charts/render?config=${encodedConfig}`;
+  return `${QuickChartUrls.apexCharts()}?config=${encodedConfig}`;
 }
 
 async function fetchApexChartsContent(
